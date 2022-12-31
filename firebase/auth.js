@@ -8,44 +8,31 @@ async function loggedIn(req, res, next) {
     req.email = decodedToken.email;
   } catch (error) {
     console.log(error);
+    res.status(403).send({ message: "Please log in first" });
+    return;
   }
   next();
 }
 
 async function superAdmin(req, res, next) {
   const token = req.header("Authorization");
-  req.superAdmin = token === process.env.SUPER_ADMIN_PASSWORD;
+  if (!token === process.env.SUPER_ADMIN_PASSWORD) {
+    res.status(403).send({ message: "Unauthorized" });
+    return;
+  }
   next();
 }
 
-async function setAdmin(email, club) {
+async function isAdmin(req, res, next) {
   try {
-    const user = await admin.auth().getUserByEmail(email);
-    await admin.auth().setCustomUserClaims(user.uid, { [club]: true });
-  } catch {
-    return false;
-  }
-  return true;
-}
-
-async function removeAdmin(email, club) {
-  try {
-    const user = await admin.auth().getUserByEmail(email);
-    await admin.auth().setCustomUserClaims(user.uid, { [club]: false });
-  } catch {
-    return false;
-  }
-  return true;
-}
-
-async function isAdmin(email, club) {
-  try {
-    const user = await admin.auth().getUserByEmail(req.email);
-    req.admin = user.customClaims[club];
+    const user = await admin.auth().getUserByEmail(req.body.email);
+    req.admin = user.customClaims[req.body.club];
   } catch (error) {
-    req.admin = false;
+    console.log(error);
+    res.status(403).send({ message: "Unauthorized" });
+    return;
   }
   next();
 }
 
-module.exports = { loggedIn, superAdmin, setAdmin, removeAdmin, isAdmin };
+module.exports = { loggedIn, superAdmin, isAdmin };

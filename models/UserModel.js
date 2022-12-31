@@ -10,6 +10,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
   },
   graduationYear: {
     type: Number,
@@ -22,10 +28,12 @@ const UserSchema = new mongoose.Schema({
   personalEmail: {
     type: String,
     required: true,
+    unique: true,
   },
   phoneNumber: {
     type: String,
     required: true,
+    unique: true,
   },
 });
 
