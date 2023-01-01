@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   },
   course: {
     type: String,
-    enum: ["B. Tech", "M. Tech", "MCA", "MBA", "PhD"],
+    enum: ["B.Tech", "M.Tech", "MCA", "MBA", "PhD"],
   },
   personalEmail: {
     type: String,
