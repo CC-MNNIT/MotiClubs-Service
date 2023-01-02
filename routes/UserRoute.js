@@ -34,7 +34,7 @@ app.post("/user", auth.loggedIn, async (req, res) => {
   const user = new userModel(req.body);
   try {
     await user.save();
-    res.status(200).send(user);
+    res.status(200).send({ ...req.body, admin: [] });
   } catch (error) {
     res.status(500).send(error);
   }
