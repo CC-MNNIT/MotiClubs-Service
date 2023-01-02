@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoute = require("./routes/UserRoute");
 const clubRoute = require("./routes/ClubRoute");
+const postRoute = require("./routes/PostRoute");
+const adminRoute = require("./routes/AdminRoute");
 require("dotenv").config();
 
 const app = express();
@@ -9,6 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(userRoute);
 app.use(clubRoute);
+app.use(postRoute);
+app.use(adminRoute);
 
 mongoose
   .connect(process.env.URL)

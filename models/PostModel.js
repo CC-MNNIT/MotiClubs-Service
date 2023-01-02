@@ -1,25 +1,25 @@
 const mongoose = require("mongoose");
 
-const ClubSchema = new mongoose.Schema(
+const PostSchema = mongoose.Schema(
   {
-    name: {
+    message: {
       type: String,
       required: true,
       trim: true,
     },
-    description: {
+    time: {
+      type: Number,
+      required: true,
+    },
+    club: {
       type: String,
       required: true,
       trim: true,
-    },
-    admins: {
-      type: Array,
-      default: [],
     },
   },
   { versionKey: false }
 );
 
-const Club = mongoose.model("Club", ClubSchema, "Clubs");
+const Post = mongoose.model("Post", PostSchema, "Posts");
 
-module.exports = Club;
+module.exports = Post;

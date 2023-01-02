@@ -16,10 +16,10 @@ app.get("/user", auth.loggedIn, async (req, res) => {
   });
   const userWithAdminList = { ...user.toJSON(), admin: arr };
   delete userWithAdminList._id;
-  delete userWithAdminList.__v;
   try {
     res.status(200).send(userWithAdminList);
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 });
@@ -36,6 +36,7 @@ app.post("/user", auth.loggedIn, async (req, res) => {
     await user.save();
     res.status(200).send({ ...req.body, admin: [] });
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 });

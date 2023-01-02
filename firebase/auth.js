@@ -24,9 +24,12 @@ async function superAdmin(req, res, next) {
 }
 
 async function isAdmin(req, res, next) {
+  const token = req.header("Authorization");
   try {
-    const user = await admin.auth().getUserByEmail(req.body.email);
-    req.admin = user.customClaims[req.body.club];
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const user = await admin.auth().getUserByEmail(decodedToken.email);
+    req.admin = user.customClaims[req.params.clubId];
+    if (!req.admin) throw new Error("Unauthorized");
   } catch (error) {
     console.log(error);
     res.status(403).send({ message: "Unauthorized" });
