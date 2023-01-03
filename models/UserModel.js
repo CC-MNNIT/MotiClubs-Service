@@ -36,6 +36,9 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    avatar: {
+      type: String,
+    },
   },
   { versionKey: false }
 );

@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "4mb" }));
 app.use(userRoute);
 app.use(clubRoute);
 app.use(postRoute);
