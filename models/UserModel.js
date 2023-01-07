@@ -39,6 +39,10 @@ const UserSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
+    subscribed: {
+      type: Array,
+      default: [],
+    },
   },
   { versionKey: false }
 );

@@ -24,11 +24,6 @@ app.get("/user", auth.loggedIn, async (req, res) => {
   }
 });
 
-async function getAdminList(email) {
-  const user = await admin.auth().getUserByEmail(email);
-  return user.hasOwnProperty("customClaims") ? user.customClaims : {};
-}
-
 app.post("/user", auth.loggedIn, async (req, res) => {
   const user = new userModel(req.body);
   try {
@@ -51,5 +46,34 @@ app.put("/user", auth.loggedIn, async (req, res) => {
     res.status(500).send(error);
   }
 });
+
+app.put("/user/subscribe", auth.loggedIn, async (req, res) => {
+  const email = req.email;
+  try {
+    const user = await userModel.findOne({ email: email }).exec();
+    await user.updateOne({ $addToSet: { subscribed: req.body.club } });
+    res.status(200).send(req.body);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+app.put("/user/unsubscribe", auth.loggedIn, async (req, res) => {
+  const email = req.email;
+  try {
+    const user = await userModel.findOne({ email: email }).exec();
+    await user.updateOne({ $pull: { subscribed: req.body.club } });
+    res.status(200).send(req.body);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+async function getAdminList(email) {
+  const user = await admin.auth().getUserByEmail(email);
+  return user.hasOwnProperty("customClaims") ? user.customClaims : {};
+}
 
 module.exports = app;
