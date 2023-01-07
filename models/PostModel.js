@@ -16,6 +16,21 @@ const PostSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    adminName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    adminEmail: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    adminPhone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { versionKey: false }
 );

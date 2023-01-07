@@ -28,8 +28,12 @@ async function isAdmin(req, res, next) {
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const user = await admin.auth().getUserByEmail(decodedToken.email);
-    req.admin = user.customClaims[req.params.clubId];
-    if (!req.admin) throw new Error("Unauthorized");
+    req.email = decodedToken.email;
+    req.admin = user.customClaims[req.params.club];
+    if (!req.admin) {
+      res.status(403).send({ message: "Unauthorized" });
+      return;
+    }
   } catch (error) {
     console.log(error);
     res.status(403).send({ message: "Unauthorized" });
