@@ -3,6 +3,7 @@ const clubModel = require("../models/ClubModel");
 const auth = require("../firebase/auth");
 const app = express();
 
+// Get all clubs
 app.get("/clubs", auth.loggedIn, async (req, res) => {
   const clubs = await clubModel.find({});
   try {
