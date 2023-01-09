@@ -1,6 +1,7 @@
 const admin = require("./config");
 require("dotenv").config();
 
+// Check if user is logged in
 async function loggedIn(req, res, next) {
   const token = req.header("Authorization");
   try {
@@ -14,6 +15,7 @@ async function loggedIn(req, res, next) {
   next();
 }
 
+// Check if user is super admin
 async function superAdmin(req, res, next) {
   const token = req.header("Authorization");
   if (!token === process.env.SUPER_ADMIN_PASSWORD) {
@@ -23,6 +25,7 @@ async function superAdmin(req, res, next) {
   next();
 }
 
+// Check if user is admin of the club
 async function isAdmin(req, res, next) {
   const token = req.header("Authorization");
   try {

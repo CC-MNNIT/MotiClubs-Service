@@ -1,9 +1,11 @@
 const express = require("express");
 const clubModel = require("../models/ClubModel");
+const subscriptionModel = require("../models/SubscriptionModel");
 const admin = require("../firebase/config");
 const auth = require("../firebase/auth");
 const app = express();
 
+// Get list of all clubs
 app.get("/admin/get_club", auth.superAdmin, async (req, res) => {
   const clubs = await clubModel.find({});
   try {
@@ -14,10 +16,16 @@ app.get("/admin/get_club", auth.superAdmin, async (req, res) => {
   }
 });
 
+// Add a club
 app.post("/admin/add_club", auth.superAdmin, async (req, res) => {
   const club = new clubModel(req.body);
   try {
     await club.save();
+    const subscription = new subscriptionModel({
+      club: club._id,
+      subscribers: [],
+    });
+    await subscription.save();
     res.status(200).send(club.toJSON());
   } catch (error) {
     console.log(error);
@@ -25,6 +33,7 @@ app.post("/admin/add_club", auth.superAdmin, async (req, res) => {
   }
 });
 
+// Assign admin role to user with email {req.body.email}
 app.post("/admin/add_admin", auth.superAdmin, async (req, res) => {
   const email = req.body.email;
   const club = req.body.club;
@@ -39,6 +48,7 @@ app.post("/admin/add_admin", auth.superAdmin, async (req, res) => {
     .send(set ? { email, club } : { message: "Failed" });
 });
 
+// Unassign admin role to user with email {req.body.email}
 app.post("/admin/remove_admin", auth.superAdmin, async (req, res) => {
   const email = req.body.email;
   const club = req.body.club;
@@ -53,6 +63,7 @@ app.post("/admin/remove_admin", auth.superAdmin, async (req, res) => {
     .send(set ? { email, club } : { message: "Failed" });
 });
 
+// Utility function to add admin role to custom claims of user
 async function setAdmin(email, club) {
   try {
     const user = await admin.auth().getUserByEmail(email);
@@ -65,6 +76,7 @@ async function setAdmin(email, club) {
   return true;
 }
 
+// Utility function to remove admin role from custom claims of user
 async function removeAdmin(email, club) {
   try {
     const user = await admin.auth().getUserByEmail(email);
