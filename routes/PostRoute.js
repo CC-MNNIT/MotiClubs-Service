@@ -50,10 +50,11 @@ app.post("/posts/:club", auth.isAdmin, async (req, res) => {
 
     await post.save();
 
+    // Send response to user
+    res.status(200).send(post.toJSON());
+
     // Notify subscribers for new post
     await notify(req.params.club, post.toJSON());
-
-    res.status(200).send(post.toJSON());
   } catch (error) {
     console.log(error);
     res.status(500).send({});
