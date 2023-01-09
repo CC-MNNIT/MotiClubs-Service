@@ -27,11 +27,14 @@ async function sendNotification(subscriber, post) {
     const payload = {
       data: {
         ...post,
+        _id: post._id.toString(),
+        time: post.time.toString(),
       },
     };
-    await admin
+    const response = await admin
       .messaging()
       .sendToDevice(token.toJSON().token, payload, options);
+    console.log(response.successCount);
   } catch (error) {
     console.log(error);
   }
