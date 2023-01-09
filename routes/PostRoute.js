@@ -1,6 +1,7 @@
 const express = require("express");
 const postModel = require("../models/PostModel");
 const userModel = require("../models/UserModel");
+const clubModel = require("../models/ClubModel");
 const auth = require("../firebase/auth");
 const notify = require("../firebase/notification");
 const app = express();
@@ -54,6 +55,10 @@ app.post("/posts/:club", auth.isAdmin, async (req, res) => {
     const user = await userModel.findOne({ email: req.email }).exec();
     const userJson = user.toJSON();
 
+    // Get club details
+    const club = await clubModel.findOne({ _id: req.params.club }).exec();
+    const clubJson = club.toJSON();
+
     // Send response to user
     res.status(200).send(post.toJSON());
 
@@ -62,6 +67,7 @@ app.post("/posts/:club", auth.isAdmin, async (req, res) => {
       ...post.toJSON(),
       adminName: userJson.name,
       adminAvatar: userJson.avatar,
+      clubName: clubJson.name,
     });
   } catch (error) {
     console.log(error);
