@@ -50,11 +50,19 @@ app.post("/posts/:club", auth.isAdmin, async (req, res) => {
 
     await post.save();
 
+    // Get admin details
+    const user = await userModel.findOne({ email: req.email }).exec();
+    const userJson = user.toJSON();
+
     // Send response to user
     res.status(200).send(post.toJSON());
 
     // Notify subscribers for new post
-    await notify(req.params.club, post.toJSON());
+    await notify(req.params.club, {
+      ...post.toJSON(),
+      adminName: userJson.name,
+      adminAvatar: userJson.avatar,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({});
