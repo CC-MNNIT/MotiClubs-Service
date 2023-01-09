@@ -6,7 +6,7 @@ const fcmTokenModel = require("../models/FcmTokenModel");
 const auth = require("../firebase/auth");
 const app = express();
 
-// Get user details
+// Get own details
 app.get("/user", auth.loggedIn, async (req, res) => {
   const email = req.email;
   const user = await userModel.findOne({ email: email }).exec();
@@ -21,6 +21,23 @@ app.get("/user", auth.loggedIn, async (req, res) => {
   delete userWithAdminList._id;
   try {
     res.status(200).send(userWithAdminList);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
+// Get user details
+app.get("/user/:email", auth.loggedIn, async (req, res) => {
+  try {
+    const user = await userModel.findOne({ email: req.params.email }).exec();
+    const userJson = user.toJSON();
+    res.status(200).send({
+      name: userJson.name,
+      personalEmail: userJson.personalEmail,
+      phoneNumber: userJson.phoneNumber,
+      avatar: userJson.avatar,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
