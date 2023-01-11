@@ -3,18 +3,17 @@ const subscriptionModel = require("../models/SubscriptionModel");
 const fcmTokenModel = require("../models/FcmTokenModel");
 require("dotenv").config();
 
-const options = {
-  priority: "high",
-  timeToLive: 60 * 60 * 24,
-};
-
 // Utility function to notify subscribers for new post
 async function notify(club, post) {
   try {
     const subscription = await subscriptionModel.findOne({ club: club });
     const subscribers = subscription.toJSON().subscribers;
     for (const subscriber of subscribers) {
-      await sendNotification(subscriber, post);
+      try {
+        await sendNotification(subscriber, post);
+      } catch (error) {
+        console.log(error);
+      }
     }
   } catch (error) {
     console.log(error);
@@ -31,10 +30,14 @@ async function sendNotification(subscriber, post) {
         time: post.time.toString(),
       },
     };
-    const response = await admin
-      .messaging()
-      .sendToDevice(token.toJSON().token, payload, options);
-    console.log(response.successCount);
+    await admin.messaging().send({
+      data: {
+        ...post,
+        _id: post._id.toString(),
+        time: post.time.toString(),
+      },
+      token: token.toJSON().token,
+    });
   } catch (error) {
     console.log(error);
   }
