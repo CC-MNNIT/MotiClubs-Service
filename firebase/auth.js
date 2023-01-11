@@ -1,5 +1,6 @@
 const admin = require("./config");
 require("dotenv").config();
+const postModel = require("../models/PostModel");
 
 // Check if user is logged in
 async function loggedIn(req, res, next) {
@@ -32,7 +33,15 @@ async function isAdmin(req, res, next) {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const user = await admin.auth().getUserByEmail(decodedToken.email);
     req.email = decodedToken.email;
-    req.admin = user.customClaims[req.params.club];
+    if (req.method !== "POST") {
+      const post = await postModel.findOne({ _id: req.params.post }).exec();
+      if (post.toJSON()["adminEmail"] === decodedToken.email) {
+        next();
+        return;
+      }
+    }
+    let club = req.body.club;
+    req.admin = user.customClaims[club];
     if (!req.admin) {
       res.status(403).send({ message: "Unauthorized" });
       return;
