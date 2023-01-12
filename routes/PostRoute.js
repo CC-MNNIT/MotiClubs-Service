@@ -56,6 +56,7 @@ app.post("/posts", auth.isAdmin, async (req, res) => {
       adminName: userJson.name,
       adminAvatar: userJson.avatar,
       clubName: clubJson.name,
+      updated: "0",
     });
   } catch (error) {
     console.log(error);
@@ -105,6 +106,7 @@ app.put("/posts/:post", auth.isAdmin, async (req, res) => {
       adminName: userJson.name,
       adminAvatar: userJson.avatar,
       clubName: clubJson.name,
+      updated: "1",
     });
   } catch (error) {
     console.log(error);
