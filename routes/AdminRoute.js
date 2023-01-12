@@ -40,6 +40,17 @@ app.post("/admin/add_club", auth.superAdmin, async (req, res) => {
   }
 });
 
+app.delete("/admin/delete_club", auth.superAdmin, async (req, res) => {
+  try {
+    const club = await clubModel.findById(req.query.club).exec();
+    await club.remove();
+    res.status(200).send({});
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
 // Assign admin role to user with email {req.body.email}
 app.post("/admin/add_admin", auth.superAdmin, async (req, res) => {
   // Extract email and club id from body
