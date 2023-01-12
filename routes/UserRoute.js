@@ -1,6 +1,6 @@
 const express = require("express");
-const admin = require("../firebase/config");
 const userModel = require("../models/UserModel");
+const clubModel = require("../models/ClubModel");
 const subscriptionModel = require("../models/SubscriptionModel");
 const fcmTokenModel = require("../models/FcmTokenModel");
 const auth = require("../firebase/auth");
@@ -13,19 +13,11 @@ app.get("/user", auth.loggedIn, async (req, res) => {
 
   const user = await userModel.findOne({ email: email }).exec();
 
-  // Get custom claims
-  const adminOf = await getCustomClaims(email);
-
-  // Extract list of clubs that user is admin of from custom claims
-  const arr = [];
-  Object.keys(adminOf).forEach((key) => {
-    if (adminOf[key]) {
-      arr.push(key);
-    }
-  });
+  // Get list of clubs user is admin of
+  const adminArray = await getAdminList(email);
 
   // Append admin array to user model
-  const userWithAdminList = { ...user.toJSON(), admin: arr };
+  const userWithAdminList = { ...user.toJSON(), admin: adminArray };
 
   // Remove unwanted property
   delete userWithAdminList._id;
@@ -162,10 +154,20 @@ app.put("/user/unsubscribe", auth.loggedIn, async (req, res) => {
   }
 });
 
-// Utility function to get custom claims of user from email
-async function getCustomClaims(email) {
-  const user = await admin.auth().getUserByEmail(email);
-  return user.hasOwnProperty("customClaims") ? user.customClaims : {};
+// Utility function to get list of clubs a user is admin of
+async function getAdminList(email) {
+  const arr = [];
+  const clubs = await clubModel.find({}).exec();
+  for (let i = 0; i < clubs.length; ++i) {
+    const admins = clubs[i].toJSON()["admins"];
+    for (let j = 0; j < admins.length; ++j) {
+      if (admins[j] === email) {
+        arr.push(clubs[i].toJSON()["_id"]);
+        break;
+      }
+    }
+  }
+  return arr;
 }
 
 module.exports = app;

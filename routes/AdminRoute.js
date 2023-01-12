@@ -1,7 +1,6 @@
 const express = require("express");
 const clubModel = require("../models/ClubModel");
 const subscriptionModel = require("../models/SubscriptionModel");
-const admin = require("../firebase/config");
 const auth = require("../firebase/auth");
 const app = express();
 
@@ -52,17 +51,15 @@ app.post("/admin/add_admin", auth.superAdmin, async (req, res) => {
     res.status(400).send({ message: "Invalid request" });
     return;
   }
+  try {
+    // Add email to admins array in club model with _id=club
+    await clubModel.updateOne({ _id: club }, { $addToSet: { admins: email } });
 
-  // Add email to admins array in club model with _id=club
-  await clubModel.updateOne({ _id: club }, { $addToSet: { admins: email } });
-
-  // Update user custom claim to assign admin role
-  const set = await setAdmin(email, club);
-
-  // set indicates if custom claim was updated successfully
-  res
-    .status(set ? 200 : 500)
-    .send(set ? { email, club } : { message: "Failed" });
+    res.status(200).send(req.body);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Failed" });
+  }
 });
 
 // Unassign admin role to user with email {req.body.email}
@@ -77,44 +74,15 @@ app.post("/admin/remove_admin", auth.superAdmin, async (req, res) => {
     return;
   }
 
-  // Remove email to admins array from club model with _id=club
-  await clubModel.updateMany({ _id: club }, { $pull: { admins: email } });
+  try {
+    // Remove email to admins array from club model with _id=club
+    await clubModel.updateOne({ _id: club }, { $pull: { admins: email } });
 
-  // Update user custom claim to unassign admin role
-  const set = await removeAdmin(email, club);
-
-  // set indicates if custom claim was updated successfully
-  res
-    .status(set ? 200 : 500)
-    .send(set ? { email, club } : { message: "Failed" });
+    res.status(200).send(req.body);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Failed" });
+  }
 });
-
-// Utility function to add admin role to custom claims of user
-// Returns true if no error occurred, else false
-async function setAdmin(email, club) {
-  try {
-    const user = await admin.auth().getUserByEmail(email);
-    await admin
-      .auth()
-      .setCustomUserClaims(user.uid, { ...user.customClaims, [club]: true });
-  } catch {
-    return false;
-  }
-  return true;
-}
-
-// Utility function to remove admin role from custom claims of user
-// Returns true if no error occurred, else false
-async function removeAdmin(email, club) {
-  try {
-    const user = await admin.auth().getUserByEmail(email);
-    await admin
-      .auth()
-      .setCustomUserClaims(user.uid, { ...user.customClaims, [club]: false });
-  } catch {
-    return false;
-  }
-  return true;
-}
 
 module.exports = app;

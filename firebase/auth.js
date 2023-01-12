@@ -1,6 +1,7 @@
 const admin = require("./config");
 require("dotenv").config();
 const postModel = require("../models/PostModel");
+const clubModel = require("../models/ClubModel");
 
 // Check if user is logged in
 async function loggedIn(req, res, next) {
@@ -31,27 +32,30 @@ async function isAdmin(req, res, next) {
   const token = req.header("Authorization");
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    const user = await admin.auth().getUserByEmail(decodedToken.email);
     req.email = decodedToken.email;
     if (req.method !== "POST") {
       const post = await postModel.findOne({ _id: req.params.post }).exec();
-      if (post.toJSON()["adminEmail"] === decodedToken.email) {
+      if (post.toJSON()["adminEmail"] === req.email) {
         next();
         return;
       }
     }
-    let club = req.body.club;
-    req.admin = user.customClaims[club];
-    if (!req.admin) {
-      res.status(403).send({ message: "Unauthorized" });
-      return;
+    let clubId = req.body.club;
+    const club = await clubModel.findOne({ _id: clubId }).exec();
+    const admins = club.toJSON().admins;
+    for (let i = 0; i < admins.length; ++i) {
+      if (admins[i] === req.email) {
+        next();
+        return;
+      }
     }
+    res.status(403).send({ message: "Unauthorized" });
+    return;
   } catch (error) {
     console.log(error);
     res.status(403).send({ message: "Unauthorized" });
     return;
   }
-  next();
 }
 
 module.exports = { loggedIn, superAdmin, isAdmin };
