@@ -1,4 +1,4 @@
-const admin = require("./config");
+const admin = require("../config/firebase");
 require("dotenv").config();
 const postModel = require("../models/PostModel");
 const clubModel = require("../models/ClubModel");

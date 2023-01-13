@@ -1,11 +1,11 @@
 {
-  "name": "notification-app-server",
+  "name": "moti-clubs-server",
   "version": "1.0.0",
-  "description": "Server for Notification App developed by CC Club MNNIT",
+  "description": "Server for MotiClubs app developed by CC Club MNNIT",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "author": "CC Club MNNIT",
   "license": "ISC",
