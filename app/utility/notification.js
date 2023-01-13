@@ -1,7 +1,6 @@
-const admin = require("./config");
+const admin = require("../config/firebase");
 const subscriptionModel = require("../models/SubscriptionModel");
 const fcmTokenModel = require("../models/FcmTokenModel");
-require("dotenv").config();
 
 // Utility function to notify subscribers for new post
 async function notify(club, post) {
