@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "notification-app-mnnit",
+  "name": "moti-clubs",
   "builds": [
     {
       "src": "index.js",
