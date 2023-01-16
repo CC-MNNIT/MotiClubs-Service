@@ -18,18 +18,9 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    graduationYear: {
-      type: Number,
-      required: true,
-    },
     course: {
       type: String,
       enum: ["B.Tech", "M.Tech", "MCA", "MBA", "PhD"],
-    },
-    personalEmail: {
-      type: String,
-      required: true,
-      unique: true,
     },
     phoneNumber: {
       type: String,
