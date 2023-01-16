@@ -1,9 +1,9 @@
 const express = require("express");
 const controller = require("../controllers/ClubController");
 const auth = require("../middlewares/auth");
-const app = express();
+const router = express.Router();
 
 // Get all clubs
-app.get("/", auth.loggedIn, controller.getClubs);
+router.get("/", auth.loggedIn, controller.getClubs);
 
-module.exports = app;
+module.exports = router;
