@@ -12,6 +12,10 @@ const ClubSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    avatar: {
+      type: String,
+      default: "",
+    },
     admins: {
       type: Array,
       default: [],
