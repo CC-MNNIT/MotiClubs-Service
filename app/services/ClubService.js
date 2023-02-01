@@ -16,22 +16,8 @@ const subscriberCount = async (clubId) => {
   return subscriptionsObj.subscribers.length;
 };
 
-const updateSocialLink = async (clubId, data) => {
-  if (data.remove)
-    await clubModel.updateOne(
-      { _id: clubId },
-      { $pull: { socialUrls: data.link } }
-    );
-  else
-    await clubModel.updateOne(
-      { _id: clubId },
-      { $addToSet: { socialUrls: data.link } }
-    );
-};
-
 module.exports = {
   getClubs,
   updateClub,
   subscriberCount,
-  updateSocialLink,
 };

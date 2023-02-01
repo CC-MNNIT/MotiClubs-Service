@@ -9,13 +9,6 @@ router.get("/", auth.userAuthorization, controller.getClubs);
 // Update club avatar
 router.put("/:club", auth.clubAuthorization, controller.updateClub);
 
-// Update social media link
-router.post(
-  "/:club/social",
-  auth.clubAuthorization,
-  controller.updateSocialLink
-);
-
 // Get subscriber count
 router.get(
   "/subscribers-count/:club",
