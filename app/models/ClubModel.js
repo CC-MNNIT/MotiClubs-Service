@@ -20,6 +20,10 @@ const ClubSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    socialUrls: {
+      type: Array,
+      default: [],
+    },
   },
   { versionKey: false }
 );

@@ -6,8 +6,8 @@ const getClubs = async () => {
   return clubs;
 };
 
-const updateAvatar = async (clubId, avatar) => {
-  await clubModel.updateOne({ _id: clubId }, { avatar: avatar });
+const updateClub = async (clubId, data) => {
+  await clubModel.updateOne({ _id: clubId }, data);
 };
 
 const subscriberCount = async (clubId) => {
@@ -16,8 +16,22 @@ const subscriberCount = async (clubId) => {
   return subscriptionsObj.subscribers.length;
 };
 
+const updateSocialLink = async (clubId, data) => {
+  if (data.remove)
+    await clubModel.updateOne(
+      { _id: clubId },
+      { $pull: { socialUrls: data.link } }
+    );
+  else
+    await clubModel.updateOne(
+      { _id: clubId },
+      { $addToSet: { socialUrls: data.link } }
+    );
+};
+
 module.exports = {
   getClubs,
-  updateAvatar,
+  updateClub,
   subscriberCount,
+  updateSocialLink,
 };

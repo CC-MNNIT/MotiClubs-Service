@@ -5,15 +5,15 @@ const router = express.Router();
 
 // Get posts
 // Pass club id with query param as {club} if posts of particular club is required
-router.get("/", auth.loggedIn, controller.getPosts);
+router.get("/", auth.userAuthorization, controller.getPosts);
 
 // Add post to club with id {req.body.club} and notify subscribers
-router.post("/", auth.isAdmin, controller.savePost);
+router.post("/", auth.postAuthorization, controller.savePost);
 
 // Delete a post
-router.delete("/:post", auth.isAdmin, controller.deletePost);
+router.delete("/:post", auth.postAuthorization, controller.deletePost);
 
 // Update a post
-router.put("/:post", auth.isAdmin, controller.updatePost);
+router.put("/:post", auth.postAuthorization, controller.updatePost);
 
 module.exports = router;
