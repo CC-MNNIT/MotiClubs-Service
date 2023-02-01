@@ -7,6 +7,10 @@ const getClubs = async () => {
 };
 
 const updateClub = async (clubId, data) => {
+  // Name and admin list update not allowed
+  if (data.name) throw new Error("Unauthorized request");
+  if (data.admins) throw new Error("Unauthorized request");
+
   await clubModel.updateOne({ _id: clubId }, data);
 };
 
