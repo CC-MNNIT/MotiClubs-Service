@@ -11,9 +11,9 @@ router.put("/:club", auth.clubAuthorization, controller.updateClub);
 
 // Get subscriber count
 router.get(
-  "/subscribers-count/:club",
-  auth.userAuthorization,
-  controller.subscriberCount
+    "/subscribers-count/:club",
+    auth.userAuthorization,
+    controller.subscriberCount
 );
 
 module.exports = router;
