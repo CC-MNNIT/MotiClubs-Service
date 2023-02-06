@@ -1,6 +1,12 @@
 const admin = require("../config/firebase");
-const subscriptionModel = require("../models/SubscriptionModel");
-const fcmTokenModel = require("../models/FcmTokenModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 
 // Utility function to notify subscribers for new post
 async function notify(club, post) {

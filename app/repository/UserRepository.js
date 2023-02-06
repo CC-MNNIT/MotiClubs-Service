@@ -1,13 +1,7 @@
-const getConnection = require("../db/db");
-
-let con = null;
-
-getConnection().then((connection) => {
-    con = connection;
-});
+const pool = require("../db/db");
 
 const saveUser = async (user) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "INSERT INTO user(name, email, course, phone, avatar) VALUES (?,?,?,?,?)",
         [user.name, user.email, user.course, user.phone, user.avatar]
     );
@@ -15,17 +9,17 @@ const saveUser = async (user) => {
 };
 
 const getUserByUid = async (userId) => {
-    const response = await con.execute("SELECT * FROM user WHERE uid=?", [
+    const response = await pool.execute("SELECT * FROM user WHERE uid=?", [
         userId,
     ]);
     return response;
 };
 
 const updateAvatarByUid = async (userId, avatar) => {
-    const response = await con.execute("UPDATE user SET avatar=? WHERE uid=?", [
-        avatar,
-        userId,
-    ]);
+    const response = await pool.execute(
+        "UPDATE user SET avatar=? WHERE uid=?",
+        [avatar, userId]
+    );
     return response;
 };
 

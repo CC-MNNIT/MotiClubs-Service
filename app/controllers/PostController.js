@@ -1,7 +1,13 @@
 const notify = require("../utility/notification");
 const service = require("../services/PostService");
-const userModel = require("../models/UserModel");
-const clubModel = require("../models/ClubModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 
 const getPosts = async (req, res) => {
     try {
@@ -59,7 +65,10 @@ const deletePost = async (req, res) => {
 
 const updatePost = async (req, res) => {
     try {
-        const post = await service.updatePost(req.params.post, req.body.message);
+        const post = await service.updatePost(
+            req.params.post,
+            req.body.message
+        );
         const postJson = post.toJSON();
 
         // Send response to user

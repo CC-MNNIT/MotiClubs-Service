@@ -9,7 +9,7 @@ const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
 const getUser = async (userId) => {
-    validate([userId]);
+    // validate([userId]);
 
     const user = await userRepository.getUserByUid(userId);
 

@@ -1,22 +1,20 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 
-let connection = null;
+// Connection pool
+const pool = mysql.createPool({
+    host: process.env.HOST,
+    user: process.env.DB_USER,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    waitForConnections: true,
+    connectionLimit: 10,
+    maxIdle: 10,
+    idleTimeout: 60000,
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: process.env.SSL, // TODO: change to true in production
+    },
+});
 
-/* 
-    Create connection object, if null
-    Return the connection object 
-*/
-const getConnection = async () => {
-    try {
-        if (!connection) {
-            connection = await mysql.createConnection(process.env.DATABASE_URL);
-            console.log("Connected to the database");
-        }
-        return connection;
-    } catch (error) {
-        console.log(`Database connection failed. ${error}`);
-    }
-};
-
-module.exports = getConnection;
+module.exports = pool;

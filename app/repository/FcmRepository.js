@@ -1,13 +1,7 @@
-const getConnection = require("../db/db");
-
-let con = null;
-
-getConnection().then((connection) => {
-    con = connection;
-});
+const pool = require("../db/db");
 
 const setTokenByUid = async (userId, token) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "INSERT INTO fcm (uid, token) VALUES (?,?)",
         [userId, token]
     );
@@ -15,7 +9,7 @@ const setTokenByUid = async (userId, token) => {
 };
 
 const updateTokenByUid = async (userId, token) => {
-    const response = await con.execute("UPDATE fcm SET token=? WHERE uid=?", [
+    const response = await pool.execute("UPDATE fcm SET token=? WHERE uid=?", [
         token,
         userId,
     ]);

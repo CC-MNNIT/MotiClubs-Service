@@ -1,13 +1,7 @@
-const getConnection = require("../db/db");
-
-let con = null;
-
-getConnection().then((connection) => {
-    con = connection;
-});
+const pool = require("../db/db");
 
 const getPostsByClubAndChannel = async (clubId, channelId) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "SELECT * FROM post WHERE cid=? AND chid=?",
         [clubId, channelId]
     );
@@ -15,7 +9,7 @@ const getPostsByClubAndChannel = async (clubId, channelId) => {
 };
 
 const updatePostByPostId = async (postId, message) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "UPDATE post SET message=? WHERE pid=?",
         [message, postId]
     );
@@ -23,14 +17,14 @@ const updatePostByPostId = async (postId, message) => {
 };
 
 const detelePostByPostId = async (postId) => {
-    const response = await con.execute("DELETE FROM post where pid=?", [
+    const response = await pool.execute("DELETE FROM post where pid=?", [
         postId,
     ]);
     return response;
 };
 
 const savePost = async (userId, clubId, channelId, message, general) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "INSERT INTO post (cid, chid, message, time, uid, general) VALUES (?,?,?,?,?,?)",
         [clubId, channelId, message, Date.now(), userId, general]
     );

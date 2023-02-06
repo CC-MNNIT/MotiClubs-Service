@@ -1,13 +1,7 @@
-const getConnection = require("../db/db");
-
-let con = null;
-
-getConnection().then((connection) => {
-    con = connection;
-});
+const pool = require("../db/db");
 
 const subscribe = async (userId, clubId) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "INSERT INTO subscribers (uid, cid) VALUES (?,?)",
         [userId, clubId]
     );
@@ -15,7 +9,7 @@ const subscribe = async (userId, clubId) => {
 };
 
 const unsubscribe = async (userId, clubId) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "DELETE FROM subscribers where uid=? AND cid=?",
         [userId, clubId]
     );
@@ -23,7 +17,7 @@ const unsubscribe = async (userId, clubId) => {
 };
 
 const getSubscribersCountByCid = async (clubId) => {
-    const response = await con.execute(
+    const response = await pool.execute(
         "SELECT COUNT(uid) as subscribersCount FROM club WHERE cid=?",
         [clubId]
     );

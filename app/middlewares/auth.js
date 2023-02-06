@@ -1,7 +1,13 @@
 const admin = require("../config/firebase");
 require("dotenv").config();
-const postModel = require("../models/PostModel");
-const clubModel = require("../models/ClubModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 
 // Check if user is logged in
 async function userAuthorization(req, res, next) {
@@ -34,7 +40,9 @@ async function postAuthorization(req, res, next) {
         const decodedToken = await admin.auth().verifyIdToken(token);
         req.email = decodedToken.email;
         if (req.method !== "POST") {
-            const post = await postModel.findOne({ _id: req.params.post }).exec();
+            const post = await postModel
+                .findOne({ _id: req.params.post })
+                .exec();
             if (post.toJSON()["adminEmail"] === req.email) {
                 next();
                 return;
