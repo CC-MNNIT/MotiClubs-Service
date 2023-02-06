@@ -1,5 +1,11 @@
-const clubModel = require("../models/ClubModel");
-const SubscriptionModel = require("../models/SubscriptionModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 
 const getClubs = async () => {
     const clubs = await clubModel.find({});

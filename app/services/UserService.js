@@ -1,24 +1,27 @@
-const userModel = require("../models/UserModel");
-const clubModel = require("../models/ClubModel");
-const subscriptionModel = require("../models/SubscriptionModel");
-const fcmTokenModel = require("../models/FcmTokenModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
-const getUser = async (email) => {
-    validate([email]);
+const getUser = async (userId) => {
+    validate([userId]);
 
-    const user = await userModel.findOne({ email: email }).exec();
+    const user = await userRepository.getUserByUid(userId);
+
+    console.log(user);
 
     if (!user) throw new Error("User does not exist");
 
     // Get list of clubs user is admin of
-    const adminArray = await getAdminList(email);
+    const adminArray = await adminRepository.getClubsWithUidAsAdmin(userId);
 
     // Append admin array to user model
     const userWithAdminList = { ...user.toJSON(), admin: adminArray };
-
-    // Remove unwanted property
-    delete userWithAdminList._id;
 
     return userWithAdminList;
 };

@@ -1,0 +1,45 @@
+const getConnection = require("../db/db");
+
+let con = null;
+
+getConnection().then((connection) => {
+    con = connection;
+});
+
+const getPostsByClubAndChannel = async (clubId, channelId) => {
+    const response = await con.execute(
+        "SELECT * FROM post WHERE cid=? AND chid=?",
+        [clubId, channelId]
+    );
+    return response;
+};
+
+const updatePostByPostId = async (postId, message) => {
+    const response = await con.execute(
+        "UPDATE post SET message=? WHERE pid=?",
+        [message, postId]
+    );
+    return response;
+};
+
+const detelePostByPostId = async (postId) => {
+    const response = await con.execute("DELETE FROM post where pid=?", [
+        postId,
+    ]);
+    return response;
+};
+
+const savePost = async (userId, clubId, channelId, message, general) => {
+    const response = await con.execute(
+        "INSERT INTO post (cid, chid, message, time, uid, general) VALUES (?,?,?,?,?,?)",
+        [clubId, channelId, message, Date.now(), userId, general]
+    );
+    return response;
+};
+
+module.exports = {
+    getPostsByClubAndChannel,
+    updatePostByPostId,
+    detelePostByPostId,
+    savePost,
+};

@@ -1,6 +1,11 @@
-const clubModel = require("../models/ClubModel");
-const subscriptionModel = require("../models/SubscriptionModel");
-const userModel = require("../models/UserModel");
+const userRepository = require("../repository/UserRepository");
+const fcmRepository = require("../repository/FcmRepository");
+const subscribersRepository = require("../repository/SubscribersRepository");
+const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
+const clubRepository = require("../repository/ClubRepository");
+const postRepository = require("../repository/PostRepository");
+const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
 const getClubs = async () => {
@@ -53,7 +58,10 @@ const updateAdmin = async (email, club, add) => {
 
     // Update admins array in club with _id=club
     if (add)
-        await clubModel.updateOne({ _id: club }, { $addToSet: { admins: email } });
+        await clubModel.updateOne(
+            { _id: club },
+            { $addToSet: { admins: email } }
+        );
     else await clubModel.updateOne({ _id: club }, { $pull: { admins: email } });
 };
 
