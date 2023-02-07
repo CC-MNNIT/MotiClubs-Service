@@ -23,8 +23,14 @@ const updateAvatarByUid = async (userId, avatar) => {
     return response.insertId;
 };
 
+const userExists = async (userId) => {
+    const user = await getUserByUid(userId);
+    return user.length > 0;
+};
+
 module.exports = {
     saveUser,
     getUserByUid,
     updateAvatarByUid,
+    userExists,
 };

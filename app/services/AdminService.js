@@ -9,60 +9,39 @@ const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
 const getClubs = async () => {
-    const clubs = await clubModel.find({});
+    const clubs = await clubRepository.getAllClubs();
     return clubs;
 };
 
 const saveClub = async (clubDetails) => {
-    // Create club object from club details (name, description)
-    const club = new clubModel(clubDetails);
-
-    // Save club
-    await club.save();
-
-    // Create subscription doc for new Club
-    const subscription = new subscriptionModel({
-        club: club._id,
-        subscribers: [],
-    });
-
-    // Save subscription doc
-    await subscription.save();
-
-    return club;
+    await clubRepository.saveClub(
+        clubDetails.name,
+        clubDetails.description,
+        clubDetails.avatar,
+        clubDetails.summary
+    );
 };
 
-const deleteClub = async (id) => {
+const deleteClub = async (clubId) => {
     validate([id]);
 
-    // Find club
-    const club = await clubModel.findById(id).exec();
-
-    // Club not found
-    if (!club) throw new Error("Club does not exist");
-
-    // Delete club
-    await club.remove();
+    await clubRepository.deleteClubByCid(clubId);
 };
 
-const updateAdmin = async (email, club, add) => {
+const updateAdmin = async (userId, clubId, add) => {
     validate([email, club]);
 
     // Check if user exists
-    const user = await userModel.findOne({ email: email }).exec();
+    const user = await userRepository.userExists(userId);
     if (!user) throw new Error("User does not exist");
 
     // Check if club exists
-    const clubObject = await clubModel.findOne({ _id: club }).exec();
-    if (!clubObject) throw new Error("Club does not exist");
+    const club = await clubRepository.clubExists(clubId);
+    if (!club) throw new Error("Club does not exist");
 
-    // Update admins array in club with _id=club
-    if (add)
-        await clubModel.updateOne(
-            { _id: club },
-            { $addToSet: { admins: email } }
-        );
-    else await clubModel.updateOne({ _id: club }, { $pull: { admins: email } });
+    // Update admin table
+    if (add) await adminRepository.addAdmin(clubId, userId);
+    else await adminRepository.removeAdmin(clubId, userId);
 };
 
 module.exports = {

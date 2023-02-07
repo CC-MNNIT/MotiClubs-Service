@@ -31,10 +31,16 @@ const updateClubByCid = async (clubId, description, avatar, summary) => {
     );
 };
 
+const clubExists = async (clubId) => {
+    const club = await getClubByUid(clubId);
+    return club.length > 0;
+};
+
 module.exports = {
     getClubByClubId,
     getAllClubs,
     saveClub,
     deleteClubByCid,
     updateClubByCid,
+    clubExists,
 };
