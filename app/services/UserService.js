@@ -7,7 +7,7 @@ const clubRepository = require("../repository/ClubRepository");
 const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
-const admin = require("../config");
+const admin = require("../config/firebase");
 
 const getUser = async (userId) => {
     validate([userId]);

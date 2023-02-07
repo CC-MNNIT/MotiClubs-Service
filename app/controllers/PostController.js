@@ -1,4 +1,4 @@
-const notify = require("../utility/notification");
+const { notify, notifyAll } = require("../utility/notification");
 const service = require("../services/PostService");
 const userRepository = require("../repository/UserRepository");
 const fcmRepository = require("../repository/FcmRepository");
@@ -11,7 +11,10 @@ const urlRepository = require("../repository/UrlRepository");
 
 const getPosts = async (req, res) => {
     try {
-        const posts = await service.getPosts(req.query.club);
+        const posts = await service.getPosts(
+            req.query.clubId,
+            req.query.channelId
+        );
         res.status(200).send(posts);
     } catch (error) {
         console.log(error);
@@ -22,30 +25,23 @@ const getPosts = async (req, res) => {
 const savePost = async (req, res) => {
     try {
         const message = req.body.message;
-        const clubId = req.body.club;
-        const adminEmail = req.email;
+        const userId = req.userId;
+        const clubId = req.body.clubId;
+        const channelId = req.body.channelId;
+        const general = req.body.general;
 
-        const post = await service.savePost(message, clubId, adminEmail);
+        const postId = await service.savePost(
+            userId,
+            clubId,
+            channelId,
+            message,
+            general
+        );
 
         // Send response to user
-        res.status(200).send(post.toJSON());
+        res.status(200).send({});
 
-        // Get admin details
-        const user = await userModel.findOne({ email: adminEmail }).exec();
-        const userJson = user.toJSON();
-
-        // Get club details
-        const club = await clubModel.findOne({ _id: clubId }).exec();
-        const clubJson = club.toJSON();
-
-        // Notify subscribers for new post
-        await notify(req.body.club, {
-            ...post.toJSON(),
-            adminName: userJson.name,
-            adminAvatar: userJson.avatar,
-            clubName: clubJson.name,
-            updated: "0",
-        });
+        notifyUsers(postId, 0);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -54,8 +50,7 @@ const savePost = async (req, res) => {
 
 const deletePost = async (req, res) => {
     try {
-        await service.deletePost(req.params.post);
-
+        await service.deletePost(req.params.postId);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -65,34 +60,51 @@ const deletePost = async (req, res) => {
 
 const updatePost = async (req, res) => {
     try {
-        const post = await service.updatePost(
-            req.params.post,
-            req.body.message
-        );
-        const postJson = post.toJSON();
+        await service.updatePost(req.params.postId, req.body.message);
 
         // Send response to user
         res.status(200).send({});
 
-        // Get admin details
-        const user = await userModel.findOne({ email: req.email }).exec();
-        const userJson = user.toJSON();
-
-        // Get club details
-        const club = await clubModel.findOne({ _id: postJson.club }).exec();
-        const clubJson = club.toJSON();
-
-        // Notify subscribers for new post
-        await notify(postJson.club, {
-            ...post.toJSON(),
-            adminName: userJson.name,
-            adminAvatar: userJson.avatar,
-            clubName: clubJson.name,
-            updated: "1",
-        });
+        notifyUsers(req.params.postId, 1);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
+    }
+};
+
+// Notify users about new post / post update
+const notifyUsers = async (postId, updated) => {
+    // Get inserted post details
+    const post = await postRepository.getPostByPostId(postId);
+
+    // Get admin details
+    const user = await userRepository.getUserByUid(post[0].uid);
+
+    // Get club details
+    const club = await clubRepository.getClubByClubId(post[0].cid);
+
+    // Get channel details
+    const channel = await channelRepository.getChannelByChannelId(post[0].chid);
+
+    // Notify subscribers for new post
+    if (post[0].general) {
+        await notifyAll({
+            ...post[0],
+            adminName: user[0].name,
+            adminAvatar: user[0].avatar,
+            clubName: club[0].name,
+            channelName: channel[0].name,
+            updated: updated.toString(),
+        });
+    } else {
+        await notify(club[0].cid, {
+            ...post[0],
+            adminName: user[0].name,
+            adminAvatar: user[0].avatar,
+            clubName: club[0].name,
+            channelName: channel[0].name,
+            updated: updated.toString(),
+        });
     }
 };
 

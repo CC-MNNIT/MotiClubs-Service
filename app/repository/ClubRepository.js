@@ -1,5 +1,12 @@
 const pool = require("../db/db");
 
+const getClubByClubId = async (clubId) => {
+    const [response] = await pool.execute("SELECT * FROM club WHERE cid=?", [
+        clubId,
+    ]);
+    return response;
+};
+
 const getAllClubs = async () => {
     const response = await pool.execute("SELECT * FROM club");
     return response;
@@ -29,6 +36,7 @@ const updateClubByCid = async (clubId, description, avatar, summary) => {
 };
 
 module.exports = {
+    getClubByClubId,
     getAllClubs,
     saveClub,
     deleteClubByCid,

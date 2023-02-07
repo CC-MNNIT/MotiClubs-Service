@@ -8,49 +8,39 @@ const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
-const getPosts = async (clubId) => {
-    // Create filter object
-    // If id is null, send all posts, else post of the required club
-    const clubFilter = clubId ? { club: clubId } : {};
+const getPosts = async (clubId, channelId) => {
+    validate([clubId, channelId]);
 
-    // Fetch posts from most to least recent with filter
-    const posts = await postModel.find(clubFilter).sort({ time: -1 });
-
+    const posts = await postRepository.getPostsByClubAndChannel(
+        clubId,
+        channelId
+    );
     return posts;
 };
 
-const savePost = async (message, club, adminEmail) => {
-    validate([message, club]);
+const savePost = async (userId, clubId, channelId, message, general) => {
+    validate([userId, clubId, channelId, message, general]);
 
-    // Create Post object
-    const post = new postModel({
-        message: message,
-        time: Date.now(),
-        club: club,
-        adminEmail: adminEmail,
-    });
-
-    await post.save();
-
-    return post;
+    const postId = postRepository.savePost(
+        userId,
+        clubId,
+        channelId,
+        message,
+        general
+    );
+    return postId;
 };
 
-const deletePost = async (post) => {
-    validate([post]);
+const deletePost = async (postId) => {
+    validate([postId]);
 
-    await postModel.deleteOne({ _id: post }).exec();
+    await postRepository.detelePostByPostId(postId);
 };
 
-const updatePost = async (post, message) => {
-    validate([post]);
+const updatePost = async (postId, message) => {
+    validate([postId]);
 
-    await postModel
-        .updateOne({ _id: post }, { message: message, time: Date.now() })
-        .exec();
-
-    // Get updated post
-    const updatedPost = await postModel.findOne({ _id: post });
-    return updatedPost;
+    await postRepository.updatePostByPostId(postId, message);
 };
 
 module.exports = {

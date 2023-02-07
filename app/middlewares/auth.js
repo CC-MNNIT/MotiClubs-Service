@@ -1,4 +1,6 @@
 const admin = require("../config/firebase");
+const postRepository = require("../repository/PostRepository");
+const adminRepository = require("../repository/AdminRepository");
 require("dotenv").config();
 
 // Verify JWT
@@ -8,7 +10,7 @@ async function signUpAuthorization(req, res, next) {
         await admin.auth().verifyIdToken(token);
     } catch (error) {
         console.log(error);
-        res.status(403).send({ message: "Please log in first" });
+        res.status(401).send({ message: "Please log in first" });
         return;
     }
     next();
@@ -22,7 +24,7 @@ async function userAuthorization(req, res, next) {
         req.userId = decodedToken.userId;
     } catch (error) {
         console.log(error);
-        res.status(403).send({ message: "Please log in first" });
+        res.status(401).send({ message: "Please log in first" });
         return;
     }
     next();
@@ -32,7 +34,7 @@ async function userAuthorization(req, res, next) {
 async function superAdmin(req, res, next) {
     const token = req.header("Authorization");
     if (!token === process.env.SUPER_ADMIN_PASSWORD) {
-        res.status(403).send({ message: "Unauthorized" });
+        res.status(401).send({ message: "Unauthorized" });
         return;
     }
     next();
@@ -43,26 +45,28 @@ async function postAuthorization(req, res, next) {
     const token = req.header("Authorization");
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
-        req.email = decodedToken.email;
+        req.userId = decodedToken.userId;
         if (req.method !== "POST") {
-            const post = await postModel
-                .findOne({ _id: req.params.post })
-                .exec();
-            if (post.toJSON()["adminEmail"] === req.email) {
+            const post = await postRepository.getPostByPostId(
+                req.params.postId
+            );
+            if (post[0]["uid"] === req.userId) {
                 next();
                 return;
             }
+            res.status(401).send({ message: "Unauthorized" });
+            return;
         }
-        const isAdmin = await clubAdminCheck(req.email, req.body.club);
+        const isAdmin = await clubAdminCheck(req.userId, req.body.clubId);
         if (isAdmin) {
             next();
             return;
         }
-        res.status(403).send({ message: "Unauthorized" });
+        res.status(401).send({ message: "Unauthorized" });
         return;
     } catch (error) {
         console.log(error);
-        res.status(403).send({ message: "Unauthorized" });
+        res.status(401).send({ message: "Unauthorized" });
         return;
     }
 }
@@ -72,28 +76,27 @@ const clubAuthorization = async (req, res, next) => {
     const token = req.header("Authorization");
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
-        req.email = decodedToken.email;
-        const isAdmin = await clubAdminCheck(req.email, req.params.club);
+        req.userId = decodedToken.userId;
+        const isAdmin = await clubAdminCheck(req.userId, req.params.clubId);
         if (isAdmin) {
             next();
             return;
         }
-        res.status(403).send({ message: "Unauthorized" });
+        res.status(401).send({ message: "Unauthorized" });
         return;
     } catch (error) {
         console.log(error);
-        res.status(403).send({ message: "Unauthorized" });
+        res.status(401).send({ message: "Unauthorized" });
         return;
     }
 };
 
 // Check is the user with email (email) is admin of club with id clubId
-const clubAdminCheck = async (email, clubId) => {
+const clubAdminCheck = async (userId, clubId) => {
     try {
-        const club = await clubModel.findOne({ _id: clubId }).exec();
-        const admins = club.toJSON()["admins"];
+        const admins = adminRepository.getAdminsFromClubId(clubId);
         for (let i = 0; i < admins.length; ++i)
-            if (admins[i] === email) return true;
+            if (admins[i] === userId) return true;
         return false;
     } catch (error) {
         console.log(error);

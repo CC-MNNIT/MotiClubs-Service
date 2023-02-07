@@ -25,6 +25,8 @@ async function notify(club, post) {
     }
 }
 
+async function notifyAll(post) {}
+
 async function sendNotification(subscriber, post) {
     try {
         const token = await fcmTokenModel.findOne({ user: subscriber });
@@ -48,4 +50,4 @@ async function sendNotification(subscriber, post) {
     }
 }
 
-module.exports = notify;
+module.exports = { notify, notifyAll };
