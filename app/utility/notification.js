@@ -9,13 +9,13 @@ const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 
 // Utility function to notify subscribers for new post
-async function notify(club, post) {
+async function notify(clubId, post) {
     try {
-        const subscription = await subscriptionModel.findOne({ club: club });
-        const subscribers = subscription.toJSON().subscribers;
+        const subscribers = await fcmRepository.getTokensOfSubscribers(clubId);
         for (const subscriber of subscribers) {
             try {
-                await sendNotification(subscriber, post);
+                if (subscriber.token)
+                    await sendNotification(subscriber.token, post);
             } catch (error) {
                 console.log(error);
             }
@@ -25,25 +25,26 @@ async function notify(club, post) {
     }
 }
 
-async function notifyAll(post) {}
+async function notifyAll(post) {
+    const users = await fcmRepository.getAllTokens();
+    for (let i = 0; i < users.length; ++i) {
+        await sendNotification(users[i].token, post);
+    }
+}
 
-async function sendNotification(subscriber, post) {
+async function sendNotification(token, post) {
     try {
-        const token = await fcmTokenModel.findOne({ user: subscriber });
-        const payload = {
-            data: {
-                ...post,
-                _id: post._id.toString(),
-                time: post.time.toString(),
-            },
-        };
         await admin.messaging().send({
             data: {
                 ...post,
-                _id: post._id.toString(),
                 time: post.time.toString(),
+                uid: post.uid.toString(),
+                pid: post.pid.toString(),
+                cid: post.cid.toString(),
+                chid: post.chid.toString(),
+                general: post.general.toString(),
             },
-            token: token.toJSON().token,
+            token,
         });
     } catch (error) {
         console.log(error);

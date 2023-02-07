@@ -62,7 +62,7 @@ const updateAvatar = async (userId, avatar) => {
 const updateFcmToken = async (userId, token) => {
     validate([userId, token]);
 
-    fcmRepository.updateTokenByUid(userId, token);
+    await fcmRepository.updateTokenByUid(userId, token);
 };
 
 const subscribe = async (userId, clubId) => {
