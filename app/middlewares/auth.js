@@ -1,22 +1,25 @@
 const admin = require("../config/firebase");
 require("dotenv").config();
-const userRepository = require("../repository/UserRepository");
-const fcmRepository = require("../repository/FcmRepository");
-const subscribersRepository = require("../repository/SubscribersRepository");
-const adminRepository = require("../repository/AdminRepository");
-const channelRepository = require("../repository/ChannelRepository");
-const clubRepository = require("../repository/ClubRepository");
-const postRepository = require("../repository/PostRepository");
-const urlRepository = require("../repository/UrlRepository");
+
+// Verify JWT
+async function signUpAuthorization(req, res, next) {
+    const token = req.header("Authorization");
+    try {
+        await admin.auth().verifyIdToken(token);
+    } catch (error) {
+        console.log(error);
+        res.status(403).send({ message: "Please log in first" });
+        return;
+    }
+    next();
+}
 
 // Check if user is logged in
 async function userAuthorization(req, res, next) {
-    next();
-    return;
     const token = req.header("Authorization");
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
-        req.email = decodedToken.email;
+        req.userId = decodedToken.userId;
     } catch (error) {
         console.log(error);
         res.status(403).send({ message: "Please log in first" });
@@ -99,6 +102,7 @@ const clubAdminCheck = async (email, clubId) => {
 };
 
 module.exports = {
+    signUpAuthorization,
     userAuthorization,
     superAdmin,
     postAuthorization,
