@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", auth.userAuthorization, controller.getUser);
 
 // Get user details
-router.get("/:email", auth.userAuthorization, controller.getUserByEmail);
+router.get("/:userId", auth.userAuthorization, controller.getUserByUid);
 
 // Save user details
 router.post("/", auth.userAuthorization, controller.saveUser);

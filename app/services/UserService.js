@@ -9,11 +9,9 @@ const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
 const getUser = async (userId) => {
-    // validate([userId]);
+    validate([userId]);
 
     const user = await userRepository.getUserByUid(userId);
-
-    console.log(user);
 
     if (!user) throw new Error("User does not exist");
 
@@ -21,150 +19,65 @@ const getUser = async (userId) => {
     const adminArray = await adminRepository.getClubsWithUidAsAdmin(userId);
 
     // Append admin array to user model
-    const userWithAdminList = { ...user.toJSON(), admin: adminArray };
+    const userWithAdminList = { ...user[0], admin: adminArray };
 
     return userWithAdminList;
 };
 
-const getUserByEmail = async (email) => {
-    validate([email]);
+const getUserByUid = async (userId) => {
+    validate([userId]);
 
-    // Get user from email
-    const user = await userModel.findOne({ email: email }).exec();
+    // Get user from userId
+    const user = await userRepository.getUserByUid(userId);
 
     if (!user) throw new Error("User does not exist");
 
-    const userJson = user.toJSON();
-
     // Return restricted content
     return {
-        name: userJson.name,
-        personalEmail: userJson.personalEmail,
-        phoneNumber: userJson.phoneNumber,
-        avatar: userJson.avatar,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        avatar: user.avatar,
     };
 };
 
 const saveUser = async (userDetails) => {
-    // Get user object from user details
-    // {name, email, personalEmail, registrationNumber, phoneNumber, graduationYear, course, avatar}
-    const user = new userModel(userDetails);
+    // userDetails = {name, email, phone, course, avatar}
+    const userId = await userRepository.saveUser(userDetails);
 
-    await user.save();
+    // Default set up
+    await fcmRepository.setTokenByUid(userId, "");
+
+    // Add userId to custom claims
 };
 
-const updateAvatar = async (email, avatar) => {
-    validate([email, avatar]);
+const updateAvatar = async (userId, avatar) => {
+    validate([userId, avatar]);
 
-    // Get user from email
-    const user = await userModel.findOne({ email: email }).exec();
-
-    if (!user) throw new Error("User does not exist");
-
-    // Update {avatar: "avatar_url"}
-    await user.updateOne({ avatar: avatar });
+    userRepository.updateAvatarByUid(userId, avatar);
 };
 
-const updateFcmToken = async (email, token) => {
-    validate([email, token]);
+const updateFcmToken = async (userId, token) => {
+    validate([userId, token]);
 
-    // Find fcmToken document
-    const fcmToken = await fcmTokenModel.findOne({ user: email }).exec();
-
-    // Add new doc if not already added else update existing
-    if (fcmToken === null) {
-        const newToken = new fcmTokenModel({ token: token, user: email });
-        await newToken.save();
-    } else await fcmToken.updateOne({ token: token });
+    fcmRepository.updateTokenByUid(userId, token);
 };
 
-const subscribe = async (email, club) => {
-    validate([email, club]);
+const subscribe = async (userId, clubId) => {
+    validate([userId, clubId]);
 
-    // Find user
-    const user = await userModel.findOne({ email: email }).exec();
-
-    // Find club
-    const clubObj = await clubModel.findOne({ _id: club }).exec();
-
-    if (!user) throw new Error("User does not exist");
-    if (!clubObj) throw new Error("Club does not exist");
-
-    // Add club id to subscribed array
-    await user.updateOne({ $addToSet: { subscribed: club } });
-
-    // Get subscription doc for req.body.club
-    const subscription = await subscriptionModel.findOne({
-        club: club,
-    });
-
-    // Add subscription doc if does not exist
-    if (!subscription) {
-        const newSubscriptionDoc = new subscriptionModel({
-            club: club,
-            subscribers: [email],
-        });
-        await newSubscriptionDoc.save();
-        return;
-    }
-
-    // Add user email to subscription list
-    await subscription.updateOne({ $addToSet: { subscribers: email } });
+    await subscribersRepository.subscribe(userId, clubId);
 };
 
-const unsubscribe = async (email, club) => {
-    validate([email, club]);
+const unsubscribe = async (userId, clubId) => {
+    validate([userId, clubId]);
 
-    // Find user
-    const user = await userModel.findOne({ email: email }).exec();
-
-    // Find club
-    const clubObj = await clubModel.findOne({ _id: club }).exec();
-
-    if (!user) throw new Error("User does not exist");
-    if (!clubObj) throw new Error("Club does not exist");
-
-    // Add club id to subscribed array
-    await user.updateOne({ $pull: { subscribed: club } });
-
-    // Get subscription doc for req.body.club
-    const subscription = await subscriptionModel.findOne({
-        club: club,
-    });
-
-    // Add subscription doc if does not exist
-    if (!subscription) {
-        const newSubscriptionDoc = new subscriptionModel({
-            club: club,
-            subscribers: [],
-        });
-        await newSubscriptionDoc.save();
-        return;
-    }
-
-    // Add user email to subscription list
-    await subscription.updateOne({ $pull: { subscribers: email } });
+    await subscribersRepository.unsubscribe(userId, clubId);
 };
-
-// Utility function to get list of clubs a user is admin of
-async function getAdminList(email) {
-    const arr = [];
-    const clubs = await clubModel.find({}).exec();
-    for (let i = 0; i < clubs.length; ++i) {
-        const admins = clubs[i].toJSON()["admins"];
-        for (let j = 0; j < admins.length; ++j) {
-            if (admins[j] === email) {
-                arr.push(clubs[i].toJSON()["_id"]);
-                break;
-            }
-        }
-    }
-    return arr;
-}
 
 module.exports = {
     getUser,
-    getUserByEmail,
+    getUserByUid,
     saveUser,
     updateAvatar,
     updateFcmToken,

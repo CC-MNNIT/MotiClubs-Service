@@ -2,9 +2,7 @@ const service = require("../services/UserService");
 
 const getUser = async (req, res) => {
     try {
-        // Get email from auth.loggedIn middleware
-        const user = await service.getUser(req.email);
-
+        const user = await service.getUser(req.userId);
         res.status(200).send(user);
     } catch (error) {
         console.log(error);
@@ -12,10 +10,9 @@ const getUser = async (req, res) => {
     }
 };
 
-const getUserByEmail = async (req, res) => {
+const getUserByUid = async (req, res) => {
     try {
-        const user = await service.getUserByEmail(req.params.email);
-
+        const user = await service.getUserByUid(req.params.userId);
         res.status(200).send(user);
     } catch (error) {
         console.log(error);
@@ -26,7 +23,7 @@ const getUserByEmail = async (req, res) => {
 const saveUser = async (req, res) => {
     try {
         await service.saveUser(req.body);
-        res.status(200).send({ ...req.body, admin: [] });
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -35,10 +32,8 @@ const saveUser = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
     try {
-        // Get email from auth.loggedIn middleware
-        await service.updateAvatar(req.email, req.body.avatar);
-
-        res.status(200).send(req.body);
+        await service.updateAvatar(req.userId, req.body.avatar);
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -47,9 +42,8 @@ const updateAvatar = async (req, res) => {
 
 const updateFcmToken = async (req, res) => {
     try {
-        await service.updateFcmToken(req.email, req.body.token);
-
-        res.status(200).send(req.body);
+        await service.updateFcmToken(req.userId, req.body.token);
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -58,10 +52,8 @@ const updateFcmToken = async (req, res) => {
 
 const subscribe = async (req, res) => {
     try {
-        // Get email from auth.loggedIn middleware
-        await service.subscribe(req.email, req.body.club);
-
-        res.status(200).send(req.body);
+        await service.subscribe(req.userId, req.body.clubId);
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -70,10 +62,8 @@ const subscribe = async (req, res) => {
 
 const unsubscribe = async (req, res) => {
     try {
-        // Get email from auth.loggedIn middleware
-        await service.unsubscribe(req.email, req.body.club);
-
-        res.status(200).send(req.body);
+        await service.unsubscribe(req.userId, req.body.clubId);
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -82,7 +72,7 @@ const unsubscribe = async (req, res) => {
 
 module.exports = {
     getUser,
-    getUserByEmail,
+    getUserByUid,
     saveUser,
     updateAvatar,
     updateFcmToken,
