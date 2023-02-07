@@ -7,5 +7,6 @@ app.use("/user", require("./routes/UserRoute"));
 app.use("/clubs", require("./routes/ClubRoute"));
 app.use("/posts", require("./routes/PostRoute"));
 app.use("/admin", require("./routes/AdminRoute"));
+app.use("/channel", require("./routes/ChannelRoute"));
 
 module.exports = app;
