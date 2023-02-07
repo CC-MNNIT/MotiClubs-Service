@@ -17,11 +17,11 @@ const unsubscribe = async (userId, clubId) => {
 };
 
 const getSubscribersCountByCid = async (clubId) => {
-    const response = await pool.execute(
-        "SELECT COUNT(uid) as subscribersCount FROM club WHERE cid=?",
+    const [response] = await pool.execute(
+        "SELECT COUNT(uid) as subscribersCount FROM subscribers WHERE cid=?",
         [clubId]
     );
-    return response;
+    return response[0].subscribersCount;
 };
 
 module.exports = {

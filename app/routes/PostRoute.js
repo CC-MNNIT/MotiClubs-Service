@@ -11,9 +11,9 @@ router.get("/", auth.userAuthorization, controller.getPosts);
 router.post("/", auth.postAuthorization, controller.savePost);
 
 // Delete a post
-router.delete("/:post", auth.postAuthorization, controller.deletePost);
+router.delete("/:postId", auth.postAuthorization, controller.deletePost);
 
 // Update a post
-router.put("/:post", auth.postAuthorization, controller.updatePost);
+router.put("/:postId", auth.postAuthorization, controller.updatePost);
 
 module.exports = router;

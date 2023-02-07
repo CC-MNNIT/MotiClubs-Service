@@ -12,7 +12,7 @@ const getClubs = async (req, res) => {
 
 const updateClub = async (req, res) => {
     try {
-        await service.updateClub(req.params.club, req.body);
+        await service.updateClub(req.params.clubId, req.body);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -22,7 +22,7 @@ const updateClub = async (req, res) => {
 
 const subscriberCount = async (req, res) => {
     try {
-        const count = await service.subscriberCount(req.params.club);
+        const count = await service.subscriberCount(req.params.clubId);
         res.status(200).send({ count });
     } catch (error) {
         console.log(error);

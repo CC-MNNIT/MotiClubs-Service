@@ -8,31 +8,27 @@ const getClubByClubId = async (clubId) => {
 };
 
 const getAllClubs = async () => {
-    const response = await pool.execute("SELECT * FROM club");
+    const [response] = await pool.execute("SELECT * FROM club");
     return response;
 };
 
 const saveClub = async (name, description, avatar, summary) => {
-    const response = pool.execute(
+    const [response] = pool.execute(
         "INSERT INTO club (name, description, avatar, summary) VALUES (?,?,?,?)",
         [name, description, avatar, summary]
     );
-    return response;
+    return response.insertId;
 };
 
 const deleteClubByCid = async (clubId) => {
-    const response = await pool.execute("DELETE FROM club WHERE cid=?", [
-        clubId,
-    ]);
-    return response;
+    await pool.execute("DELETE FROM club WHERE cid=?", [clubId]);
 };
 
 const updateClubByCid = async (clubId, description, avatar, summary) => {
-    const response = await pool.execute(
+    await pool.execute(
         "UPDATE club SET description=?, avatar=?, summary=? WHERE cid=?",
         [description, avatar, summary, clubId]
     );
-    return response;
 };
 
 module.exports = {

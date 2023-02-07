@@ -8,22 +8,25 @@ const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 
 const getClubs = async () => {
-    const clubs = await clubModel.find({});
+    const clubs = await clubRepository.getAllClubs();
     return clubs;
 };
 
 const updateClub = async (clubId, data) => {
     // Name and admin list update not allowed
-    if (data.name) throw new Error("Unauthorized request");
-    if (data.admins) throw new Error("Unauthorized request");
+    if (data.name) throw new Error("Cannot change name of club");
 
-    await clubModel.updateOne({ _id: clubId }, data);
+    await clubRepository.updateClubByCid(
+        clubId,
+        data.description,
+        data.avatar,
+        data.summary
+    );
 };
 
 const subscriberCount = async (clubId) => {
-    const subscriptions = await SubscriptionModel.findOne({ club: clubId });
-    subscriptionsObj = subscriptions.toJSON();
-    return subscriptionsObj.subscribers.length;
+    const count = await subscribersRepository.getSubscribersCountByCid(clubId);
+    return count;
 };
 
 module.exports = {
