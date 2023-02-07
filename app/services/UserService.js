@@ -7,6 +7,7 @@ const clubRepository = require("../repository/ClubRepository");
 const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
+const admin = require("../config");
 
 const getUser = async (userId) => {
     validate([userId]);
@@ -48,7 +49,8 @@ const saveUser = async (userDetails) => {
     // Default set up
     await fcmRepository.setTokenByUid(userId, "");
 
-    // Add userId to custom claims
+    // Add userId to custom claims [Firebase]
+    await saveUserIdInCustomUserClaims(userId);
 };
 
 const updateAvatar = async (userId, avatar) => {
@@ -73,6 +75,15 @@ const unsubscribe = async (userId, clubId) => {
     validate([userId, clubId]);
 
     await subscribersRepository.unsubscribe(userId, clubId);
+};
+
+// Add userId to custom claims [Firebase]
+const saveUserIdInCustomUserClaims = async (userId) => {
+    const user = await userRepository.getUserByUid(userId);
+    const firebaseUser = await admin.auth().getUserByEmail(user.email);
+    await admin
+        .auth()
+        .setCustomUserClaims(firebaseUser.uid, { userId: userId });
 };
 
 module.exports = {
