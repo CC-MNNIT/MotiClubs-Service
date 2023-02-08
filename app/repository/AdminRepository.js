@@ -8,9 +8,10 @@ const getAdminsFromClubId = async (clubId) => {
 };
 
 const getClubsWithUidAsAdmin = async (userId) => {
-    const [response] = await pool.execute("SELECT cid FROM admin WHERE uid=?", [
-        userId,
-    ]);
+    const [response] = await pool.execute(
+        "SELECT cid as clubId FROM admin WHERE uid=?",
+        [userId]
+    );
     return response;
 };
 

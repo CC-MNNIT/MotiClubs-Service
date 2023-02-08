@@ -24,8 +24,17 @@ const getSubscribersCountByCid = async (clubId) => {
     return response[0].subscribersCount;
 };
 
+const getSubscribedClubsByUid = async (userId) => {
+    const [response] = await pool.execute(
+        "SELECT cid as clubId FROM subscribers WHERE uid=?",
+        [userId]
+    );
+    return response;
+};
+
 module.exports = {
     subscribe,
     unsubscribe,
     getSubscribersCountByCid,
+    getSubscribedClubsByUid,
 };

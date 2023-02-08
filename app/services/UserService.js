@@ -19,8 +19,17 @@ const getUser = async (userId) => {
     // Get list of clubs user is admin of
     const adminArray = await adminRepository.getClubsWithUidAsAdmin(userId);
 
+    // Get list of clubs user subscribed to
+    const subscribedArray = await subscribersRepository.getSubscribedClubsByUid(
+        userId
+    );
+
     // Append admin array to user model
-    const userWithAdminList = { ...user, admin: adminArray };
+    const userWithAdminList = {
+        ...user,
+        admin: adminArray,
+        subscribed: subscribedArray,
+    };
 
     return userWithAdminList;
 };

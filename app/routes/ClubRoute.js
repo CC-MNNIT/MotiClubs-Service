@@ -6,7 +6,7 @@ const router = express.Router();
 // Get all clubs
 router.get("/", auth.userAuthorization, controller.getClubs);
 
-// Update club avatar
+// Update club details
 router.put("/:clubId", auth.clubAuthorization, controller.updateClub);
 
 // Get subscriber count
