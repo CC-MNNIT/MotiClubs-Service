@@ -1,6 +1,7 @@
 const admin = require("../config/firebase");
 const postRepository = require("../repository/PostRepository");
 const adminRepository = require("../repository/AdminRepository");
+const channelRepository = require("../repository/ChannelRepository");
 require("dotenv").config();
 
 // Verify JWT
@@ -69,12 +70,41 @@ async function postAuthorization(req, res, next) {
     }
 }
 
-// Check if user is authorized to work update club
+// Check if user is authorized to access club modification apis
 const clubAuthorization = async (req, res, next) => {
     try {
         const token = req.header("Authorization");
         req.userId = await getUserId(token);
         const isAdmin = await clubAdminCheck(req.userId, req.params.clubId);
+        if (isAdmin) {
+            next();
+            return;
+        }
+        res.status(401).send({ message: "Unauthorized" });
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(401).send({ message: "Unauthorized" });
+        return;
+    }
+};
+
+// Check if user is authorized to access channel modification apis
+const channelAuthorization = async (req, res, next) => {
+    try {
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
+        let clubId = "";
+        if (req.method === "POST") {
+            clubId = req.body.clubId;
+        } else {
+            const channelId = req.params.channelId;
+            const channel = await channelRepository.getChannelByChannelId(
+                channelId
+            );
+            clubId = channel.cid;
+        }
+        const isAdmin = await clubAdminCheck(req.userId, clubId);
         if (isAdmin) {
             next();
             return;
@@ -114,4 +144,5 @@ module.exports = {
     superAdmin,
     postAuthorization,
     clubAuthorization,
+    channelAuthorization,
 };

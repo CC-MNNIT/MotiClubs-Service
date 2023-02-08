@@ -14,12 +14,20 @@ router.get(
 );
 
 // Add new channel, body requires clubId and channelName
-router.post("/", auth.superAdmin, controller.saveChannel);
+router.post("/", auth.channelAuthorization, controller.saveChannel);
 
 // Delete a channel with channelId passed in query parameter
-router.delete("/", auth.superAdmin, controller.deleteChannel);
+router.delete(
+    "/:channelId",
+    auth.channelAuthorization,
+    controller.deleteChannel
+);
 
 // Update channel name, body requires channelName
-router.put("/:channelId", auth.superAdmin, controller.updateChannelName);
+router.put(
+    "/:channelId",
+    auth.channelAuthorization,
+    controller.updateChannelName
+);
 
 module.exports = router;

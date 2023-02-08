@@ -37,7 +37,7 @@ const saveChannel = async (req, res) => {
 
 const deleteChannel = async (req, res) => {
     try {
-        await service.deleteChannel(req.query.channelId);
+        await service.deleteChannel(req.params.channelId);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
