@@ -47,7 +47,10 @@ const deleteChannel = async (req, res) => {
 
 const updateChannelName = async (req, res) => {
     try {
-        await service.updateChannelName(req.params.channelId, req.body.name);
+        await service.updateChannelName(
+            req.params.channelId,
+            req.body.channelName
+        );
         res.status(200).send({});
     } catch (error) {
         console.log(error);

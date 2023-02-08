@@ -33,7 +33,7 @@ async function userAuthorization(req, res, next) {
 // Check if user is super admin
 async function superAdmin(req, res, next) {
     const token = req.header("Authorization");
-    if (!token === process.env.SUPER_ADMIN_PASSWORD) {
+    if (token !== process.env.SUPER_ADMIN_PASSWORD) {
         res.status(401).send({ message: "Unauthorized" });
         return;
     }
