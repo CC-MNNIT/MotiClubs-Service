@@ -1,9 +1,10 @@
 const pool = require("../db/db");
 
 const getAdminsFromClubId = async (clubId) => {
-    const [response] = await pool.execute("SELECT uid FROM admin WHERE cid=?", [
-        clubId,
-    ]);
+    const [response] = await pool.execute(
+        "SELECT uid as userId FROM admin WHERE cid=?",
+        [clubId]
+    );
     return response;
 };
 

@@ -10,6 +10,10 @@ const validate = require("../utility/validate");
 
 const getClubs = async () => {
     const clubs = await clubRepository.getAllClubs();
+    for (let i = 0; i < clubs.length; ++i) {
+        const admins = await adminRepository.getAdminsFromClubId(clubs[i].cid);
+        clubs[i].admins = admins;
+    }
     return clubs;
 };
 
