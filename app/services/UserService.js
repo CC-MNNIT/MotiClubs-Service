@@ -52,7 +52,16 @@ const getUserByUid = async (userId) => {
 };
 
 const saveUser = async (userDetails) => {
-    // userDetails = {name, email, phone, course, avatar}
+    validate([
+        userDetails.regno,
+        userDetails.name,
+        userDetails.email,
+        userDetails.course,
+        userDetails.phone,
+        userDetails.avatar,
+    ]);
+
+    // userDetails = {name, email, phone, course, avatar, regno}
     const userId = await userRepository.saveUser(userDetails);
 
     // Default set up

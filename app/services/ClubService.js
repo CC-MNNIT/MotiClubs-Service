@@ -6,6 +6,7 @@ const channelRepository = require("../repository/ChannelRepository");
 const clubRepository = require("../repository/ClubRepository");
 const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
+const validate = require("../utility/validate");
 
 const getClubs = async () => {
     const clubs = await clubRepository.getAllClubs();
@@ -13,6 +14,8 @@ const getClubs = async () => {
 };
 
 const updateClub = async (clubId, data) => {
+    validate([clubId, data.description, data.avatar, data.summary]);
+
     // Name and admin list update not allowed
     if (data.name) throw new Error("Cannot change name of club");
 
@@ -25,6 +28,8 @@ const updateClub = async (clubId, data) => {
 };
 
 const subscriberCount = async (clubId) => {
+    validate([clubId]);
+
     const count = await subscribersRepository.getSubscribersCountByCid(clubId);
     return count;
 };

@@ -14,6 +14,13 @@ const getClubs = async () => {
 };
 
 const saveClub = async (clubDetails) => {
+    validate([
+        clubDetails.name,
+        clubDetails.description,
+        clubDetails.avatar,
+        clubDetails.summary,
+    ]);
+
     const clubId = await clubRepository.saveClub(
         clubDetails.name,
         clubDetails.description,
