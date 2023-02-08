@@ -14,22 +14,23 @@ const getClubs = async () => {
 };
 
 const saveClub = async (clubDetails) => {
-    await clubRepository.saveClub(
+    const clubId = await clubRepository.saveClub(
         clubDetails.name,
         clubDetails.description,
         clubDetails.avatar,
         clubDetails.summary
     );
+    return clubId;
 };
 
 const deleteClub = async (clubId) => {
-    validate([id]);
+    validate([clubId]);
 
     await clubRepository.deleteClubByCid(clubId);
 };
 
 const updateAdmin = async (userId, clubId, add) => {
-    validate([email, club]);
+    validate([userId, clubId]);
 
     // Check if user exists
     const user = await userRepository.userExists(userId);

@@ -13,7 +13,7 @@ const getAllClubs = async () => {
 };
 
 const saveClub = async (name, description, avatar, summary) => {
-    const [response] = pool.execute(
+    const [response] = await pool.execute(
         "INSERT INTO club (name, description, avatar, summary) VALUES (?,?,?,?)",
         [name, description, avatar, summary]
     );
@@ -32,8 +32,8 @@ const updateClubByCid = async (clubId, description, avatar, summary) => {
 };
 
 const clubExists = async (clubId) => {
-    const club = await getClubByUid(clubId);
-    return club.length > 0;
+    const club = await getClubByClubId(clubId);
+    return club !== null && club !== undefined;
 };
 
 module.exports = {

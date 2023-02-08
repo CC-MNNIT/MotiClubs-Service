@@ -19,9 +19,9 @@ router.post("/avatar", auth.userAuthorization, controller.updateAvatar);
 router.post("/fcmtoken", auth.userAuthorization, controller.updateFcmToken);
 
 // Subscribe a club
-router.put("/subscribe", auth.userAuthorization, controller.subscribe);
+router.post("/subscribe", auth.userAuthorization, controller.subscribe);
 
 // Unsubscribe a club
-router.put("/unsubscribe", auth.userAuthorization, controller.unsubscribe);
+router.post("/unsubscribe", auth.userAuthorization, controller.unsubscribe);
 
 module.exports = router;

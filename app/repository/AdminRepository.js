@@ -17,17 +17,18 @@ const getClubsWithUidAsAdmin = async (userId) => {
 const addAdmin = async (clubId, userId) => {
     const [response] = await pool.execute(
         "INSERT INTO admin (cid, uid) VALUES (?,?)",
-        [userId, clubId]
+        [clubId, userId]
     );
     return response.insertId;
 };
 
 const removeAdmin = async (clubId, userId) => {
+    console.log(userId, clubId);
     const response = await pool.execute(
         "DELETE FROM admin WHERE uid=? AND cid=?",
         [userId, clubId]
     );
-    return response.insertId;
+    console.log(response);
 };
 
 module.exports = {

@@ -13,6 +13,7 @@ const getClubs = async (req, res) => {
 const saveClub = async (req, res) => {
     try {
         const clubId = await service.saveClub(req.body);
+        console.log(clubId);
         res.status(200).send({ cid: clubId });
     } catch (error) {
         console.log(error);
@@ -22,7 +23,7 @@ const saveClub = async (req, res) => {
 
 const deleteClub = async (req, res) => {
     try {
-        await service.deleteClub(req.query.club);
+        await service.deleteClub(req.query.clubId);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -53,7 +54,7 @@ const unassignAdmin = async (req, res) => {
 
         await service.updateAdmin(userId, clubId, false);
 
-        res.status(200).send(req.body);
+        res.status(200).send({});
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });

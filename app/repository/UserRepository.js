@@ -24,7 +24,7 @@ const updateAvatarByUid = async (userId, avatar) => {
 
 const userExists = async (userId) => {
     const user = await getUserByUid(userId);
-    return user.length > 0;
+    return user !== null && user !== undefined;
 };
 
 module.exports = {

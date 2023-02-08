@@ -9,7 +9,7 @@ const getPostByPostId = async (postId) => {
 
 const getPostsByClubAndChannel = async (clubId, channelId) => {
     const [response] = await pool.execute(
-        "SELECT * FROM post WHERE cid=? AND chid=? SORT BY time DESC",
+        "SELECT * FROM post WHERE cid=? AND chid=? ORDER BY time DESC",
         [clubId, channelId]
     );
     return response;

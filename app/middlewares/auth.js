@@ -18,10 +18,9 @@ async function signUpAuthorization(req, res, next) {
 
 // Check if user is logged in
 async function userAuthorization(req, res, next) {
-    const token = req.header("Authorization");
     try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        req.userId = decodedToken.userId;
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
     } catch (error) {
         console.log(error);
         res.status(401).send({ message: "Please log in first" });
@@ -42,10 +41,9 @@ async function superAdmin(req, res, next) {
 
 // Check if user is authorized to add / update post
 async function postAuthorization(req, res, next) {
-    const token = req.header("Authorization");
     try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        req.userId = decodedToken.userId;
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
         if (req.method !== "POST") {
             const post = await postRepository.getPostByPostId(
                 req.params.postId
@@ -73,10 +71,9 @@ async function postAuthorization(req, res, next) {
 
 // Check if user is authorized to work update club
 const clubAuthorization = async (req, res, next) => {
-    const token = req.header("Authorization");
     try {
-        const decodedToken = await admin.auth().verifyIdToken(token);
-        req.userId = decodedToken.userId;
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
         const isAdmin = await clubAdminCheck(req.userId, req.params.clubId);
         if (isAdmin) {
             next();
@@ -93,15 +90,22 @@ const clubAuthorization = async (req, res, next) => {
 
 // Check is the user with email (email) is admin of club with id clubId
 const clubAdminCheck = async (userId, clubId) => {
+    console.log(userId, clubId);
     try {
-        const admins = adminRepository.getAdminsFromClubId(clubId);
+        const admins = await adminRepository.getAdminsFromClubId(clubId);
         for (let i = 0; i < admins.length; ++i)
-            if (admins[i] === userId) return true;
+            if (admins[i].uid === userId) return true;
         return false;
     } catch (error) {
         console.log(error);
         return false;
     }
+};
+
+const getUserId = async (token) => {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const firebaseUser = await admin.auth().getUserByEmail(decodedToken.email);
+    return firebaseUser.customClaims.userId;
 };
 
 module.exports = {
