@@ -12,15 +12,14 @@ const getUserByUid = async (userId) => {
     const [response] = await pool.execute("SELECT * FROM user WHERE uid=?", [
         userId,
     ]);
-    return response;
+    return response[0];
 };
 
 const updateAvatarByUid = async (userId, avatar) => {
-    const [response] = await pool.execute(
-        "UPDATE user SET avatar=? WHERE uid=?",
-        [avatar, userId]
-    );
-    return response.insertId;
+    await pool.execute("UPDATE user SET avatar=? WHERE uid=?", [
+        avatar,
+        userId,
+    ]);
 };
 
 const userExists = async (userId) => {

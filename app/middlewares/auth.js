@@ -18,8 +18,6 @@ async function signUpAuthorization(req, res, next) {
 
 // Check if user is logged in
 async function userAuthorization(req, res, next) {
-    next();
-    return;
     const token = req.header("Authorization");
     try {
         const decodedToken = await admin.auth().verifyIdToken(token);
@@ -52,7 +50,7 @@ async function postAuthorization(req, res, next) {
             const post = await postRepository.getPostByPostId(
                 req.params.postId
             );
-            if (post[0]["uid"] === req.userId) {
+            if (post["uid"] === req.userId) {
                 next();
                 return;
             }

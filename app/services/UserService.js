@@ -20,7 +20,7 @@ const getUser = async (userId) => {
     const adminArray = await adminRepository.getClubsWithUidAsAdmin(userId);
 
     // Append admin array to user model
-    const userWithAdminList = { ...user[0], admin: adminArray };
+    const userWithAdminList = { ...user, admin: adminArray };
 
     return userWithAdminList;
 };
@@ -56,7 +56,7 @@ const saveUser = async (userDetails) => {
 const updateAvatar = async (userId, avatar) => {
     validate([userId, avatar]);
 
-    userRepository.updateAvatarByUid(userId, avatar);
+    await userRepository.updateAvatarByUid(userId, avatar);
 };
 
 const updateFcmToken = async (userId, token) => {

@@ -4,7 +4,7 @@ const getChannels = async (req, res) => {
     try {
         let channels;
         if (req.query.clubId)
-            channels = await service.getChannelByClubId(req.query.clubId);
+            channels = await service.getChannelsByClubId(req.query.clubId);
         else channels = await service.getAllChannels();
         res.status(200).send(channels);
     } catch (error) {
@@ -15,10 +15,10 @@ const getChannels = async (req, res) => {
 
 const getChannelByChannelId = async (req, res) => {
     try {
-        const channels = await service.getChannelByChannelId(
+        const channel = await service.getChannelByChannelId(
             req.params.channelId
         );
-        res.status(200).send(channels);
+        res.status(200).send(channel);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });

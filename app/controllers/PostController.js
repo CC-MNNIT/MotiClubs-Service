@@ -78,31 +78,31 @@ const notifyUsers = async (postId, updated) => {
     const post = await postRepository.getPostByPostId(postId);
 
     // Get admin details
-    const user = await userRepository.getUserByUid(post[0].uid);
+    const user = await userRepository.getUserByUid(post.uid);
 
     // Get club details
-    const club = await clubRepository.getClubByClubId(post[0].cid);
+    const club = await clubRepository.getClubByClubId(post.cid);
 
     // Get channel details
-    const channel = await channelRepository.getChannelByChannelId(post[0].chid);
+    const channel = await channelRepository.getChannelByChannelId(post.chid);
 
     // Notify subscribers for new post
-    if (post[0].general) {
+    if (post.general) {
         await notifyAll({
-            ...post[0],
-            adminName: user[0].name,
-            adminAvatar: user[0].avatar,
-            clubName: club[0].name,
-            channelName: channel[0].name,
+            ...post,
+            adminName: user.name,
+            adminAvatar: user.avatar,
+            clubName: club.name,
+            channelName: channel.name,
             updated: updated.toString(),
         });
     } else {
-        await notify(club[0].cid, {
-            ...post[0],
-            adminName: user[0].name,
-            adminAvatar: user[0].avatar,
-            clubName: club[0].name,
-            channelName: channel[0].name,
+        await notify(club.cid, {
+            ...post,
+            adminName: user.name,
+            adminAvatar: user.avatar,
+            clubName: club.name,
+            channelName: channel.name,
             updated: updated.toString(),
         });
     }

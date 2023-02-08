@@ -5,7 +5,7 @@ const getAllChannels = async () => {
     return response;
 };
 
-const getChannelByClubId = async (clubId) => {
+const getChannelsByClubId = async (clubId) => {
     const [response] = await pool.execute("SELECT * FROM channel WHERE cid=?", [
         clubId,
     ]);
@@ -17,7 +17,7 @@ const getChannelByChannelId = async (channelId) => {
         "SELECT * FROM channel WHERE chid=?",
         [channelId]
     );
-    return response;
+    return response[0];
 };
 
 const saveChannel = async (clubId, channelName) => {
@@ -41,7 +41,7 @@ const updateChannelName = async (channelId, channelName) => {
 
 module.exports = {
     getAllChannels,
-    getChannelByClubId,
+    getChannelsByClubId,
     getChannelByChannelId,
     saveChannel,
     deleteChannel,

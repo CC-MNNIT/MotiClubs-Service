@@ -4,7 +4,7 @@ const getPostByPostId = async (postId) => {
     const [response] = await pool.execute("SELECT * FROM post WHERE pid=?", [
         postId,
     ]);
-    return response;
+    return response[0];
 };
 
 const getPostsByClubAndChannel = async (clubId, channelId) => {
@@ -16,18 +16,14 @@ const getPostsByClubAndChannel = async (clubId, channelId) => {
 };
 
 const updatePostByPostId = async (postId, message) => {
-    const response = await pool.execute(
-        "UPDATE post SET message=? WHERE pid=?",
-        [message, postId]
-    );
-    return response;
+    await pool.execute("UPDATE post SET message=? WHERE pid=?", [
+        message,
+        postId,
+    ]);
 };
 
 const detelePostByPostId = async (postId) => {
-    const response = await pool.execute("DELETE FROM post where pid=?", [
-        postId,
-    ]);
-    return response;
+    await pool.execute("DELETE FROM post where pid=?", [postId]);
 };
 
 const savePost = async (userId, clubId, channelId, message, general) => {

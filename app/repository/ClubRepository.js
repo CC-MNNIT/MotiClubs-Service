@@ -4,7 +4,7 @@ const getClubByClubId = async (clubId) => {
     const [response] = await pool.execute("SELECT * FROM club WHERE cid=?", [
         clubId,
     ]);
-    return response;
+    return response[0];
 };
 
 const getAllClubs = async () => {

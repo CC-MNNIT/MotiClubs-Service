@@ -5,14 +5,14 @@ const getAllChannels = async () => {
     return channels;
 };
 
-const getChannelByClubId = async (clubId) => {
+const getChannelsByClubId = async (clubId) => {
     const channels = await channelRepository.getChannelByClubId(clubId);
     return channels;
 };
 
 const getChannelByChannelId = async (channelId) => {
-    const channels = await channelRepository.getChannelByChannelId(channelId);
-    return channels;
+    const channel = await channelRepository.getChannelByChannelId(channelId);
+    return channel;
 };
 
 const saveChannel = async (clubId, channelName) => {
@@ -30,7 +30,7 @@ const updateChannelName = async (channelId, channelName) => {
 
 module.exports = {
     getAllChannels,
-    getChannelByClubId,
+    getChannelsByClubId,
     getChannelByChannelId,
     saveChannel,
     deleteChannel,
