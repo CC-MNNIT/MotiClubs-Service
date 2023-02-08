@@ -2,8 +2,15 @@ const pool = require("../db/db");
 
 const saveUser = async (user) => {
     const [response] = await pool.execute(
-        "INSERT INTO user(name, email, course, phone, avatar) VALUES (?,?,?,?,?)",
-        [user.name, user.email, user.course, user.phone, user.avatar]
+        "INSERT INTO user(regno, name, email, course, phone, avatar) VALUES (?,?,?,?,?,?)",
+        [
+            user.regno,
+            user.name,
+            user.email,
+            user.course,
+            user.phone,
+            user.avatar,
+        ]
     );
     return response.insertId;
 };
