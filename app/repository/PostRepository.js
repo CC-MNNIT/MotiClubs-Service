@@ -34,10 +34,15 @@ const savePost = async (userId, clubId, channelId, message, general) => {
     return response.insertId;
 };
 
+const deletePostsByChannelId = async (channelId) => {
+    await pool.execute("DELETE FROM post WHERE chid=?", [channelId]);
+};
+
 module.exports = {
     getPostByPostId,
     getPostsByClubAndChannel,
     updatePostByPostId,
     detelePostByPostId,
     savePost,
+    deletePostsByChannelId,
 };

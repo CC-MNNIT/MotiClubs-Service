@@ -1,4 +1,5 @@
 const channelRepository = require("../repository/ChannelRepository");
+const postRepository = require("../repository/PostRepository");
 
 const getAllChannels = async () => {
     const channels = await channelRepository.getAllChannels();
@@ -22,6 +23,7 @@ const saveChannel = async (clubId, channelName) => {
 
 const deleteChannel = async (channelId) => {
     await channelRepository.deleteChannel(channelId);
+    await postRepository.deletePostsByChannelId(channelId);
 };
 
 const updateChannelName = async (channelId, channelName) => {
