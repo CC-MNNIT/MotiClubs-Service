@@ -6,7 +6,7 @@ const getAllChannels = async () => {
 };
 
 const getChannelsByClubId = async (clubId) => {
-    const channels = await channelRepository.getChannelByClubId(clubId);
+    const channels = await channelRepository.getChannelsByClubId(clubId);
     return channels;
 };
 
