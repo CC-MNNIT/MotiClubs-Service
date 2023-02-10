@@ -24,7 +24,7 @@ const getUserByUid = async (userId) => {
 
 const getAdmins = async () => {
     const [response] = await pool.execute(
-        "SELECT name, email, phone, avatar FROM user INNER JOIN admin ON user.uid = admin.uid"
+        "SELECT user.uid as userId, name, email, phone, avatar FROM user INNER JOIN admin ON user.uid = admin.uid"
     );
     return response;
 }
