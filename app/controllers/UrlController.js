@@ -2,7 +2,7 @@ const service = require("../services/UrlService");
 
 const getUrls = async (req, res) => {
     try {
-        const urls = await service.getUrls(req.body.clubId);
+        const urls = await service.getUrls(req.query.clubId);
         res.status(200).send(urls);
     } catch (error) {
         console.log(error);
@@ -12,7 +12,7 @@ const getUrls = async (req, res) => {
 
 const saveUrl = async (req, res) => {
     try {
-        await service.saveUrl(req.body);
+        await service.saveUrl(req.query.clubId, req.body);
         res.status(200).send({});
     } catch (error) {
         console.log(error);

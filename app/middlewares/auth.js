@@ -94,7 +94,7 @@ const urlAuthorization = async (req, res, next) => {
     try {
         const token = req.header("Authorization");
         req.userId = await getUserId(token);
-        const isAdmin = await clubAdminCheck(req.userId, req.body.clubId);
+        const isAdmin = await clubAdminCheck(req.userId, req.query.clubId);
         if (isAdmin) {
             next();
             return;

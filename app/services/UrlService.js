@@ -8,8 +8,8 @@ const getUrls = async (clubId) => {
     return urls;
 };
 
-const saveUrl = async (url) => {
-    validate([url.clubId, url.name, url.color, url.url]);
+const saveUrl = async (clubId, url) => {
+    validate([clubId, url.name, url.color, url.url]);
 
     await urlRepository.saveUrl(url);
 };
