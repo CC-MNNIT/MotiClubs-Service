@@ -12,6 +12,9 @@ const getClubs = async () => {
     for (let i = 0; i < clubs.length; ++i) {
         const admins = await adminRepository.getAdminsFromClubId(clubs[i].cid);
         clubs[i].admins = admins;
+
+        const channels = await channelRepository.getChannelsByClubId(clubs[i].cid);
+        clubs[i].channels = channels;
     }
     return clubs;
 };
