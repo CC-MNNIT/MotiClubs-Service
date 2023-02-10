@@ -36,13 +36,8 @@ const getUser = async (userId) => {
 
 const getAdmins = async () => {
     // Get list of clubs user is admin of
-    const admin = await userRepository.getAdmins();
-    return {
-        name: admin.name,
-        email: admin.email,
-        phone: admin.phone,
-        avatar: admin.avatar
-    };
+    const admins = await userRepository.getAdmins();
+    return admins;
 }
 
 const getUserByUid = async (userId) => {

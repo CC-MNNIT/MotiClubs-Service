@@ -9,11 +9,11 @@ router.post("/", auth.signUpAuthorization, controller.saveUser);
 // Get own details
 router.get("/", auth.userAuthorization, controller.getUser);
 
-// Get user details
-router.get("/:userId", auth.userAuthorization, controller.getUserByUid);
-
 // Get all admins
 router.get("/admins", auth.userAuthorization, controller.getAdmins);
+
+// Get user details
+router.get("/:userId", auth.userAuthorization, controller.getUserByUid);
 
 // Update avatar
 router.post("/avatar", auth.userAuthorization, controller.updateAvatar);

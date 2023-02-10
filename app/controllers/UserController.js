@@ -22,8 +22,8 @@ const getUserByUid = async (req, res) => {
 
 const getAdmins = async (req, res) => {
     try {
-        const user = await service.getAdmins();
-        res.status(200).send(user);
+        const admins = await service.getAdmins();
+        res.status(200).send(admins);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
