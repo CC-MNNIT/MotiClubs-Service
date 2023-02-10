@@ -12,6 +12,9 @@ router.get("/", auth.userAuthorization, controller.getUser);
 // Get user details
 router.get("/:userId", auth.userAuthorization, controller.getUserByUid);
 
+// Get all admins
+router.get("/admins", auth.userAuthorization, controller.getAdmins);
+
 // Update avatar
 router.post("/avatar", auth.userAuthorization, controller.updateAvatar);
 

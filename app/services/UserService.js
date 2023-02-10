@@ -34,6 +34,17 @@ const getUser = async (userId) => {
     return userWithAdminList;
 };
 
+const getAdmins = async () => {
+    // Get list of clubs user is admin of
+    const admin = await userRepository.getAdmins();
+    return {
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        avatar: admin.avatar
+    };
+}
+
 const getUserByUid = async (userId) => {
     validate([userId]);
 
@@ -107,6 +118,7 @@ const saveUserIdInCustomUserClaims = async (userId) => {
 module.exports = {
     getUser,
     getUserByUid,
+    getAdmins,
     saveUser,
     updateAvatar,
     updateFcmToken,

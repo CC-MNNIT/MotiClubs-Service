@@ -20,6 +20,16 @@ const getUserByUid = async (req, res) => {
     }
 };
 
+const getAdmins = async (req, res) => {
+    try {
+        const user = await service.getAdmins();
+        res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+};
+
 const saveUser = async (req, res) => {
     try {
         await service.saveUser(req.body);
@@ -73,6 +83,7 @@ const unsubscribe = async (req, res) => {
 module.exports = {
     getUser,
     getUserByUid,
+    getAdmins,
     saveUser,
     updateAvatar,
     updateFcmToken,
