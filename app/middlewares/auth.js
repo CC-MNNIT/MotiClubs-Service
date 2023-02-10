@@ -124,7 +124,7 @@ const clubAdminCheck = async (userId, clubId) => {
     try {
         const admins = await adminRepository.getAdminsFromClubId(clubId);
         for (let i = 0; i < admins.length; ++i)
-            if (admins[i].uid === userId) return true;
+            if (admins[i].userId === userId) return true;
         return false;
     } catch (error) {
         console.log(error);
