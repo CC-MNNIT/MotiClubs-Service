@@ -1,25 +1,26 @@
 const pool = require("../db/db");
 
 const getUrls = async (clubId) => {
-    const [response] = await pool.execute(
-        "SELECT * FROM url WHERE cid=?",
-        [clubId]
-    );
+    const [response] = await pool.execute("SELECT * FROM url WHERE cid=?", [
+        clubId,
+    ]);
     return response;
 };
 
-const saveUrl = async (url) => {
+const saveUrl = async (clubId, url) => {
     await pool.execute(
         "INSERT INTO url (cid, name, color, url) VALUES (?, ?, ?, ?)",
-        [url.clubId, url.name, url.color, url.url]
+        [clubId, url.name, url.color, url.url]
     );
 };
 
 const updateUrl = async (urlId, url) => {
-    await pool.execute(
-        "UPDATE url SET name=?, color=?, url=? WHERE urlid=?",
-        [url.name, url.color, url.url, urlId]
-    );
+    await pool.execute("UPDATE url SET name=?, color=?, url=? WHERE urlid=?", [
+        url.name,
+        url.color,
+        url.url,
+        urlId,
+    ]);
 };
 
 const deleteUrl = async (urlId) => {

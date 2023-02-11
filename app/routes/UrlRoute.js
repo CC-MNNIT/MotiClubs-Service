@@ -4,7 +4,7 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 // Get urls of club by clubId in the body
-router.get("/", auth.urlAuthorization, controller.getUrls);
+router.get("/", auth.userAuthorization, controller.getUrls);
 
 // Save url of club by clubId in the body
 router.post("/", auth.urlAuthorization, controller.saveUrl);

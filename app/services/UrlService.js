@@ -11,7 +11,7 @@ const getUrls = async (clubId) => {
 const saveUrl = async (clubId, url) => {
     validate([clubId, url.name, url.color, url.url]);
 
-    await urlRepository.saveUrl(url);
+    await urlRepository.saveUrl(clubId, url);
 };
 
 const updateUrl = async (urlId, url) => {
