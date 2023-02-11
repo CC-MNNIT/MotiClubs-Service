@@ -89,6 +89,25 @@ const clubAuthorization = async (req, res, next) => {
     }
 };
 
+// Check if user is authorized to access club url modification apis
+const urlAuthorization = async (req, res, next) => {
+    try {
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
+        const isAdmin = await clubAdminCheck(req.userId, req.query.clubId);
+        if (isAdmin) {
+            next();
+            return;
+        }
+        res.status(401).send({ message: "Unauthorized" });
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(401).send({ message: "Unauthorized" });
+        return;
+    }
+};
+
 // Check if user is authorized to access channel modification apis
 const channelAuthorization = async (req, res, next) => {
     try {
@@ -124,7 +143,7 @@ const clubAdminCheck = async (userId, clubId) => {
     try {
         const admins = await adminRepository.getAdminsFromClubId(clubId);
         for (let i = 0; i < admins.length; ++i)
-            if (admins[i].uid === userId) return true;
+            if (admins[i].userId === userId) return true;
         return false;
     } catch (error) {
         console.log(error);
@@ -144,5 +163,6 @@ module.exports = {
     superAdmin,
     postAuthorization,
     clubAuthorization,
+    urlAuthorization,
     channelAuthorization,
 };
