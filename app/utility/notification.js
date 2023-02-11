@@ -44,6 +44,7 @@ async function sendNotification(token, post) {
                 chid: post.chid.toString(),
                 general: post.general.toString(),
             },
+            notification: {},
             token,
         });
     } catch (error) {
