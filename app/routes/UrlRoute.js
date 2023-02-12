@@ -6,13 +6,13 @@ const router = express.Router();
 // Get urls of club by clubId in the body
 router.get("/", auth.userAuthorization, controller.getUrls);
 
-// Save url of club by clubId in the body
-router.post("/", auth.urlAuthorization, controller.saveUrl);
+// Save urls of club by url objects in body
+router.post("/add", auth.urlAuthorization, controller.saveUrl);
 
-// Update url of club by url info in the body
-router.post("/:urlId", auth.urlAuthorization, controller.updateUrl);
+// Update urls of club by urls info in the body
+router.post("/update", auth.urlAuthorization, controller.updateUrl);
 
-// Delete url of club by clubId in the body
-router.delete("/:urlId", auth.urlAuthorization, controller.deleteUrl);
+// Delete urls of club by urlIds in the body
+router.post("/delete", auth.urlAuthorization, controller.deleteUrl);
 
 module.exports = router;

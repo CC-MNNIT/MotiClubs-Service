@@ -8,7 +8,7 @@ const getUrls = async (req, res) => {
         console.log(error);
         res.status(400).send({ message: error.message });
     }
-}
+};
 
 const saveUrl = async (req, res) => {
     try {
@@ -22,7 +22,7 @@ const saveUrl = async (req, res) => {
 
 const updateUrl = async (req, res) => {
     try {
-        await service.updateUrl(req.params.urlId, req.body);
+        await service.updateUrl(req.body);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -32,7 +32,7 @@ const updateUrl = async (req, res) => {
 
 const deleteUrl = async (req, res) => {
     try {
-        await service.deleteUrl(req.params.urlId);
+        await service.deleteUrl(req.body.urlIds);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
