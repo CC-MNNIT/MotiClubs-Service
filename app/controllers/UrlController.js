@@ -12,27 +12,7 @@ const getUrls = async (req, res) => {
 
 const saveUrl = async (req, res) => {
     try {
-        await service.saveUrl(req.query.clubId, req.body);
-        res.status(200).send({});
-    } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: error.message });
-    }
-};
-
-const updateUrl = async (req, res) => {
-    try {
-        await service.updateUrl(req.body);
-        res.status(200).send({});
-    } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: error.message });
-    }
-};
-
-const deleteUrl = async (req, res) => {
-    try {
-        await service.deleteUrl(req.body.urlIds);
+        await service.saveUrl(req.query.clubId, req.body.urls);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -43,6 +23,4 @@ const deleteUrl = async (req, res) => {
 module.exports = {
     getUrls,
     saveUrl,
-    updateUrl,
-    deleteUrl,
 };

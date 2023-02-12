@@ -10,25 +10,28 @@ const getUrls = async (clubId) => {
 
 const saveUrl = async (clubId, urls) => {
     validate([clubId, urls]);
-    for (let i = 0; i < urls.length; ++i)
-        await urlRepository.saveUrl(clubId, urls[i]);
-};
 
-const updateUrl = async (urls) => {
-    validate([urls]);
-    for (let i = 0; i < urls.length; ++i)
-        await urlRepository.updateUrl(urls[i].urlId, urls[i]);
-};
+    const currentUrls = await urlRepository.getUrls(clubId);
 
-const deleteUrl = async (urlIds) => {
-    validate([urlIds]);
-    for (let i = 0; i < urlIds.length; ++i)
-        await urlRepository.deleteUrl(urlIds[i]);
+    const toRemove = currentUrls.filter((url) => {
+        for (let i = 0; i < urls.length; ++i) {
+            if (urls[i].urlId === url.urlId) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    for (let i = 0; i < toRemove.length; ++i)
+        await urlRepository.deleteUrl(toRemove[i].urlId);
+
+    for (let i = 0; i < urls.length; ++i) {
+        if (urls[i].urlId) await urlRepository.saveUrl(clubId, urls[i]);
+        else await urlRepository.updateUrl(urls[i].urlId, urls[i]);
+    }
 };
 
 module.exports = {
     getUrls,
     saveUrl,
-    updateUrl,
-    deleteUrl,
 };
