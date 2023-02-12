@@ -1,7 +1,7 @@
 const pool = require("../db/db");
 
 const getUrls = async (clubId) => {
-    const [response] = await pool.execute("SELECT * FROM url WHERE cid=?", [
+    const [response] = await pool.execute("SELECT urlid as urlId, cid, name, color, url FROM url WHERE cid=?", [
         clubId,
     ]);
     return response;
