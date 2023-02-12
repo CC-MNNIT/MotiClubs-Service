@@ -9,5 +9,6 @@ app.use("/posts", require("./routes/PostRoute"));
 app.use("/admin", require("./routes/AdminRoute"));
 app.use("/channel", require("./routes/ChannelRoute"));
 app.use("/url", require("./routes/UrlRoute"));
+app.use("/views", require("./routes/ViewRoute"));
 
 module.exports = app;
