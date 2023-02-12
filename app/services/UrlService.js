@@ -26,7 +26,7 @@ const saveUrl = async (clubId, urls) => {
         await urlRepository.deleteUrl(toRemove[i].urlId);
 
     for (let i = 0; i < urls.length; ++i) {
-        if (urls[i].urlId) await urlRepository.saveUrl(clubId, urls[i]);
+        if (urls[i].urlId === -1) await urlRepository.saveUrl(clubId, urls[i]);
         else await urlRepository.updateUrl(urls[i].urlId, urls[i]);
     }
 };
