@@ -3,7 +3,7 @@ const controller = require("../controllers/UrlController");
 const auth = require("../middlewares/auth");
 const router = express.Router();
 
-// Get urls of club by clubId in the body
+// Get urls of club by clubId in the query
 router.get("/", auth.userAuthorization, controller.getUrls);
 
 // Save urls of club by url objects in body
