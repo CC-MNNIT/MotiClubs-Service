@@ -21,7 +21,7 @@ async function notify(clubId, post) {
             }
         }
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 }
 
@@ -39,7 +39,7 @@ async function sendNotification(token, post) {
             token,
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 }
 

@@ -42,7 +42,7 @@ const savePost = async (req, res) => {
         // Send response to user
         res.status(200).send({});
 
-        notifyUsers(postId, 0);
+        await notifyUsers(postId, 0);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -55,7 +55,10 @@ const deletePost = async (req, res) => {
 
         res.status(200).send({});
 
-        sendDeletePushNotification(req.params.postId, req.query.channelId);
+        await sendDeletePushNotification(
+            req.params.postId,
+            req.query.channelId
+        );
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -78,7 +81,7 @@ const updatePost = async (req, res) => {
         // Send response to user
         res.status(200).send({});
 
-        notifyUsers(req.params.postId, 1);
+        await notifyUsers(req.params.postId, 1);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
