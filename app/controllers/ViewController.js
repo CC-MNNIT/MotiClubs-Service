@@ -16,8 +16,8 @@ const addView = async (req, res) => {
     try {
         await service.addView(req.body.postId, req.userId);
     } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: error.message });
+        // console.log(error);
+        res.status(200).send({ message: error.message });
     }
 };
 
