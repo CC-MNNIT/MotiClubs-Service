@@ -8,6 +8,7 @@ const channelRepository = require("../repository/ChannelRepository");
 const clubRepository = require("../repository/ClubRepository");
 const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
+const validate = require("../utility/validate");
 
 const getPosts = async (req, res) => {
     try {
@@ -51,11 +52,23 @@ const savePost = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
         await service.deletePost(req.params.postId);
+
         res.status(200).send({});
+
+        sendDeletePushNotification(req.params.postId, req.query.channelId);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
     }
+};
+
+// Notify user of post deletion
+const sendDeletePushNotification = async (postId, channelId) => {
+    await notifyAll({
+        deleted: "1",
+        pid: postId.toString(),
+        chid: channelId.toString(),
+    });
 };
 
 const updatePost = async (req, res) => {
@@ -90,6 +103,12 @@ const notifyUsers = async (postId, updated) => {
     if (post.general) {
         await notifyAll({
             ...post,
+            time: post.time.toString(),
+            uid: post.uid.toString(),
+            pid: post.pid.toString(),
+            cid: post.cid.toString(),
+            chid: post.chid.toString(),
+            general: post.general.toString(),
             adminName: user.name,
             adminAvatar: user.avatar,
             clubName: club.name,
@@ -99,6 +118,12 @@ const notifyUsers = async (postId, updated) => {
     } else {
         await notify(club.cid, {
             ...post,
+            time: post.time.toString(),
+            uid: post.uid.toString(),
+            pid: post.pid.toString(),
+            cid: post.cid.toString(),
+            chid: post.chid.toString(),
+            general: post.general.toString(),
             adminName: user.name,
             adminAvatar: user.avatar,
             clubName: club.name,

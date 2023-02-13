@@ -35,15 +35,7 @@ async function notifyAll(post) {
 async function sendNotification(token, post) {
     try {
         await admin.messaging().send({
-            data: {
-                ...post,
-                time: post.time.toString(),
-                uid: post.uid.toString(),
-                pid: post.pid.toString(),
-                cid: post.cid.toString(),
-                chid: post.chid.toString(),
-                general: post.general.toString(),
-            },
+            data: { ...post },
             token,
         });
     } catch (error) {
