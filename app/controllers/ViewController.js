@@ -15,9 +15,9 @@ const getViewCount = async (req, res) => {
 const addView = async (req, res) => {
     try {
         await service.addView(req.body.postId, req.userId);
-    } catch (error) {
-        // console.log(error);
-        res.status(200).send({ message: error.message });
+    } catch (_) {
+    } finally {
+        res.status(200).send({});
     }
 };
 
