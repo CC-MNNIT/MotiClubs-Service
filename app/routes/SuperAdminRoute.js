@@ -1,7 +1,10 @@
 const express = require("express");
-const controller = require("../controllers/AdminController");
+const controller = require("../controllers/SuperAdminController");
 const auth = require("../middlewares/auth");
 const router = express.Router();
+
+// Return 200 if logged in user is super admin, else 401
+router.get("/login", auth.superAdmin, controller.login);
 
 // Get list of all clubs
 router.get("/get_club", auth.superAdmin, controller.getClubs);

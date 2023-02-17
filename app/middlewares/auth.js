@@ -2,6 +2,7 @@ const admin = require("../config/firebase");
 const postRepository = require("../repository/PostRepository");
 const adminRepository = require("../repository/AdminRepository");
 const channelRepository = require("../repository/ChannelRepository");
+const superAdminRepository = require("../repository/SuperAdminRepository");
 require("dotenv").config();
 
 // Verify JWT
@@ -32,8 +33,17 @@ async function userAuthorization(req, res, next) {
 
 // Check if user is super admin
 async function superAdmin(req, res, next) {
-    const token = req.header("Authorization");
-    if (token !== process.env.SUPER_ADMIN_PASSWORD) {
+    try {
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
+        const isSuperAdmin = await superAdminRepository.isSuperAdmin(
+            req.userId
+        );
+        if (!isSuperAdmin) {
+            throw new Error("Unauthorized");
+        }
+    } catch (error) {
+        console.log(error);
         res.status(401).send({ message: "Unauthorized" });
         return;
     }
