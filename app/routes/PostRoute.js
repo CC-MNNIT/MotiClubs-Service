@@ -4,7 +4,7 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 // Get posts
-// Pass club id with query param as {club} if posts of particular club is required
+// Pass channel id with query param as {channelId} if posts of particular channel is required
 router.get("/", auth.userAuthorization, controller.getPosts);
 
 // Add post to club with id {req.body.club} and notify subscribers

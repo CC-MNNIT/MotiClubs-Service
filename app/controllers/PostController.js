@@ -12,10 +12,7 @@ const validate = require("../utility/validate");
 
 const getPosts = async (req, res) => {
     try {
-        const posts = await service.getPosts(
-            req.query.clubId,
-            req.query.channelId
-        );
+        const posts = await service.getPosts(req.query.channelId);
         res.status(200).send(posts);
     } catch (error) {
         console.log(error);
@@ -25,19 +22,9 @@ const getPosts = async (req, res) => {
 
 const savePost = async (req, res) => {
     try {
-        const message = req.body.message;
-        const userId = req.userId;
-        const clubId = req.body.clubId;
-        const channelId = req.body.channelId;
-        const general = req.body.general;
-
-        const postId = await service.savePost(
-            userId,
-            clubId,
-            channelId,
-            message,
-            general
-        );
+        const post = req.body;
+        const postId = post.pid;
+        await service.savePost(post);
 
         // Send response to user
         res.status(200).send({});
@@ -96,11 +83,11 @@ const notifyUsers = async (postId, updated) => {
     // Get admin details
     const user = await userRepository.getUserByUid(post.uid);
 
-    // Get club details
-    const club = await clubRepository.getClubByClubId(post.cid);
-
     // Get channel details
     const channel = await channelRepository.getChannelByChannelId(post.chid);
+
+    // Get club details
+    const club = await clubRepository.getClubByClubId(channel.cid);
 
     // Notify subscribers for new post
     if (post.general) {
@@ -109,7 +96,7 @@ const notifyUsers = async (postId, updated) => {
             time: post.time.toString(),
             uid: post.uid.toString(),
             pid: post.pid.toString(),
-            cid: post.cid.toString(),
+            cid: channel.cid.toString(),
             chid: post.chid.toString(),
             general: post.general.toString(),
             adminName: user.name,
@@ -124,7 +111,7 @@ const notifyUsers = async (postId, updated) => {
             time: post.time.toString(),
             uid: post.uid.toString(),
             pid: post.pid.toString(),
-            cid: post.cid.toString(),
+            cid: channel.cid.toString(),
             chid: post.chid.toString(),
             general: post.general.toString(),
             adminName: user.name,

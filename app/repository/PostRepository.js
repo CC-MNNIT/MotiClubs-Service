@@ -7,10 +7,10 @@ const getPostByPostId = async (postId) => {
     return response[0];
 };
 
-const getPostsByClubAndChannel = async (clubId, channelId) => {
+const getPostsByClubAndChannel = async (channelId) => {
     const [response] = await pool.execute(
-        "SELECT * FROM post WHERE cid=? AND chid=? ORDER BY time DESC",
-        [clubId, channelId]
+        "SELECT * FROM post WHERE chid=? ORDER BY time DESC",
+        [channelId]
     );
     return response;
 };
@@ -26,12 +26,11 @@ const detelePostByPostId = async (postId) => {
     await pool.execute("DELETE FROM post where pid=?", [postId]);
 };
 
-const savePost = async (userId, clubId, channelId, message, general) => {
-    const [response] = await pool.execute(
-        "INSERT INTO post (cid, chid, message, time, uid, general) VALUES (?,?,?,?,?,?)",
-        [clubId, channelId, message, Date.now(), userId, general]
+const savePost = async (post) => {
+    await pool.execute(
+        "INSERT INTO post (pid, chid, message, time, uid, general) VALUES (?,?,?,?,?,?)",
+        [post.pid, post.chid, post.message, post.time, post.uid, post.general]
     );
-    return response.insertId;
 };
 
 const deletePostsByChannelId = async (channelId) => {
