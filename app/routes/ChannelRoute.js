@@ -13,7 +13,7 @@ router.get(
     controller.getChannelByChannelId
 );
 
-// Add new channel, body requires clubId and channelName
+// Add new channel, body requires chid, cid and name
 router.post("/", auth.channelAuthorization, controller.saveChannel);
 
 // Delete a channel with channelId passed in query parameter

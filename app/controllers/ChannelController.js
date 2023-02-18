@@ -27,7 +27,7 @@ const getChannelByChannelId = async (req, res) => {
 
 const saveChannel = async (req, res) => {
     try {
-        await service.saveChannel(req.body.clubId, req.body.channelName);
+        await service.saveChannel(req.body);
         res.status(200).send({});
     } catch (error) {
         console.log(error);
@@ -49,7 +49,7 @@ const updateChannelName = async (req, res) => {
     try {
         await service.updateChannelName(
             req.params.channelId,
-            req.body.channelName
+            req.body.name
         );
         res.status(200).send({});
     } catch (error) {

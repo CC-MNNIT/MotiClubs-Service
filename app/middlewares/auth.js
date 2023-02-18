@@ -125,7 +125,7 @@ const channelAuthorization = async (req, res, next) => {
         req.userId = await getUserId(token);
         let clubId = "";
         if (req.method === "POST") {
-            clubId = req.body.clubId;
+            clubId = req.body.cid;
         } else {
             const channelId = req.params.channelId;
             const channel = await channelRepository.getChannelByChannelId(
@@ -149,7 +149,6 @@ const channelAuthorization = async (req, res, next) => {
 
 // Check is the user with email (email) is admin of club with id clubId
 const clubAdminCheck = async (userId, clubId) => {
-    console.log(userId, clubId);
     try {
         const admins = await adminRepository.getAdminsFromClubId(clubId);
         for (let i = 0; i < admins.length; ++i)
