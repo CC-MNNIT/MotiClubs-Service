@@ -49,12 +49,7 @@ const getUserByUid = async (userId) => {
     if (!user) throw new Error("User does not exist");
 
     // Return restricted content
-    return {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        avatar: user.avatar,
-    };
+    return user;
 };
 
 const saveUser = async (userDetails) => {
