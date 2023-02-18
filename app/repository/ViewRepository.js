@@ -1,11 +1,11 @@
 const pool = require("../db/db");
 
-const getViewCount = async (postId) => {
+const getViews = async (postId) => {
     const [response] = await pool.execute(
-        "SELECT COUNT(uid) as count FROM view WHERE pid=?",
+        "SELECT * FROM view WHERE pid=?",
         [postId]
     );
-    return response[0].count;
+    return response;
 };
 
 const addView = async (postId, userId) => {
@@ -16,6 +16,6 @@ const addView = async (postId, userId) => {
 };
 
 module.exports = {
-    getViewCount,
+    getViews,
     addView,
 };

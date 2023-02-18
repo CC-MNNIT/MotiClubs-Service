@@ -1,11 +1,11 @@
 const service = require("../services/ViewService");
 
-const getViewCount = async (req, res) => {
+const getViews = async (req, res) => {
     try {
-        const count = await service.getViewCount(
+        const views = await service.getViews(
             req.query ? req.query.postId : -1
         );
-        res.status(200).send({ count: count });
+        res.status(200).send(views);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -14,7 +14,7 @@ const getViewCount = async (req, res) => {
 
 const addView = async (req, res) => {
     try {
-        await service.addView(req.body.postId, req.userId);
+        await service.addView(req.body.pid, req.userId);
     } catch (_) {
     } finally {
         res.status(200).send({});
@@ -22,6 +22,6 @@ const addView = async (req, res) => {
 };
 
 module.exports = {
-    getViewCount,
+    getViews,
     addView,
 };
