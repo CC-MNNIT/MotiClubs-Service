@@ -12,22 +12,12 @@ const saveUrl = async (clubId, urls) => {
     validate([clubId, urls]);
 
     const currentUrls = await urlRepository.getUrls(clubId);
-
-    const toRemove = currentUrls.filter((url) => {
-        for (let i = 0; i < urls.length; ++i) {
-            if (urls[i].urlId === url.urlId) {
-                return false;
-            }
-        }
-        return true;
-    });
-
-    for (let i = 0; i < toRemove.length; ++i)
-        await urlRepository.deleteUrl(toRemove[i].urlId);
+    for (let i = 0; i < currentUrls.length; ++i) {
+        await urlRepository.deleteUrl(currentUrls[i].urlId);
+    }
 
     for (let i = 0; i < urls.length; ++i) {
-        if (urls[i].urlId === -1) await urlRepository.saveUrl(clubId, urls[i]);
-        else await urlRepository.updateUrl(urls[i].urlId, urls[i]);
+        await urlRepository.saveUrl(clubId, urls[i]);
     }
 };
 
