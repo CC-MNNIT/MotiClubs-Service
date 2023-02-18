@@ -20,10 +20,10 @@ const updateClub = async (req, res) => {
     }
 };
 
-const subscriberCount = async (req, res) => {
+const subscribers = async (req, res) => {
     try {
-        const count = await service.subscriberCount(req.params.clubId);
-        res.status(200).send({ count });
+        const subscribers = await service.subscribers(req.params.clubId);
+        res.status(200).send(subscribers);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -33,5 +33,5 @@ const subscriberCount = async (req, res) => {
 module.exports = {
     getClubs,
     updateClub,
-    subscriberCount,
+    subscribers,
 };
