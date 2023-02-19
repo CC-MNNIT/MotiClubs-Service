@@ -40,7 +40,23 @@ const deleteClub = async (clubId) => {
     await clubRepository.deleteClubByCid(clubId);
 };
 
-const updateAdmin = async (userId, clubId, add) => {
+const addAdmin = async (email, clubId) => {
+    validate([email, clubId]);
+
+    // Get user by email
+    // Check if user exists
+    const user = await userRepository.getUserByEmail(email.toLowerCase());
+    if (user.size() < 1) throw new Error("User does not exist");
+
+    // Check if club exists
+    const club = await clubRepository.clubExists(clubId);
+    if (!club) throw new Error("Club does not exist");
+
+    // Update admin table
+    await adminRepository.addAdmin(clubId, user[0].uid);
+};
+
+const removeAdmin = async (userId, clubId) => {
     validate([userId, clubId]);
 
     // Check if user exists
@@ -52,13 +68,13 @@ const updateAdmin = async (userId, clubId, add) => {
     if (!club) throw new Error("Club does not exist");
 
     // Update admin table
-    if (add) await adminRepository.addAdmin(clubId, userId);
-    else await adminRepository.removeAdmin(clubId, userId);
+    await adminRepository.removeAdmin(clubId, userId);
 };
 
 module.exports = {
     getClubs,
     saveClub,
     deleteClub,
-    updateAdmin,
+    addAdmin,
+    removeAdmin,
 };

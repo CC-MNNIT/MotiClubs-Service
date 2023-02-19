@@ -22,12 +22,19 @@ const getUserByUid = async (userId) => {
     return response[0];
 };
 
+const getUserByEmail = async (email) => {
+    const [response] = await pool.execute("SELECT * FROM user WHERE email=?", [
+        email,
+    ]);
+    return response[0];
+};
+
 const getAdmins = async () => {
     const [response] = await pool.execute(
         "SELECT user.uid, regno, name, email, course, phone, avatar, admin.cid FROM user INNER JOIN admin ON user.uid = admin.uid"
     );
     return response;
-}
+};
 
 const updateAvatarByUid = async (userId, avatar) => {
     await pool.execute("UPDATE user SET avatar=? WHERE uid=?", [
@@ -44,6 +51,7 @@ const userExists = async (userId) => {
 module.exports = {
     saveUser,
     getUserByUid,
+    getUserByEmail,
     getAdmins,
     updateAvatarByUid,
     userExists,

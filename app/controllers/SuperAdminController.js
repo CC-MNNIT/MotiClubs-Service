@@ -38,10 +38,10 @@ const deleteClub = async (req, res) => {
 const assignAdmin = async (req, res) => {
     try {
         // Extract email and club id from body
-        const userId = req.body.userId;
         const clubId = req.body.clubId;
+        const email = req.body.email;
 
-        await service.updateAdmin(userId, clubId, true);
+        await service.addAdmin(email, clubId);
 
         res.status(200).send({});
     } catch (error) {
@@ -56,7 +56,7 @@ const unassignAdmin = async (req, res) => {
         const userId = req.body.userId;
         const clubId = req.body.clubId;
 
-        await service.updateAdmin(userId, clubId, false);
+        await service.removeAdmin(userId, clubId);
 
         res.status(200).send({});
     } catch (error) {
