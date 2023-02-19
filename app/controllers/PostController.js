@@ -8,13 +8,11 @@ const channelRepository = require("../repository/ChannelRepository");
 const clubRepository = require("../repository/ClubRepository");
 const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
+const validate = require("../utility/validate");
 
 const getPosts = async (req, res) => {
     try {
-        const posts = await service.getPosts(
-            req.query.clubId,
-            req.query.channelId
-        );
+        const posts = await service.getPosts(req.query.channelId);
         res.status(200).send(posts);
     } catch (error) {
         console.log(error);
@@ -24,24 +22,14 @@ const getPosts = async (req, res) => {
 
 const savePost = async (req, res) => {
     try {
-        const message = req.body.message;
-        const userId = req.userId;
-        const clubId = req.body.clubId;
-        const channelId = req.body.channelId;
-        const general = req.body.general;
-
-        const postId = await service.savePost(
-            userId,
-            clubId,
-            channelId,
-            message,
-            general
-        );
+        const post = req.body;
+        const postId = post.pid;
+        await service.savePost(post);
 
         // Send response to user
         res.status(200).send({});
 
-        notifyUsers(postId, 0);
+        await notifyUsers(postId, 0);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -51,11 +39,26 @@ const savePost = async (req, res) => {
 const deletePost = async (req, res) => {
     try {
         await service.deletePost(req.params.postId);
+
         res.status(200).send({});
+
+        await sendDeletePushNotification(
+            req.params.postId,
+            req.query.channelId
+        );
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
     }
+};
+
+// Notify user of post deletion
+const sendDeletePushNotification = async (postId, channelId) => {
+    await notifyAll({
+        deleted: "1",
+        pid: postId.toString(),
+        chid: channelId.toString(),
+    });
 };
 
 const updatePost = async (req, res) => {
@@ -65,7 +68,7 @@ const updatePost = async (req, res) => {
         // Send response to user
         res.status(200).send({});
 
-        notifyUsers(req.params.postId, 1);
+        await notifyUsers(req.params.postId, 1);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -80,16 +83,22 @@ const notifyUsers = async (postId, updated) => {
     // Get admin details
     const user = await userRepository.getUserByUid(post.uid);
 
-    // Get club details
-    const club = await clubRepository.getClubByClubId(post.cid);
-
     // Get channel details
     const channel = await channelRepository.getChannelByChannelId(post.chid);
+
+    // Get club details
+    const club = await clubRepository.getClubByClubId(channel.cid);
 
     // Notify subscribers for new post
     if (post.general) {
         await notifyAll({
             ...post,
+            time: post.time.toString(),
+            uid: post.uid.toString(),
+            pid: post.pid.toString(),
+            cid: channel.cid.toString(),
+            chid: post.chid.toString(),
+            general: post.general.toString(),
             adminName: user.name,
             adminAvatar: user.avatar,
             clubName: club.name,
@@ -99,6 +108,12 @@ const notifyUsers = async (postId, updated) => {
     } else {
         await notify(club.cid, {
             ...post,
+            time: post.time.toString(),
+            uid: post.uid.toString(),
+            pid: post.pid.toString(),
+            cid: channel.cid.toString(),
+            chid: post.chid.toString(),
+            general: post.general.toString(),
             adminName: user.name,
             adminAvatar: user.avatar,
             clubName: club.name,

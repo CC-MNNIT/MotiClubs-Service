@@ -1,7 +1,7 @@
 const pool = require("../db/db");
 
 const getUrls = async (clubId) => {
-    const [response] = await pool.execute("SELECT * FROM url WHERE cid=?", [
+    const [response] = await pool.execute("SELECT urlid as urlId, cid, name, color, url FROM url WHERE cid=?", [
         clubId,
     ]);
     return response;
@@ -9,8 +9,8 @@ const getUrls = async (clubId) => {
 
 const saveUrl = async (clubId, url) => {
     await pool.execute(
-        "INSERT INTO url (cid, name, color, url) VALUES (?, ?, ?, ?)",
-        [clubId, url.name, url.color, url.url]
+        "INSERT INTO url (urlid, cid, name, color, url) VALUES (?, ?, ?, ?, ?)",
+        [url.urlId, clubId, url.name, url.color, url.url]
     );
 };
 

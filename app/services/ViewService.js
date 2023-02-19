@@ -1,7 +1,7 @@
 const viewRepository = require("../repository/ViewRepository");
 
-const getViewCount = async (postId) => {
-    const count = await viewRepository.getViewCount(postId);
+const getViews = async (postId) => {
+    const count = await viewRepository.getViews(postId);
     return count;
 };
 
@@ -10,6 +10,6 @@ const addView = async (postId, userId) => {
 };
 
 module.exports = {
-    getViewCount,
+    getViews,
     addView,
 };

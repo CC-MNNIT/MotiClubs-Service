@@ -1,4 +1,8 @@
-const service = require("../services/AdminService");
+const service = require("../services/SuperAdminService");
+
+const login = async (req, res) => {
+    res.status(200).send({});
+};
 
 const getClubs = async (req, res) => {
     try {
@@ -62,6 +66,7 @@ const unassignAdmin = async (req, res) => {
 };
 
 module.exports = {
+    login,
     getClubs,
     saveClub,
     deleteClub,

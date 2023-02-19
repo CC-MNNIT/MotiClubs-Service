@@ -20,10 +20,10 @@ const getChannelByChannelId = async (channelId) => {
     return response[0];
 };
 
-const saveChannel = async (clubId, channelName) => {
+const saveChannel = async (channel) => {
     const [response] = await pool.execute(
-        "INSERT INTO channel (cid, name) VALUES(?,?)",
-        [clubId, channelName]
+        "INSERT INTO channel (chid, cid, name) VALUES(?,?,?)",
+        [channel.chid, channel.cid, channel.name]
     );
     return response.insertId;
 };

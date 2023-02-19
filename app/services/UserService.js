@@ -38,7 +38,7 @@ const getAdmins = async () => {
     // Get list of clubs user is admin of
     const admins = await userRepository.getAdmins();
     return admins;
-}
+};
 
 const getUserByUid = async (userId) => {
     validate([userId]);
@@ -49,12 +49,7 @@ const getUserByUid = async (userId) => {
     if (!user) throw new Error("User does not exist");
 
     // Return restricted content
-    return {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        avatar: user.avatar,
-    };
+    return user;
 };
 
 const saveUser = async (userDetails) => {
@@ -105,9 +100,10 @@ const unsubscribe = async (userId, clubId) => {
 const saveUserIdInCustomUserClaims = async (userId) => {
     const user = await userRepository.getUserByUid(userId);
     const firebaseUser = await admin.auth().getUserByEmail(user.email);
+    const claims = firebaseUser?.customClaims ? firebaseUser.customClaims : {};
     await admin
         .auth()
-        .setCustomUserClaims(firebaseUser.uid, { userId: userId });
+        .setCustomUserClaims(firebaseUser.uid, { ...claims, userId: userId });
 };
 
 module.exports = {

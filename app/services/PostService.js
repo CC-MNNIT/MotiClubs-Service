@@ -8,27 +8,17 @@ const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
-const getPosts = async (clubId, channelId) => {
-    validate([clubId, channelId]);
+const getPosts = async (channelId) => {
+    validate([channelId]);
 
-    const posts = await postRepository.getPostsByClubAndChannel(
-        clubId,
-        channelId
-    );
+    const posts = await postRepository.getPostsByClubAndChannel(channelId);
     return posts;
 };
 
-const savePost = async (userId, clubId, channelId, message, general) => {
-    validate([userId, clubId, channelId, message, general]);
+const savePost = async (post) => {
+    validate([post.pid, post.chid, post.message, post.time, post.uid, post.general]);
 
-    const postId = postRepository.savePost(
-        userId,
-        clubId,
-        channelId,
-        message,
-        general
-    );
-    return postId;
+    await postRepository.savePost(post);
 };
 
 const deletePost = async (postId) => {

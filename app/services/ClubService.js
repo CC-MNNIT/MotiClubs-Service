@@ -33,15 +33,15 @@ const updateClub = async (clubId, data) => {
     );
 };
 
-const subscriberCount = async (clubId) => {
+const subscribers = async (clubId) => {
     validate([clubId]);
 
-    const count = await subscribersRepository.getSubscribersCountByCid(clubId);
-    return count;
+    const subscribers = await subscribersRepository.getSubscribersByCid(clubId);
+    return subscribers;
 };
 
 module.exports = {
     getClubs,
     updateClub,
-    subscriberCount,
+    subscribers,
 };

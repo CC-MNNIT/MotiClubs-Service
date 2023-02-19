@@ -9,11 +9,11 @@ router.get("/", auth.userAuthorization, controller.getClubs);
 // Update club details
 router.put("/:clubId", auth.clubAuthorization, controller.updateClub);
 
-// Get subscriber count
+// Get subscribers
 router.get(
-    "/subscribers-count/:clubId",
+    "/subscribers/:clubId",
     auth.userAuthorization,
-    controller.subscriberCount
+    controller.subscribers
 );
 
 module.exports = router;

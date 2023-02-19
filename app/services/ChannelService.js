@@ -16,8 +16,8 @@ const getChannelByChannelId = async (channelId) => {
     return channel;
 };
 
-const saveChannel = async (clubId, channelName) => {
-    const channelId = await channelRepository.saveChannel(clubId, channelName);
+const saveChannel = async (channel) => {
+    const channelId = await channelRepository.saveChannel(channel);
     return channelId;
 };
 
