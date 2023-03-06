@@ -8,10 +8,10 @@ const postRepository = require("../repository/PostRepository");
 const urlRepository = require("../repository/UrlRepository");
 const validate = require("../utility/validate");
 
-const getPosts = async (channelId) => {
-    validate([channelId]);
+const getPosts = async (channelId, page, items) => {
+    validate([channelId, page, items]);
 
-    const posts = await postRepository.getPostsByClubAndChannel(channelId);
+    const posts = await postRepository.getPostsByClubAndChannel(channelId, page, items);
     return posts;
 };
 
