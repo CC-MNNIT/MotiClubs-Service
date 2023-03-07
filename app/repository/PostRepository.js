@@ -7,10 +7,10 @@ const getPostByPostId = async (postId) => {
     return response[0];
 };
 
-const getPostsByClubAndChannel = async (channelId) => {
+const getPostsByClubAndChannel = async (channelId, page, items) => {
     const [response] = await pool.execute(
-        "SELECT * FROM post WHERE chid=? ORDER BY time DESC",
-        [channelId]
+        "SELECT * FROM post WHERE chid=? ORDER BY time DESC LIMIT ? OFFSET ?",
+        [channelId, items, (page - 1) * items]
     );
     return response;
 };

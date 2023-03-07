@@ -12,7 +12,9 @@ const validate = require("../utility/validate");
 
 const getPosts = async (req, res) => {
     try {
-        const posts = await service.getPosts(req.query.channelId);
+        const page = parseInt(req.query.page ? req.query.page : 1);
+        const items = parseInt(req.query.items ? req.query.items : 10);
+        const posts = await service.getPosts(req.query.channelId, page, items);
         res.status(200).send(posts);
     } catch (error) {
         console.log(error);
