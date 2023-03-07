@@ -17,7 +17,7 @@ router.delete("/delete_club", auth.superAdmin, controller.deleteClub);
 // Assign admin role to user with email {req.body.email}
 router.post("/add_admin", auth.superAdmin, controller.assignAdmin);
 
-// Unassign admin role to user with email {req.body.email}
+// Unassign admin role to user with userId {req.body.userid}
 router.post("/remove_admin", auth.superAdmin, controller.unassignAdmin);
 
 module.exports = router;
