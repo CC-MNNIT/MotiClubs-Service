@@ -3,3 +3,4 @@ node_modules/
 firebase_private_key.json
 .vercel
 package-lock.json
+dist

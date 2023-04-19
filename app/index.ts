@@ -1,5 +1,5 @@
-import express = require("express");
-import cors = require("cors");
+import * as express from 'express';
+import * as cors from 'cors';
 
 import { ChannelRouter } from "./routes/ChannelRoute";
 import { ClubRouter } from "./routes/ClubRoute";
