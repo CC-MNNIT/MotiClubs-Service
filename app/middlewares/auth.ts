@@ -5,6 +5,7 @@ import { AdminRepository } from "../repository/AdminRepository";
 import { ChannelRepository } from "../repository/ChannelRepository";
 import { PostRepository } from "../repository/PostRepository";
 import { SuperAdminRepository } from "../repository/SuperAdminRepository";
+import { ReplyRepository } from "../repository/ReplyRepository";
 
 dotenv.config();
 
@@ -176,6 +177,30 @@ const channelAuthorization = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+const replyAuthorization = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = req.header("Authorization");
+        req.userId = await getUserId(token);
+
+        const replyTime = Number(req.query.replyId);
+        if (isNaN(replyTime)) {
+            res.status(401).send({ message: "Unauthorized: Invalid reply ID" });
+            return;
+        }
+
+        const reply = await ReplyRepository.getReplyByTime(replyTime);
+        if (reply.uid === req.userId) {
+            next();
+            return;
+        }
+        res.status(401).send({ message: "Unauthorized" });
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(401).send({ message: "Unauthorized" });
+    }
+};
+
 // Check is the user with email (email) is admin of club with id clubId
 const clubAdminCheck = async (userId: number, clubId: number): Promise<boolean> => new Promise(async (resolve, reject) => {
     try {
@@ -206,4 +231,5 @@ export const auth = {
     clubAuthorization,
     urlAuthorization,
     channelAuthorization,
+    replyAuthorization,
 };

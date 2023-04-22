@@ -8,6 +8,7 @@ import { SuperAdminRouter } from "./routes/SuperAdminRoute";
 import { UrlRouter } from "./routes/UrlRoute";
 import { UserRouter } from "./routes/UserRoute";
 import { ViewRouter } from "./routes/ViewRoute";
+import { ReplyRouter } from './routes/ReplyRoute';
 
 const app: express.Application = express();
 
@@ -21,5 +22,6 @@ app.use("/admin", SuperAdminRouter);
 app.use("/channel", ChannelRouter);
 app.use("/url", UrlRouter);
 app.use("/views", ViewRouter);
+app.use("/reply", ReplyRouter);
 
 export default app;
