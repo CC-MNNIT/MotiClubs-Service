@@ -12,7 +12,12 @@ const getPostByPostId = async (postId: number): Promise<Post> => new Promise((re
                 return;
             }
 
-            const row = (<RowDataPacket[]>result)[0];
+            const rows = (<RowDataPacket[]>result);
+            if (rows.length === 0) {
+                reject("Post not found");
+                return;
+            }
+            const row = rows[0];
             resolve({ pid: row.pid, chid: row.chid, uid: row.uid, message: row.message, time: row.time, general: row.general });
         }
     );
@@ -56,7 +61,7 @@ const updatePostByPostId = async (postId: number, message: string): Promise<void
     );
 });
 
-const detelePostByPostId = async (postId: number): Promise<void> => new Promise((resolve, reject) => {
+const deletePostByPostId = async (postId: number): Promise<void> => new Promise((resolve, reject) => {
     db.query(
         "DELETE FROM post where pid=?",
         [postId],
@@ -102,7 +107,7 @@ export const PostRepository = {
     getPostByPostId,
     getPostsByClubAndChannel,
     updatePostByPostId,
-    detelePostByPostId,
+    deletePostByPostId,
     savePost,
     deletePostsByChannelId
 };

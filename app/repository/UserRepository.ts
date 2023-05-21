@@ -32,7 +32,12 @@ const getUserByUid = async (userId: number): Promise<User | undefined> => new Pr
                 reject(error);
                 return;
             }
-            const row = (<RowDataPacket[]>result)[0]
+            const rows = (<RowDataPacket[]>result);
+            if (rows.length === 0) {
+                reject("User not found");
+                return;
+            }
+            const row = rows[0];
             resolve({
                 uid: row.uid,
                 regno: row.regno,

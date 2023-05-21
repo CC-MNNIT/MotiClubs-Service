@@ -11,7 +11,13 @@ const getClubByClubId = async (clubId: number): Promise<Club> => new Promise((re
                 reject(error);
                 return;
             }
-            const row = (<RowDataPacket[]>result)[0];
+            const rows = (<RowDataPacket[]>result);
+            if (rows.length === 0) {
+                reject("Club not found");
+                return;
+            }
+
+            const row = rows[0];
             resolve({
                 cid: row.cid,
                 name: row.name,

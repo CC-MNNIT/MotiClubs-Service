@@ -46,7 +46,12 @@ const getChannelByChannelId = async (channelId: number): Promise<Channel> => new
                 return;
             }
 
-            const row = (<RowDataPacket[]>result)[0];
+            const rows = (<RowDataPacket[]>result);
+            if (rows.length === 0) {
+                reject("Channel not found");
+                return;
+            }
+            const row = rows[0];
             resolve({ chid: row.chid, cid: row.cid, name: row.name });
         }
     );

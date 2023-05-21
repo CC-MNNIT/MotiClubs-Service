@@ -17,7 +17,7 @@ const savePost = async (post: Post) => {
 const deletePost = async (postId: number) => {
     validate([postId]);
 
-    await PostRepository.detelePostByPostId(postId);
+    await PostRepository.deletePostByPostId(postId);
 };
 
 const updatePost = async (postId: number, message: string) => {

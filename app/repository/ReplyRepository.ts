@@ -53,7 +53,12 @@ const getReplyByTime = async (time: number): Promise<Reply> => new Promise((reso
                 reject(error);
                 return;
             }
-            const row = (<RowDataPacket[]>result)[0];
+            const rows = (<RowDataPacket[]>result);
+            if (rows.length === 0) {
+                reject("Reply not found");
+                return;
+            }
+            const row = rows[0];
             resolve({
                 pid: row.pid,
                 uid: row.uid,
