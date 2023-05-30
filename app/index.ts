@@ -1,5 +1,8 @@
 import * as express from 'express';
 import * as cors from 'cors';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 import { ChannelRouter } from "./routes/ChannelRoute";
 import { ClubRouter } from "./routes/ClubRoute";
@@ -15,13 +18,16 @@ const app: express.Application = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/user", UserRouter);
-app.use("/clubs", ClubRouter);
-app.use("/posts", PostRouter);
-app.use("/admin", SuperAdminRouter);
-app.use("/channel", ChannelRouter);
-app.use("/url", UrlRouter);
-app.use("/views", ViewRouter);
-app.use("/reply", ReplyRouter);
+const rootUrl: string = process.env.ROOT_URL || "";
+
+app.use(`/${rootUrl}user`, UserRouter);
+app.use(`/${rootUrl}clubs`, ClubRouter);
+app.use(`/${rootUrl}posts`, PostRouter);
+app.use(`/${rootUrl}admin`, SuperAdminRouter);
+app.use(`/${rootUrl}channel`, ChannelRouter);
+app.use(`/${rootUrl}url`, UrlRouter);
+app.use(`/${rootUrl}views`, ViewRouter);
+app.use(`/${rootUrl}reply`, ReplyRouter);
+app.use(`/${rootUrl}`, (_, res) => res.status(200).send({ message: "API Running" }));
 
 export default app;
