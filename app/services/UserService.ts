@@ -28,6 +28,8 @@ const getUser = async (userId: number) => {
     return userWithAdminList;
 };
 
+const getAllUsers = async () => await UserRepository.getAllUsers();
+
 const getAdmins = async () => await UserRepository.getAdmins();
 
 const getUserByUid = async (userId: number) => {
@@ -96,6 +98,7 @@ const saveUserIdInCustomUserClaims = async (userId: number) => {
 
 export const UserService = {
     getUser,
+    getAllUsers,
     getUserByUid,
     getAdmins,
     saveUser,

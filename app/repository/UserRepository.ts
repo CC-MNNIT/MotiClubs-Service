@@ -51,6 +51,32 @@ const getUserByUid = async (userId: number): Promise<User | undefined> => new Pr
     );
 });
 
+const getAllUsers = async (): Promise<User[] | undefined> => new Promise((resolve, reject) => {
+    db.query(
+        "SELECT * FROM user",
+        [],
+        (error, result) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            const users: User[] = [];
+            (<RowDataPacket[]>result).forEach(row => users.push({
+                uid: row.uid,
+                regno: row.regno,
+                name: row.name,
+                email: row.email,
+                course: row.course,
+                phone: row.phone,
+                avatar: row.avatar
+            }));
+            resolve(users);
+        }
+    );
+});
+
+
 const getUserByEmail = async (email: string): Promise<User> => new Promise((resolve, reject) => {
     db.query(
         "SELECT * FROM user WHERE email=?",
@@ -130,6 +156,7 @@ const userExists = async (userId: number): Promise<boolean> => new Promise((reso
 export const UserRepository = {
     saveUser,
     getUserByUid,
+    getAllUsers,
     getUserByEmail,
     getAdmins,
     updateAvatarByUid,

@@ -13,6 +13,9 @@ router.get("/", auth.userAuthorization, controller.getUser);
 // Get all admins
 router.get("/admins", auth.userAuthorization, controller.getAdmins);
 
+// Get all users
+router.get("/all", auth.userAuthorization, controller.getAllUsers);
+
 // Get user details
 router.get("/:userId", auth.userAuthorization, controller.getUserByUid);
 

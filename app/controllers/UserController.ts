@@ -1,11 +1,21 @@
 import { Request, Response } from "express";
-import { UserService as service } from "../services/UserService";
 import { User } from "../models/User";
+import { UserService as service } from "../services/UserService";
 
 const getUser = async (req: Request, res: Response) => {
     try {
         const user = await service.getUser(Number(req.userId));
         res.status(200).send(user);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+};
+
+const getAllUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await service.getAllUsers();
+        res.status(200).send(users);
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -95,6 +105,7 @@ const unsubscribe = async (req: Request, res: Response) => {
 
 export const UserController = {
     getUser,
+    getAllUsers,
     getUserByUid,
     getAdmins,
     saveUser,
