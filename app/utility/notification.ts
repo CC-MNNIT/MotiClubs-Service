@@ -1,17 +1,29 @@
 import admin from "../config/firebase";
+import { Payload } from "../models/Payload";
 import { FcmRepository } from "../repository/FcmRepository";
 
-interface Payload {
-    [key: string]: string;
-}
-
 // Utility function to notify subscribers for new post
-const notifyUsers = async (clubId: number, payload: Payload) => {
+const notifySubscribers = async (clubId: number, payload: Payload) => {
     try {
         const subscribers = await FcmRepository.getTokensOfSubscribers(clubId);
         for (const subscriber of subscribers) {
             try {
                 if (subscriber.token) await sendNotification(subscriber.token, payload);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    } catch (error) {
+        // console.log(error);
+    }
+};
+
+const notifyPostParticipants = async (postId: number, payload: Payload) => {
+    try {
+        const participants = await FcmRepository.getTokensOfPostParticipants(postId);
+        for (const participant of participants) {
+            try {
+                if (participant.token) await sendNotification(participant.token, payload);
             } catch (error) {
                 console.log(error);
             }
@@ -39,4 +51,4 @@ const sendNotification = async (token: string, payload: Payload) => {
     }
 };
 
-export const Notification = { notifyUsers, notifyAll };
+export const Notification = { notifySubscribers, notifyAll, notifyPostParticipants };

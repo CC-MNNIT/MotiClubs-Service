@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Payload, Type } from "../models/Payload";
 import { Post } from "../models/Post";
 import { ChannelRepository } from "../repository/ChannelRepository";
 import { ClubRepository } from "../repository/ClubRepository";
@@ -64,7 +65,7 @@ const deletePost = async (req: Request, res: Response) => {
 
 const sendDeletePushNotification = async (postId: number, channelId: number) => {
     await Notification.notifyAll({
-        deleted: "1",
+        type: Type.DELTE_POST,
         pid: postId.toString(),
         chid: channelId.toString(),
     });
@@ -99,37 +100,26 @@ const notifyUsers = async (postId: number, updated: number) => {
     // Get club details
     const club = await ClubRepository.getClubByClubId(channel.cid);
 
+    const payload: Payload = {
+        type: Type.POST,
+        pid: post.pid.toString(),
+        cid: club.cid.toString(),
+        chid: post.chid.toString(),
+        uid: post.uid.toString(),
+        time: post.time.toString(),
+        general: post.general.toString(),
+        adminName: user.name,
+        adminAvatar: user.avatar,
+        clubName: club.name,
+        channelName: channel.name,
+        updated: updated.toString()
+    }
+
     // Notify subscribers for new post
     if (post.general) {
-        await Notification.notifyAll({
-            ...post,
-            time: post.time.toString(),
-            uid: post.uid.toString(),
-            pid: post.pid.toString(),
-            cid: channel.cid.toString(),
-            chid: post.chid.toString(),
-            general: post.general.toString(),
-            adminName: user.name,
-            adminAvatar: user.avatar,
-            clubName: club.name,
-            channelName: channel.name,
-            updated: updated.toString(),
-        });
+        await Notification.notifyAll(payload);
     } else {
-        await Notification.notifyUsers(club.cid, {
-            ...post,
-            time: post.time.toString(),
-            uid: post.uid.toString(),
-            pid: post.pid.toString(),
-            cid: channel.cid.toString(),
-            chid: post.chid.toString(),
-            general: post.general.toString(),
-            adminName: user.name,
-            adminAvatar: user.avatar,
-            clubName: club.name,
-            channelName: channel.name,
-            updated: updated.toString(),
-        });
+        await Notification.notifySubscribers(club.cid, payload);
     }
 };
 
