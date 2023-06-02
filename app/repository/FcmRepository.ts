@@ -69,9 +69,30 @@ const getTokensOfSubscribers = async (clubId: number): Promise<FCM[]> => new Pro
     )
 });
 
+const getTokensOfPostParticipants = async (postId: number): Promise<FCM[]> => new Promise((resolve, reject) => {
+    db.query(
+        "SELECT DISTINCT(A.uid), token FROM fcm INNER JOIN (SELECT uid FROM reply WHERE pid=?) A ON A.uid = fcm.uid;",
+        [postId],
+        (error, result) => {
+            const tokens: FCM[] = [];
+            if (error) {
+                reject(error);
+                return;
+            }
+
+            (<RowDataPacket[]>result).forEach(row => tokens.push({
+                uid: row.uid,
+                token: row.token
+            }));
+            resolve(tokens);
+        }
+    )
+});
+
 export const FcmRepository = {
     setTokenByUid,
     updateTokenByUid,
     getAllTokens,
-    getTokensOfSubscribers
+    getTokensOfSubscribers,
+    getTokensOfPostParticipants
 };
