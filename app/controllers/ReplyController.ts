@@ -87,6 +87,7 @@ const notifyUsers = async (postId: number, replyId: number) => {
         uid: reply.uid.toString(),
         to_uid: reply.to_uid.toString(),
         message: reply.message,
+        postMessage: post.message,
         time: reply.time.toString(),
         userName: user.name,
         userAvatar: user.avatar,
