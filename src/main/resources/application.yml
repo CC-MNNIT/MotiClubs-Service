@@ -1,0 +1,19 @@
+springdoc:
+  swagger-ui:
+    path: /swagger
+    operations-sorter: method
+    syntax-highlight:
+      activated: true
+    tags-sorter: alpha
+  writer-with-order-by-keys: true
+
+spring:
+  config:
+    import: optional:file:src/main/resources/r2dbc.yml
+  main:
+    web-application-type: reactive
+
+server:
+  error:
+    whitelabel:
+      enabled: false
