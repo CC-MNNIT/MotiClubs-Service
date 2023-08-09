@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id
 data class Url(
     @Id
     @JsonProperty("urlId")
-    val urlId: Long,
+    val urlid: Long,
 
     @JsonProperty("cid")
     val cid: Long,
