@@ -19,9 +19,7 @@ class ClubService(
 
     fun getClubByCID(cid: Long): Mono<Club> = clubRepository.findById(cid)
 
-    fun updateClub(cid: Long, updateClubDTO: UpdateClubDTO): Mono<Club> = clubRepository
-        .findById(cid)
-        .flatMap { saveClub(it.copy(updateClubDTO)) }
+    fun updateClub(cid: Long, dto: UpdateClubDTO): Mono<Club> = clubRepository.updateClub(cid, dto)
 
     fun clubExists(cid: Long): Mono<Boolean> = clubRepository.existsById(cid)
 

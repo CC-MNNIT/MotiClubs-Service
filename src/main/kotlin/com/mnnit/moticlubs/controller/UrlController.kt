@@ -41,7 +41,10 @@ class UrlController(
         .clubAuthorization(clubId)
         .flatMap {
             LOGGER.info("updateUrls: cid: $clubId")
-            urlService.saveUrl(clubId, dto.urls)
+            urlService.saveUrl(
+                clubId,
+                dto.urls.map { url -> Url(url.urlid, clubId, url.name, url.color, url.url) }
+            )
         }
         .wrapError()
 }

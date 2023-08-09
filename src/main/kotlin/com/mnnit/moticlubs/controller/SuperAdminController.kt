@@ -45,7 +45,7 @@ class SuperAdminController(
     fun addClub(@RequestBody club: Club): Mono<Club> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
-            LOGGER.info("addClub: club: $club")
+            LOGGER.info("addClub: club: ${club.name}")
             clubService.saveClub(club)
         }
         .wrapError()

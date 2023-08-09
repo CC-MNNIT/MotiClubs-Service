@@ -49,7 +49,7 @@ class PostController(
     ): Mono<Post> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
-            LOGGER.info("savePost: cid: $clubId; post: $post")
+            LOGGER.info("savePost: cid: $clubId")
             postService.savePost(post)
         }
         .wrapError()
@@ -63,7 +63,7 @@ class PostController(
     ): Mono<Post> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
-            LOGGER.info("updatePost: pid: $postId; cid: $clubId; dto: $dto")
+            LOGGER.info("updatePost: pid: $postId; cid: $clubId")
             postService.updatePost(postId, dto)
         }
         .wrapError()

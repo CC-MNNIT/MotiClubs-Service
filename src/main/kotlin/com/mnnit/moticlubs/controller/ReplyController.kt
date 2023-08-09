@@ -39,7 +39,7 @@ class ReplyController(
     fun saveReply(@RequestBody reply: Reply): Mono<Reply> = pathAuthorization
         .userAuthorization()
         .flatMap {
-            LOGGER.info("saveReply: reply: $reply")
+            LOGGER.info("saveReply: reply: ${reply.time}")
             replyService.saveReply(reply)
         }
         .wrapError()

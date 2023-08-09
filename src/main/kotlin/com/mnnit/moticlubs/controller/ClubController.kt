@@ -57,7 +57,7 @@ class ClubController(
     ): Mono<Club> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
-            LOGGER.info("updateClub: cid: $clubId; dto: $dto")
+            LOGGER.info("updateClub: cid: $clubId")
             clubService.updateClub(clubId, dto)
         }
         .wrapError()

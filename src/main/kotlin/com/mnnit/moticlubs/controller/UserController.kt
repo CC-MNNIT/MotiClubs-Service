@@ -70,7 +70,7 @@ class UserController(
     fun saveUser(@RequestBody user: User): Mono<User> = pathAuthorization
         .userAuthorization()
         .flatMap {
-            LOGGER.info("saveUser: user: $user")
+            LOGGER.info("saveUser: user: ${user.regno}")
             userService.saveUser(user)
         }
         .wrapError()
@@ -80,7 +80,7 @@ class UserController(
     fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<User> = pathAuthorization
         .userAuthorization()
         .flatMap {
-            LOGGER.info("updateAvatar: dto: $dto")
+            LOGGER.info("updateAvatar")
             userService.updateAvatar(it, dto.avatar)
         }
         .wrapError()
@@ -90,7 +90,7 @@ class UserController(
     fun updateFCM(@RequestBody dto: FCMTokenDto): Mono<FCM> = pathAuthorization
         .userAuthorization()
         .flatMap {
-            LOGGER.info("updateFCM: dto: $dto")
+            LOGGER.info("updateFCM: uid: $it")
             fcmService.updateFcm(FCM(it, dto.token))
         }
         .wrapError()
