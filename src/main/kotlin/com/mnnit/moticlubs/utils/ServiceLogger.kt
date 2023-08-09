@@ -13,5 +13,7 @@ class ServiceLogger private constructor(clazz: Class<*>) {
 
     fun info(str: String) = logger.info("[${getReqId()}] $str")
 
+    fun debug(str: String) = logger.debug("[${getReqId()}] $str")
+
     fun warn(str: String) = logger.warn("[${getReqId()}] $str")
 }

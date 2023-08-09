@@ -5,7 +5,7 @@ import com.google.firebase.messaging.Message
 import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.repository.*
-import org.slf4j.LoggerFactory
+import com.mnnit.moticlubs.utils.ServiceLogger
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -26,7 +26,7 @@ class NotificationService(
     }
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(NotificationService::class.java)
+        private val LOGGER = ServiceLogger.getLogger(NotificationService::class.java)
     }
 
     fun notifyPost(post: Post, updated: Boolean): Mono<Void> = Mono
@@ -58,20 +58,24 @@ class NotificationService(
         }
         .flatMap { payload ->
             if (post.general == 1) {
+                LOGGER.info("notifyPost -> notifyAll")
                 notifyAll(payload)
             } else {
+                LOGGER.info("notifyPost -> notifySubscribers")
                 notifySubscribers(payload["cid"]!!.toLong(), payload)
             }
         }
 
-    fun notifyDeletePost(pid: Long): Mono<Void> = postRepository
-        .findById(pid)
-        .flatMap { post ->
-            notifyAll(HashMap<String, String>().apply {
+    fun notifyDeletePost(post: Post): Mono<Void> = Mono.just(post)
+        .flatMap { p ->
+            Mono.just(HashMap<String, String>().apply {
                 this["type"] = Type.DELETE_POST.ordinal.toString()
-                this["pid"] = pid.toString()
-                this["chid"] = post.chid.toString()
+                this["pid"] = p.pid.toString()
+                this["chid"] = p.chid.toString()
             })
+        }.flatMap { payload ->
+            LOGGER.info("notifyDeletePost: payload: $payload")
+            notifyAll(payload)
         }
 
     fun notifyReply(reply: Reply): Mono<Void> = Mono
@@ -103,12 +107,20 @@ class NotificationService(
                         }
                 }
         }
-        .flatMap { payload -> notifyPostParticipants(reply.pid, payload) }
+        .flatMap { payload ->
+            LOGGER.info("notifyReply")
+            notifyPostParticipants(reply.pid, payload)
+        }
 
-    fun notifyDeleteReply(replyId: Long): Mono<Void> = notifyAll(HashMap<String, String>().apply {
-        this["type"] = Type.DELETE_REPLY.ordinal.toString()
-        this["time"] = replyId.toString()
-    })
+    fun notifyDeleteReply(replyId: Long): Mono<Void> = Mono
+        .just(HashMap<String, String>().apply {
+            this["type"] = Type.DELETE_REPLY.ordinal.toString()
+            this["time"] = replyId.toString()
+        })
+        .flatMap { payload ->
+            LOGGER.info("notifyDeleteReply: payload: $payload")
+            notifyAll(payload)
+        }
 
     // --------------------------------------------------------------------- //
 

@@ -12,5 +12,10 @@ fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
     )
 }
 
-fun getReqId(): String = MDC.get("req")
+fun getReqId(): String = try {
+    MDC.get("req")
+} catch (_: Exception) {
+    "null"
+}
+
 fun putReqId(reqId: String) = MDC.put("req", reqId)

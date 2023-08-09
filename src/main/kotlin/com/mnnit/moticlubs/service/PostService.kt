@@ -31,6 +31,9 @@ class PostService(
         }
 
     fun deletePostByPid(pid: Long): Mono<Void> = postRepository
-        .deleteById(pid)
-        .then(notificationService.notifyDeletePost(pid))
+        .findById(pid)
+        .flatMap { post ->
+            postRepository.deleteById(pid)
+                .then(notificationService.notifyDeletePost(post))
+        }
 }
