@@ -1,9 +1,9 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.PostRepository
-import com.mnnit.moticlubs.dto.Post
-import com.mnnit.moticlubs.dto.request.SavePostDTO
+import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dto.request.UpdatePostDTO
+import com.mnnit.moticlubs.repository.PostRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -13,21 +13,18 @@ class PostService(
     private val notificationService: NotificationService,
 ) {
 
-    fun savePost(dto: SavePostDTO): Mono<Post> = postRepository.save(Post(dto))
+    fun savePost(post: Post): Mono<Post> = postRepository.save(post)
         .flatMap { savedPost ->
             notificationService.notifyPost(savedPost, false)
                 .then(Mono.just(savedPost))
         }
 
-    fun getPostByPid(pid: Long): Mono<Post> = postRepository.findById(pid)
-
-    fun getPostsByChannel(chid: Long): Mono<List<Post>> = postRepository
-        .findAllByChid(chid)
+    fun getPostsByChannel(chid: Long, pageRequest: PageRequest): Mono<List<Post>> = postRepository
+        .findAllByChid(chid, pageRequest)
         .collectList()
 
     fun updatePost(pid: Long, updatePostDTO: UpdatePostDTO): Mono<Post> = postRepository
-        .findById(pid)
-        .flatMap { postRepository.save(it.copy(message = updatePostDTO.message)) }
+        .updatePost(pid, updatePostDTO.message)
         .flatMap { post ->
             notificationService.notifyPost(post, true)
                 .then(Mono.just(post))

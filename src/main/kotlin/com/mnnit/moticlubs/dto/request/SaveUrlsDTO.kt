@@ -1,7 +1,7 @@
 package com.mnnit.moticlubs.dto.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.mnnit.moticlubs.dto.Url
+import com.mnnit.moticlubs.dao.Url
 
 data class SaveUrlsDTO(
     @JsonProperty("urls")

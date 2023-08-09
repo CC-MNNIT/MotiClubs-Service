@@ -2,8 +2,8 @@ package com.mnnit.moticlubs.web.security
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
-import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
-import org.slf4j.LoggerFactory
+import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.putReqId
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono
 class SecurityConfig {
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(SecurityConfig::class.java)
+        private val LOGGER = ServiceLogger.getLogger(SecurityConfig::class.java)
         private val AUTH_WHITELIST_PATH = arrayOf(
             "/swagger",
             "/webjars/swagger-ui",
@@ -39,9 +39,10 @@ class SecurityConfig {
     ): SecurityWebFilterChain = http
         .csrf { it.disable() }
         .addFilterAt(firebaseAuthTokenFilter(firebaseAuth), SecurityWebFiltersOrder.AUTHENTICATION)
-        .addFilterAfter({ exchange, chain ->
+        .addFilterAt({ exchange, chain ->
+            putReqId(exchange.request.id)
             chain.filter(exchange)
-        }, SecurityWebFiltersOrder.AUTHENTICATION)
+        }, SecurityWebFiltersOrder.AUTHORIZATION)
         .authorizeExchange { spec ->
             spec.pathMatchers(
                 "/swagger/**",
@@ -55,11 +56,17 @@ class SecurityConfig {
     private fun firebaseAuthTokenFilter(firebaseAuth: FirebaseAuth): AuthenticationWebFilter = AuthenticationWebFilter(
         ReactiveAuthenticationManager { auth ->
             val token = auth.principal as FirebaseToken
-            LOGGER.info("authentication: emailVerified: ${token.isEmailVerified} ${token.uid}: id: ${token.claims[USER_ID_CLAIM]}")
+            LOGGER.info(
+                "authentication: emailVerified: ${token.isEmailVerified}; claims: ${
+                    firebaseAuth.getUser(token.uid).customClaims
+                }"
+            )
             Mono.just(auth.apply { isAuthenticated = token.isEmailVerified })
         }
     ).apply {
         setServerAuthenticationConverter { exchange ->
+            putReqId(exchange.request.id)
+
             val reqPath = exchange.request.path.value()
             if (AUTH_WHITELIST_PATH.any { reqPath.startsWith(it) }) {
                 return@setServerAuthenticationConverter Mono.empty()

@@ -1,4 +1,4 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import org.springframework.data.annotation.Id
 

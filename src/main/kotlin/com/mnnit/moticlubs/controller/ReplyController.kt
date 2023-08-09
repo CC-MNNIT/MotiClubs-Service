@@ -1,9 +1,10 @@
 package com.mnnit.moticlubs.controller
 
-import com.mnnit.moticlubs.dto.Reply
+import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.service.ReplyService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.REPLY_ROUTE
+import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -19,24 +20,37 @@ class ReplyController(
     private val replyService: ReplyService,
 ) {
 
+    companion object {
+        private val LOGGER = ServiceLogger.getLogger(ReplyController::class.java)
+    }
+
     @GetMapping
     @Operation(summary = "Returns replies from the post")
     fun getReplies(@RequestParam postId: Long): Mono<List<Reply>> = pathAuthorization
         .userAuthorization()
-        .flatMap { replyService.getRepliesByPid(postId) }
+        .flatMap {
+            LOGGER.info("getReplies: pid: $postId")
+            replyService.getRepliesByPid(postId)
+        }
         .wrapError()
 
     @PostMapping
     @Operation(summary = "Saves reply in the post and notify participants")
     fun saveReply(@RequestBody reply: Reply): Mono<Reply> = pathAuthorization
         .userAuthorization()
-        .flatMap { replyService.saveReply(reply) }
+        .flatMap {
+            LOGGER.info("saveReply: reply: $reply")
+            replyService.saveReply(reply)
+        }
         .wrapError()
 
     @DeleteMapping
     @Operation(summary = "Delete reply in the post")
     fun deleteReply(@RequestParam replyId: Long): Mono<Void> = pathAuthorization
         .userAuthorization()
-        .flatMap { userId -> replyService.deleteReply(userId, replyId) }
+        .flatMap { userId ->
+            LOGGER.info("deleteReply: time: $replyId")
+            replyService.deleteReply(userId, replyId)
+        }
         .wrapError()
 }

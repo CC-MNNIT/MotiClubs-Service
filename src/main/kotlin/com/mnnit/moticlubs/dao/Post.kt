@@ -1,13 +1,12 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.mnnit.moticlubs.dto.request.SavePostDTO
 import org.springframework.data.annotation.Id
 
 data class Post(
     @Id
     @JsonProperty("pid")
-    val pid: Long = System.currentTimeMillis(),
+    val pid: Long = -1,
 
     @JsonProperty("uid")
     val uid: Long,
@@ -20,12 +19,4 @@ data class Post(
 
     @JsonProperty("general")
     val general: Int,
-) {
-    constructor(dto: SavePostDTO) : this(
-        pid = dto.pid,
-        uid = dto.uid,
-        chid = dto.chid,
-        message = dto.message,
-        general = dto.general,
-    )
-}
+)

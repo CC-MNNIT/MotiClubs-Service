@@ -1,13 +1,14 @@
 package com.mnnit.moticlubs.controller
 
-import com.mnnit.moticlubs.dto.Admin
-import com.mnnit.moticlubs.dto.Club
+import com.mnnit.moticlubs.dao.Admin
+import com.mnnit.moticlubs.dao.Club
 import com.mnnit.moticlubs.dto.request.AssignAdminDTO
 import com.mnnit.moticlubs.service.AdminService
 import com.mnnit.moticlubs.service.ClubService
 import com.mnnit.moticlubs.service.UserService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.SUPER_ADMIN_ROUTE
+import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -25,25 +26,38 @@ class SuperAdminController(
     private val adminService: AdminService,
 ) {
 
+    companion object {
+        private val LOGGER = ServiceLogger.getLogger(SuperAdminController::class.java)
+    }
+
     @GetMapping("/login")
     @Operation(summary = "Logs user in")
     fun login(): Mono<String> = pathAuthorization
         .superAdminAuthorization()
-        .flatMap { Mono.just("Logged in") }
+        .flatMap {
+            LOGGER.info("login")
+            Mono.just("Logged in")
+        }
         .wrapError()
 
     @PostMapping("/add_club")
     @Operation(summary = "Adds a new club")
     fun addClub(@RequestBody club: Club): Mono<Club> = pathAuthorization
         .superAdminAuthorization()
-        .flatMap { clubService.saveClub(club) }
+        .flatMap {
+            LOGGER.info("addClub: club: $club")
+            clubService.saveClub(club)
+        }
         .wrapError()
 
     @DeleteMapping("/delete_club")
     @Operation(summary = "Deletes club")
     fun deleteClub(@RequestParam clubId: Long): Mono<Void> = pathAuthorization
         .superAdminAuthorization()
-        .flatMap { clubService.deleteClubByCID(clubId) }
+        .flatMap {
+            LOGGER.info("deleteClubByCid: cid: $clubId")
+            clubService.deleteClubByCid(clubId)
+        }
         .wrapError()
 
     @PostMapping("/add_admin")
@@ -51,6 +65,7 @@ class SuperAdminController(
     fun assignAdmin(@RequestBody dto: AssignAdminDTO): Mono<Admin> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
+            LOGGER.info("assignAdmin: dto: $dto")
             userService.getUserByEmail(dto.email)
                 .flatMap { user -> adminService.saveAdmin(Admin(dto.cid, user.uid)) }
         }
@@ -60,6 +75,9 @@ class SuperAdminController(
     @Operation(summary = "Remove user from club admin")
     fun removeAdmin(@RequestBody admin: Admin): Mono<Void> = pathAuthorization
         .superAdminAuthorization()
-        .flatMap { adminService.removeAdmin(admin) }
+        .flatMap {
+            LOGGER.info("removeAdmin: admin: $admin")
+            adminService.removeAdmin(admin)
+        }
         .wrapError()
 }

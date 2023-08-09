@@ -1,7 +1,7 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.UrlRepository
-import com.mnnit.moticlubs.dto.Url
+import com.mnnit.moticlubs.dao.Url
+import com.mnnit.moticlubs.repository.UrlRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -11,8 +11,7 @@ class UrlService(
 ) {
 
     fun saveUrl(cid: Long, urls: List<Url>): Mono<List<Url>> = urlRepository
-        .findAllByCid(cid)
-        .flatMap { deleteUrl(it) }
+        .deleteAllByCid(cid)
         .then(
             urlRepository
                 .saveAll(urls)
@@ -22,6 +21,4 @@ class UrlService(
     fun getUrlsByCid(cid: Long): Mono<List<Url>> = urlRepository
         .findAllByCid(cid)
         .collectList()
-
-    fun deleteUrl(url: Url): Mono<Void> = urlRepository.delete(url)
 }

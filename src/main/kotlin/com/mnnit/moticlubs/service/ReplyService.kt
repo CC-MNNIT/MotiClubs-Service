@@ -1,7 +1,7 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.ReplyRepository
-import com.mnnit.moticlubs.dto.Reply
+import com.mnnit.moticlubs.dao.Reply
+import com.mnnit.moticlubs.repository.ReplyRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException

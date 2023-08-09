@@ -1,4 +1,4 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
@@ -8,8 +8,8 @@ data class User(
     @JsonProperty("uid")
     val uid: Long = System.currentTimeMillis(),
 
-    @JsonProperty("regno")
-    val regNo: String,
+    @JsonProperty("regNo")
+    val regno: String,
 
     @JsonProperty("name")
     val name: String,

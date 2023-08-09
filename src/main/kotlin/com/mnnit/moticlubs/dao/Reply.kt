@@ -1,4 +1,4 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
@@ -13,9 +13,6 @@ data class Reply(
 
     @JsonProperty("uid")
     val uid: Long,
-
-    @JsonProperty("to_uid")
-    val toUid: Long,
 
     @JsonProperty("message")
     val message: String,

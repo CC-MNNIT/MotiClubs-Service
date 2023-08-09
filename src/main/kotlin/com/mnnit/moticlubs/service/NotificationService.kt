@@ -2,9 +2,9 @@ package com.mnnit.moticlubs.service
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
-import com.mnnit.moticlubs.dao.*
-import com.mnnit.moticlubs.dto.Post
-import com.mnnit.moticlubs.dto.Reply
+import com.mnnit.moticlubs.dao.Post
+import com.mnnit.moticlubs.dao.Reply
+import com.mnnit.moticlubs.repository.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -46,7 +46,6 @@ class NotificationService(
                         this["cid"] = channel.cid.toString()
                         this["chid"] = post.chid.toString()
                         this["uid"] = post.uid.toString()
-                        this["time"] = post.pid.toString()
                         this["message"] = post.message
                         this["general"] = post.general.toString()
                         this["adminName"] = user.name
@@ -65,10 +64,15 @@ class NotificationService(
             }
         }
 
-    fun notifyDeletePost(pid: Long): Mono<Void> = notifyAll(HashMap<String, String>().apply {
-        this["type"] = Type.DELETE_POST.ordinal.toString()
-        this["pid"] = pid.toString()
-    })
+    fun notifyDeletePost(pid: Long): Mono<Void> = postRepository
+        .findById(pid)
+        .flatMap { post ->
+            notifyAll(HashMap<String, String>().apply {
+                this["type"] = Type.DELETE_POST.ordinal.toString()
+                this["pid"] = pid.toString()
+                this["chid"] = post.chid.toString()
+            })
+        }
 
     fun notifyReply(reply: Reply): Mono<Void> = Mono
         .zip(
@@ -87,10 +91,8 @@ class NotificationService(
                                 this["type"] = Type.REPLY.ordinal.toString()
                                 this["pid"] = post.pid.toString()
                                 this["uid"] = post.uid.toString()
-                                this["to_uid"] = reply.toUid.toString()
                                 this["message"] = reply.message
                                 this["postMessage"] = post.message
-                                this["time"] = reply.time.toString()
                                 this["userName"] = user.name
                                 this["userAvatar"] = user.avatar
                                 this["clubName"] = club.name

@@ -1,9 +1,9 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.data.annotation.Id
 
-data class Subscriber(
+data class Admin(
     @JsonProperty("cid")
     val cid: Long,
 

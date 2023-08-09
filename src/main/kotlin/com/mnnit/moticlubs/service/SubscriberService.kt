@@ -1,7 +1,7 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.SubscriberRepository
-import com.mnnit.moticlubs.dto.Subscriber
+import com.mnnit.moticlubs.dao.Subscribers
+import com.mnnit.moticlubs.repository.SubscriberRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -10,15 +10,15 @@ class SubscriberService(
     private val subscriberRepository: SubscriberRepository,
 ) {
 
-    fun subscribe(subscriber: Subscriber): Mono<Subscriber> = subscriberRepository.save(subscriber)
+    fun subscribe(subscribers: Subscribers): Mono<Subscribers> = subscriberRepository.save(subscribers)
 
-    fun unsubscribe(subscriber: Subscriber): Mono<Void> = subscriberRepository.delete(subscriber)
+    fun unsubscribe(subscribers: Subscribers): Mono<Void> = subscriberRepository.delete(subscribers)
 
-    fun getSubscribersByCid(cid: Long): Mono<List<Subscriber>> = subscriberRepository
+    fun getSubscribersByCid(cid: Long): Mono<List<Subscribers>> = subscriberRepository
         .findAllByCid(cid)
         .collectList()
 
-    fun getSubscribedClubsByUid(uid: Long): Mono<List<Subscriber>> = subscriberRepository
-        .findAllById(arrayListOf(uid))
+    fun getSubscribedClubsByUid(uid: Long): Mono<List<Subscribers>> = subscriberRepository
+        .findAllByUid(uid)
         .collectList()
 }

@@ -1,7 +1,7 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.ViewRepository
-import com.mnnit.moticlubs.dto.View
+import com.mnnit.moticlubs.dao.View
+import com.mnnit.moticlubs.repository.ViewRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 

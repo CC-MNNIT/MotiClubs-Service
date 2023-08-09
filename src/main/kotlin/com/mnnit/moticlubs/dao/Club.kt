@@ -1,4 +1,4 @@
-package com.mnnit.moticlubs.dto
+package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.mnnit.moticlubs.dto.request.UpdateClubDTO

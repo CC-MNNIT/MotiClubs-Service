@@ -1,18 +1,17 @@
 package com.mnnit.moticlubs.controller
 
-import com.mnnit.moticlubs.dto.Channel
+import com.mnnit.moticlubs.dao.Channel
 import com.mnnit.moticlubs.dto.request.UpdateChannelDTO
 import com.mnnit.moticlubs.service.ChannelService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ROUTE
+import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 @RestController
@@ -23,25 +22,38 @@ class ChannelController(
     private val channelService: ChannelService,
 ) {
 
+    companion object {
+        private val LOGGER = ServiceLogger.getLogger(ChannelController::class.java)
+    }
+
     @GetMapping
     @Operation(summary = "Returns list of all channels")
     fun getAllChannels(): Mono<List<Channel>> = pathAuthorization
         .userAuthorization()
-        .flatMap { channelService.getAllChannels() }
+        .flatMap {
+            LOGGER.info("getAllChannels")
+            channelService.getAllChannels()
+        }
         .wrapError()
 
     @GetMapping("/{$CHANNEL_ID_CLAIM}")
     @Operation(summary = "Returns single channel from channelId")
     fun getChannelFromChid(@PathVariable channelId: Long): Mono<Channel> = pathAuthorization
         .userAuthorization()
-        .flatMap { channelService.getChannelByChID(channelId) }
+        .flatMap {
+            LOGGER.info("getChannelFromChid: chid: $channelId")
+            channelService.getChannelByChID(channelId)
+        }
         .wrapError()
 
     @PostMapping
     @Operation(summary = "Creates a channel in the club")
     fun createChannel(@RequestBody channel: Channel): Mono<Channel> = pathAuthorization
         .clubAuthorization(channel.cid)
-        .flatMap { channelService.saveChannel(channel) }
+        .flatMap {
+            LOGGER.info("createChannel: channel: $channel")
+            channelService.saveChannel(channel)
+        }
         .wrapError()
 
     @PutMapping("/{$CHANNEL_ID_CLAIM}")
@@ -51,7 +63,10 @@ class ChannelController(
         @PathVariable channelId: Long
     ): Mono<Channel> = pathAuthorization
         .clubAuthorization(dto.cid)
-        .flatMap { channelService.updateChannelName(channelId, dto.name) }
+        .flatMap {
+            LOGGER.info("updateChannel: dto: $dto; chid: $channelId")
+            channelService.updateChannelName(channelId, dto.name)
+        }
         .wrapError()
 
     @DeleteMapping("/{$CHANNEL_ID_CLAIM}")
@@ -61,6 +76,9 @@ class ChannelController(
         @PathVariable channelId: Long
     ): Mono<Void> = pathAuthorization
         .clubAuthorization(clubId)
-        .flatMap { channelService.deleteChannelByChID(channelId) }
+        .flatMap {
+            LOGGER.info("deleteChannel: chid: $channelId; cid: $clubId")
+            channelService.deleteChannelByChID(channelId)
+        }
         .wrapError()
 }

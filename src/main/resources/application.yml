@@ -13,6 +13,10 @@ spring:
   main:
     web-application-type: reactive
 
+logging:
+  file:
+    name: logs/moticlubs_service.log
+
 server:
   error:
     whitelabel:

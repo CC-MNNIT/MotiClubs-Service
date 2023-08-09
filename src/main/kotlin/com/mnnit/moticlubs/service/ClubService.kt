@@ -1,8 +1,8 @@
 package com.mnnit.moticlubs.service
 
-import com.mnnit.moticlubs.dao.ClubRepository
-import com.mnnit.moticlubs.dto.Club
+import com.mnnit.moticlubs.dao.Club
 import com.mnnit.moticlubs.dto.request.UpdateClubDTO
+import com.mnnit.moticlubs.repository.ClubRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -25,5 +25,5 @@ class ClubService(
 
     fun clubExists(cid: Long): Mono<Boolean> = clubRepository.existsById(cid)
 
-    fun deleteClubByCID(cid: Long): Mono<Void> = clubRepository.deleteById(cid)
+    fun deleteClubByCid(cid: Long): Mono<Void> = clubRepository.deleteById(cid)
 }

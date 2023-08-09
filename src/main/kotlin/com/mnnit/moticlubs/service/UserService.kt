@@ -1,11 +1,12 @@
 package com.mnnit.moticlubs.service
 
 import com.google.firebase.auth.FirebaseAuth
-import com.mnnit.moticlubs.dao.AdminRepository
-import com.mnnit.moticlubs.dao.FCMRepository
-import com.mnnit.moticlubs.dao.UserRepository
-import com.mnnit.moticlubs.dto.FCM
-import com.mnnit.moticlubs.dto.User
+import com.mnnit.moticlubs.dao.FCM
+import com.mnnit.moticlubs.dao.User
+import com.mnnit.moticlubs.dto.response.AdminUserDTO
+import com.mnnit.moticlubs.repository.AdminRepository
+import com.mnnit.moticlubs.repository.FCMRepository
+import com.mnnit.moticlubs.repository.UserRepository
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -32,15 +33,11 @@ class UserService(
 
     fun getUserByUid(uid: Long): Mono<User> = userRepository.findById(uid)
 
-    fun getUserByEmail(email: String): Mono<User> = userRepository.findUserByEmail(email)
+    fun getUserByEmail(email: String): Mono<User> = userRepository.findByEmail(email)
 
-    fun getAllUsers(): Mono<List<User>> = userRepository
+    fun getAllAdminUsers(): Mono<List<AdminUserDTO>> = adminRepository
         .findAll()
-        .collectList()
-
-    fun getAllAdminUsers(): Mono<List<User>> = adminRepository
-        .findAll()
-        .flatMap { getUserByUid(it.uid) }
+        .flatMap { admin -> getUserByUid(admin.uid).flatMap { user -> Mono.just(AdminUserDTO(admin.cid, user)) } }
         .collectList()
 
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository
