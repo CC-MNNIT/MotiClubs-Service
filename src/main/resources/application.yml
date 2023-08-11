@@ -8,6 +8,8 @@ springdoc:
   writer-with-order-by-keys: true
 
 spring:
+  profiles:
+    active: dev
   config:
     import: optional:file:src/main/resources/r2dbc.yml
   main:
@@ -22,3 +24,4 @@ server:
     whitelabel:
       enabled: false
   port: 8002
+  forward-headers-strategy: framework
