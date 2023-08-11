@@ -38,4 +38,7 @@ src/main/resources/firebase_private_key.json
 src/main/resources/r2dbc.yml
 src/main/resources/schema.sql
 
+### Metadata ###
 logs/
+deploy.sh
+sac.conf
