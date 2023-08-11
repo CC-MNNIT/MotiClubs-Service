@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.servers.Server
 )
 @OpenAPIDefinition(
     info = Info(
-        title = "MotiClubs Backend",
-        description = "Backend to provide service of the app",
+        title = "MotiClubs Service",
+        description = "Backend to provide service to the MotiClubs App",
         contact = Contact(
             name = "CC-Club MNNIT",
             url = "https://github.com/CC-MNNIT",
