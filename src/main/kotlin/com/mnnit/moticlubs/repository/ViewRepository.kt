@@ -15,7 +15,19 @@ class ViewRepository(
 ) {
 
     @Transactional
-    fun save(view: View): Mono<View> = db.insert(view)
+    fun save(view: View): Mono<View> = db
+        .exists(
+            Query.query(
+                Criteria
+                    .where(View::pid.name)
+                    .`is`(view.pid)
+                    .and(
+                        Criteria.where(View::uid.name).`is`(view.uid)
+                    )
+            ),
+            View::class.java
+        )
+        .flatMap { if (it) Mono.just(view) else db.insert(view) }
 
     @Transactional
     fun findAllByPid(pid: Long): Flux<View> = db
