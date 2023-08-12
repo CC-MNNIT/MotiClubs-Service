@@ -36,7 +36,7 @@ class ViewController(
 
     @PostMapping
     @Operation(summary = "Add views of a post")
-    fun addView(@RequestParam view: View): Mono<View> = pathAuthorization
+    fun addView(@RequestBody view: View): Mono<View> = pathAuthorization
         .userAuthorization()
         .flatMap {
             LOGGER.info("addView: view: $view")
