@@ -17,7 +17,7 @@ class FCMRepository(
     @Transactional
     fun save(fcm: FCM): Mono<FCM> = db
         .exists(
-            Query.query(Criteria.where(fcm::uid.name).`is`(fcm.uid)),
+            Query.query(Criteria.where(FCM::uid.name).`is`(fcm.uid)),
             FCM::class.java
         )
         .flatMap { if (it) update(fcm) else db.insert(fcm) }
