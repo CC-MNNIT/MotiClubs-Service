@@ -3,7 +3,7 @@ package com.mnnit.moticlubs.controller
 import com.mnnit.moticlubs.dao.FCM
 import com.mnnit.moticlubs.dao.Subscribers
 import com.mnnit.moticlubs.dao.User
-import com.mnnit.moticlubs.dto.request.FCMTokenDto
+import com.mnnit.moticlubs.dto.request.FCMTokenDTO
 import com.mnnit.moticlubs.dto.request.SubscriberDto
 import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
@@ -87,7 +87,7 @@ class UserController(
 
     @PostMapping("/fcm")
     @Operation(summary = "Update fcm token for the user")
-    fun updateFCM(@RequestBody dto: FCMTokenDto): Mono<FCM> = pathAuthorization
+    fun updateFCM(@RequestBody dto: FCMTokenDTO): Mono<FCM> = pathAuthorization
         .userAuthorization()
         .flatMap {
             LOGGER.info("updateFCM: uid: $it")

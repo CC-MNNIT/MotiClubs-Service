@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
 import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -15,14 +16,17 @@ class PostRepository(
     private val db: R2dbcEntityTemplate,
 ) {
 
+    @Transactional
     fun save(post: Post): Mono<Post> = db.insert(post)
 
+    @Transactional
     fun findById(pid: Long): Mono<Post> = db
         .selectOne(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)).limit(1),
             Post::class.java
         )
 
+    @Transactional
     fun findAllByChid(chid: Long, pageRequest: PageRequest): Flux<Post> = db
         .select(
             Query.query(Criteria.where(Post::chid.name).`is`(chid))
@@ -31,6 +35,7 @@ class PostRepository(
             Post::class.java
         )
 
+    @Transactional
     fun updatePost(pid: Long, message: String): Mono<Post> = db
         .update(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)),
@@ -39,6 +44,7 @@ class PostRepository(
         )
         .then(findById(pid))
 
+    @Transactional
     fun deleteById(pid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)),
@@ -46,6 +52,7 @@ class PostRepository(
         )
         .then()
 
+    @Transactional
     fun deleteAllByChid(chid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Post::chid.name).`is`(chid)),

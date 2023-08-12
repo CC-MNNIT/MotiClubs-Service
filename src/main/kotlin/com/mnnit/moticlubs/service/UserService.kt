@@ -33,7 +33,7 @@ class UserService(
 
     fun getUserByUid(uid: Long): Mono<User> = userRepository.findById(uid)
 
-    fun getUserByEmail(email: String): Mono<User> = userRepository.findByEmail(email)
+    fun getUserByRegNo(regNo: String): Mono<User> = userRepository.findByRegNo(regNo)
 
     fun getAllAdminUsers(): Mono<List<AdminUserDTO>> = adminRepository
         .findAll()

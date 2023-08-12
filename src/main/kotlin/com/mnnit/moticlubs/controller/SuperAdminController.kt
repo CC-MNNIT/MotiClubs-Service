@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.controller
 
 import com.mnnit.moticlubs.dao.Admin
 import com.mnnit.moticlubs.dao.Club
+import com.mnnit.moticlubs.dto.request.AddClubDTO
 import com.mnnit.moticlubs.dto.request.AssignAdminDTO
 import com.mnnit.moticlubs.service.AdminService
 import com.mnnit.moticlubs.service.ClubService
@@ -30,23 +31,19 @@ class SuperAdminController(
         private val LOGGER = ServiceLogger.getLogger(SuperAdminController::class.java)
     }
 
-    @GetMapping("/login")
-    @Operation(summary = "Logs user in")
-    fun login(): Mono<String> = pathAuthorization
-        .superAdminAuthorization()
-        .flatMap {
-            LOGGER.info("login")
-            Mono.just("Logged in")
-        }
-        .wrapError()
-
     @PostMapping("/add_club")
     @Operation(summary = "Adds a new club")
-    fun addClub(@RequestBody club: Club): Mono<Club> = pathAuthorization
+    fun addClub(@RequestBody dto: AddClubDTO): Mono<Club> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
-            LOGGER.info("addClub: club: ${club.name}")
-            clubService.saveClub(club)
+            LOGGER.info("addClub: dto: $dto")
+            clubService.saveClub(
+                Club(
+                    name = dto.name,
+                    description = dto.description,
+                    summary = dto.summary,
+                )
+            )
         }
         .wrapError()
 
@@ -66,18 +63,19 @@ class SuperAdminController(
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("assignAdmin: dto: $dto")
-            userService.getUserByEmail(dto.email)
+            userService.getUserByRegNo(dto.regNo)
                 .flatMap { user -> adminService.saveAdmin(Admin(dto.cid, user.uid)) }
         }
         .wrapError()
 
     @PostMapping("/remove_admin")
     @Operation(summary = "Remove user from club admin")
-    fun removeAdmin(@RequestBody admin: Admin): Mono<Void> = pathAuthorization
+    fun removeAdmin(@RequestBody dto: AssignAdminDTO): Mono<Void> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
-            LOGGER.info("removeAdmin: admin: $admin")
-            adminService.removeAdmin(admin)
+            LOGGER.info("removeAdmin: dto: $dto")
+            userService.getUserByRegNo(dto.regNo)
+                .flatMap { user -> adminService.removeAdmin(Admin(dto.cid, user.uid)) }
         }
         .wrapError()
 }

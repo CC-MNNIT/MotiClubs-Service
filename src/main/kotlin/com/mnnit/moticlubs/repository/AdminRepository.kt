@@ -5,6 +5,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -13,10 +14,14 @@ class AdminRepository(
     private val db: R2dbcEntityTemplate,
 ) {
 
-    fun save(admin: Admin): Mono<Admin> = db.insert(admin)
+    @Transactional
+    fun save(admin: Admin): Mono<Admin> = exists(admin)
+        .flatMap { if (it) Mono.just(admin) else db.insert(admin) }
 
+    @Transactional
     fun findAll(): Flux<Admin> = db.select(Query.empty(), Admin::class.java)
 
+    @Transactional
     fun exists(admin: Admin): Mono<Boolean> = db
         .exists(
             Query.query(
@@ -30,5 +35,6 @@ class AdminRepository(
             Admin::class.java
         )
 
+    @Transactional
     fun delete(admin: Admin): Mono<Void> = db.delete(admin).then()
 }

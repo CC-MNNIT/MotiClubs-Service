@@ -6,6 +6,6 @@ data class AssignAdminDTO(
     @JsonProperty("cid")
     val cid: Long,
 
-    @JsonProperty("email")
-    val email: String,
+    @JsonProperty("regNo")
+    val regNo: String,
 )

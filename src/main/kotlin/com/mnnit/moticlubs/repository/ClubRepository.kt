@@ -8,6 +8,7 @@ import org.springframework.data.relational.core.query.Query
 import org.springframework.data.relational.core.query.Update
 import org.springframework.data.relational.core.sql.SqlIdentifier
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
@@ -16,16 +17,20 @@ class ClubRepository(
     private val db: R2dbcEntityTemplate,
 ) {
 
+    @Transactional
     fun save(club: Club): Mono<Club> = db.insert(club)
 
+    @Transactional
     fun findAll(): Flux<Club> = db.select(Query.empty(), Club::class.java)
 
+    @Transactional
     fun findById(cid: Long): Mono<Club> = db
         .selectOne(
             Query.query(Criteria.where(Club::cid.name).`is`(cid)).limit(1),
             Club::class.java
         )
 
+    @Transactional
     fun updateClub(cid: Long, dto: UpdateClubDTO): Mono<Club> = db
         .update(
             Query.query(Criteria.where(Club::cid.name).`is`(cid)),
@@ -39,12 +44,14 @@ class ClubRepository(
         .then(findById(cid))
 
 
+    @Transactional
     fun existsById(cid: Long): Mono<Boolean> = db
         .exists(
             Query.query(Criteria.where(Club::cid.name).`is`(cid)),
             Club::class.java
         )
 
+    @Transactional
     fun deleteById(cid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Club::cid.name).`is`(cid)),
