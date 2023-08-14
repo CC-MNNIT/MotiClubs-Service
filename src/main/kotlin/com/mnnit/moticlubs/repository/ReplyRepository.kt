@@ -37,6 +37,14 @@ class ReplyRepository(
         )
 
     @Transactional
+    fun findUidByPid(pid: Long): Flux<Long> = db
+        .select(
+            Query.query(Criteria.where(Reply::pid.name).`is`(pid)),
+            Reply::class.java
+        )
+        .map { it.uid }
+
+    @Transactional
     fun deleteById(rid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Reply::time.name).`is`(rid)),

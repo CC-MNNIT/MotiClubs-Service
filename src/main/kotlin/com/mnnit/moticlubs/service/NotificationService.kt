@@ -134,9 +134,9 @@ class NotificationService(
 
     private fun notifyPostParticipants(pid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
         .from(
-            replyRepository.findAllByPid(pid)
-                .flatMap { fcmRepository.findById(it.uid) }
+            replyRepository.findUidByPid(pid)
                 .distinct()
+                .flatMap { fcmRepository.findById(it) }
                 .flatMap { fcm -> sendNotification(fcm.token, payload) }
         )
 
