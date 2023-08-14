@@ -9,6 +9,7 @@ import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
@@ -26,11 +27,15 @@ class ReplyController(
 
     @GetMapping
     @Operation(summary = "Returns replies from the post")
-    fun getReplies(@RequestParam postId: Long): Mono<List<Reply>> = pathAuthorization
+    fun getReplies(
+        @RequestParam postId: Long,
+        @RequestParam page: Int = 1,
+        @RequestParam items: Int = 10,
+    ): Mono<List<Reply>> = pathAuthorization
         .userAuthorization()
         .flatMap {
-            LOGGER.info("getReplies: pid: $postId")
-            replyService.getRepliesByPid(postId)
+            LOGGER.info("getReplies: pid: $postId; page: $page; items: $items")
+            replyService.getRepliesByPid(postId, PageRequest.of(maxOf(page - 1, 0), items))
         }
         .wrapError()
 

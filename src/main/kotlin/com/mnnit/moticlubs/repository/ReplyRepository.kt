@@ -1,6 +1,8 @@
 package com.mnnit.moticlubs.repository
 
 import com.mnnit.moticlubs.dao.Reply
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
@@ -25,9 +27,12 @@ class ReplyRepository(
         )
 
     @Transactional
-    fun findAllByPid(pid: Long): Flux<Reply> = db
+    fun findAllByPid(pid: Long, pageRequest: PageRequest): Flux<Reply> = db
         .select(
-            Query.query(Criteria.where(Reply::pid.name).`is`(pid)),
+            Query.query(Criteria.where(Reply::pid.name).`is`(pid))
+                .sort(Sort.by(Sort.Direction.DESC, Reply::time.name))
+                .limit(pageRequest.pageSize)
+                .offset(pageRequest.offset),
             Reply::class.java
         )
 

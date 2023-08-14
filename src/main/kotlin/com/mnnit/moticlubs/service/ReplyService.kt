@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.service
 
 import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.repository.ReplyRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -19,8 +20,8 @@ class ReplyService(
                 .then(Mono.just(savedReply))
         }
 
-    fun getRepliesByPid(pid: Long): Mono<List<Reply>> = replyRepository
-        .findAllByPid(pid)
+    fun getRepliesByPid(pid: Long, pageRequest: PageRequest): Mono<List<Reply>> = replyRepository
+        .findAllByPid(pid, pageRequest)
         .collectList()
 
     fun deleteReply(uid: Long, time: Long): Mono<Void> = replyRepository.findById(time)
