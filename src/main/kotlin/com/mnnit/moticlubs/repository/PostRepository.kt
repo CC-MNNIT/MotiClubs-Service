@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.repository
 
 import com.mnnit.moticlubs.dao.Post
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
@@ -30,6 +31,7 @@ class PostRepository(
     fun findAllByChid(chid: Long, pageRequest: PageRequest): Flux<Post> = db
         .select(
             Query.query(Criteria.where(Post::chid.name).`is`(chid))
+                .sort(Sort.by(Sort.Direction.DESC, Post::pid.name))
                 .limit(pageRequest.pageSize)
                 .offset(pageRequest.offset),
             Post::class.java
