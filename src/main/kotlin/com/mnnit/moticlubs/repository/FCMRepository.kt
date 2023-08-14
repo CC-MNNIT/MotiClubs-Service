@@ -15,11 +15,7 @@ class FCMRepository(
 ) {
 
     @Transactional
-    fun save(fcm: FCM): Mono<FCM> = db
-        .exists(
-            Query.query(Criteria.where(FCM::uid.name).`is`(fcm.uid)),
-            FCM::class.java
-        )
+    fun save(fcm: FCM): Mono<FCM> = exists(fcm)
         .flatMap { if (it) update(fcm) else db.insert(fcm) }
 
     @Transactional
@@ -33,5 +29,13 @@ class FCMRepository(
     fun findAll(): Flux<FCM> = db.select(Query.empty(), FCM::class.java)
 
     @Transactional
-    fun update(fcm: FCM): Mono<FCM> = db.update(fcm)
+    fun exists(fcm: FCM): Mono<Boolean> = db
+        .exists(
+            Query.query(Criteria.where(FCM::uid.name).`is`(fcm.uid)),
+            FCM::class.java
+        )
+
+    @Transactional
+    fun update(fcm: FCM): Mono<FCM> = exists(fcm)
+        .flatMap { if (it) db.update(fcm) else save(fcm) }
 }
