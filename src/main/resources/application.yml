@@ -14,6 +14,28 @@ spring:
     import: optional:file:src/main/resources/r2dbc.yml
   main:
     web-application-type: reactive
+  boot:
+    admin:
+      client:
+        url: http://localhost:8003
+        enabled: true
+        auto-registration: true
+        instance:
+          name: MotiClubs-Service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    env:
+      show-values: when_authorized
+  info:
+    env:
+      enabled: true
 
 logging:
   file:

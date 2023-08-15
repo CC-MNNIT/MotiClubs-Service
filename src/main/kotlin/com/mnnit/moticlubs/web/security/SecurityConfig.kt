@@ -26,6 +26,7 @@ class SecurityConfig {
     companion object {
         private val LOGGER = ServiceLogger.getLogger(SecurityConfig::class.java)
         private val AUTH_WHITELIST_PATH = arrayOf(
+            "/actuator",
             "/swagger",
             "/webjars/swagger-ui",
             "/v3/api-docs",
@@ -45,6 +46,7 @@ class SecurityConfig {
         }, SecurityWebFiltersOrder.AUTHORIZATION)
         .authorizeExchange { spec ->
             spec.pathMatchers(
+                "/actuator/**",
                 "/swagger/**",
                 "/webjars/swagger-ui/**",
                 "/v3/api-docs/**",
