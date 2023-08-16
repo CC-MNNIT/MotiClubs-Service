@@ -4,6 +4,7 @@ import com.mnnit.moticlubs.dao.User
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
+import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Mono
@@ -29,6 +30,15 @@ class UserRepository(
             Query.query(Criteria.where(User::regno.name).`is`(regNo)).limit(1),
             User::class.java
         )
+
+    @Transactional
+    fun updateAvatar(uid: Long, avatar: String): Mono<User> = db
+        .update(
+            Query.query(Criteria.where(User::uid.name).`is`(uid)),
+            Update.update(User::avatar.name, avatar),
+            User::class.java
+        )
+        .then(findById(uid))
 
     @Transactional
     fun deleteById(uid: Long): Mono<Void> = db

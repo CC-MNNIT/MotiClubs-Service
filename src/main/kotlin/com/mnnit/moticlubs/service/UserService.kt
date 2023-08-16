@@ -40,9 +40,7 @@ class UserService(
         .flatMap { admin -> getUserByUid(admin.uid).flatMap { user -> Mono.just(AdminUserDTO(admin.cid, user)) } }
         .collectList()
 
-    fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository
-        .findById(uid)
-        .flatMap { saveUser(it.copy(avatar = avatar)) }
+    fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
 
     fun deleteUser(uid: Long) = userRepository.deleteById(uid)
 }
