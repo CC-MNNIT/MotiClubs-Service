@@ -94,7 +94,7 @@ class NotificationService(
                             Mono.just(HashMap<String, String>().apply {
                                 this["type"] = Type.REPLY.ordinal.toString()
                                 this["pid"] = post.pid.toString()
-                                this["uid"] = post.uid.toString()
+                                this["uid"] = reply.uid.toString()
                                 this["message"] = reply.message
                                 this["postMessage"] = post.message
                                 this["userName"] = user.name
