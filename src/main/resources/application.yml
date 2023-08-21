@@ -1,3 +1,6 @@
+app:
+  context-path: ~
+
 springdoc:
   swagger-ui:
     path: /swagger
@@ -5,9 +8,14 @@ springdoc:
     syntax-highlight:
       activated: true
     tags-sorter: alpha
+    config-url: ${app.context-path}/v3/api-docs/swagger-config
+    url: ${app.context-path}/v3/api-docs
+    disable-swagger-default-url: true
   writer-with-order-by-keys: true
 
 spring:
+  webflux:
+    base-path: ${app.context-path}
   profiles:
     active: dev
   config:

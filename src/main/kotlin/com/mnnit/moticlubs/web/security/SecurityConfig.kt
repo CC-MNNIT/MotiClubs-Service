@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.putReqId
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -21,7 +22,9 @@ import reactor.core.publisher.Mono
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
-class SecurityConfig {
+class SecurityConfig(
+    @Value("\${app.context-path}") private val contextPath: String,
+) {
 
     companion object {
         private val LOGGER = ServiceLogger.getLogger(SecurityConfig::class.java)
@@ -33,13 +36,30 @@ class SecurityConfig {
         )
     }
 
+    init {
+        LOGGER.info("context-path: $contextPath")
+    }
+
     @Bean
     fun securityWebFilterChain(
         http: ServerHttpSecurity,
         firebaseAuth: FirebaseAuth,
     ): SecurityWebFilterChain = http
         .csrf { it.disable() }
+
+        // Change context path of service
+        .addFilterAt({ exchange, chain ->
+            chain.filter(
+                exchange.mutate()
+                    .request(exchange.request.mutate().contextPath(contextPath).build())
+                    .build()
+            )
+        }, SecurityWebFiltersOrder.FIRST)
+
+        // Firebase auth for APIs
         .addFilterAt(firebaseAuthTokenFilter(firebaseAuth), SecurityWebFiltersOrder.AUTHENTICATION)
+
+        // Store requestId for logging and tracing
         .addFilterAt({ exchange, chain ->
             putReqId(exchange.request.id)
             chain.filter(exchange)
@@ -70,7 +90,10 @@ class SecurityConfig {
             putReqId(exchange.request.id)
 
             val reqPath = exchange.request.path.value()
-            if (AUTH_WHITELIST_PATH.any { reqPath.startsWith(it) }) {
+            if (AUTH_WHITELIST_PATH
+                    .map { "$contextPath$it" }
+                    .any { reqPath.startsWith(it) }
+            ) {
                 return@setServerAuthenticationConverter Mono.empty()
             }
 

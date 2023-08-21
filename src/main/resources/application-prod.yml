@@ -1,4 +1,2 @@
-springdoc:
-  swagger-ui:
-    config-url: /moticlubs/v3/api-docs/swagger-config
-    url: /moticlubs/v3/api-docs
+app:
+  context-path: /moticlubs
