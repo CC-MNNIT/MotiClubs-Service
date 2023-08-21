@@ -25,7 +25,7 @@ spring:
   boot:
     admin:
       client:
-        url: http://localhost:8003
+        url: http://localhost:8003/spring-admin
         enabled: true
         auto-registration: true
         instance:
