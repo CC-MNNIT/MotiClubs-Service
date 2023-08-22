@@ -1,5 +1,6 @@
 package com.mnnit.moticlubs
 
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact
@@ -7,6 +8,11 @@ import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.servers.Server
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 
 @SecurityScheme(
     type = SecuritySchemeType.HTTP,
@@ -35,4 +41,19 @@ import io.swagger.v3.oas.annotations.servers.Server
     ],
     security = [SecurityRequirement(name = "Firebase Auth")]
 )
-class OpenAPIDefinition
+@RestController
+@Hidden
+class OpenAPIDefinition {
+
+    @GetMapping("/webjars/swagger-ui/swagger-ui.css")
+    fun getSwaggerCSS(
+        @Value("classpath:/static/swagger-dark-ui.css")
+        cssFile: Resource
+    ): Mono<ByteArray> = Mono.just(cssFile.contentAsByteArray)
+
+    @GetMapping("/webjars/swagger-ui/index.css")
+    fun getIndexCSS(
+        @Value("classpath:/static/index.css")
+        index: Resource
+    ): Mono<ByteArray> = Mono.just(index.contentAsByteArray)
+}
