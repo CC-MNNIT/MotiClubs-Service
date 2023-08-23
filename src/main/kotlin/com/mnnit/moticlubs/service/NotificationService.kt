@@ -109,15 +109,19 @@ class NotificationService(
                 }
         }
         .flatMap { payload ->
-            LOGGER.info("notifyReply")
+            LOGGER.info("notifyReply: ${reply.pid}")
             notifyPostParticipants(reply.pid, payload)
         }
 
-    fun notifyDeleteReply(replyId: Long): Mono<Void> = Mono
-        .just(HashMap<String, String>().apply {
-            this["type"] = Type.DELETE_REPLY.ordinal.toString()
-            this["time"] = replyId.toString()
-        })
+    fun notifyDeleteReply(reply: Reply): Mono<Void> = postRepository.findById(reply.pid)
+        .flatMap { post ->
+            Mono.just(HashMap<String, String>().apply {
+                this["type"] = Type.DELETE_REPLY.ordinal.toString()
+                this["pid"] = reply.pid.toString()
+                this["chid"] = post.chid.toString()
+                this["time"] = reply.time.toString()
+            })
+        }
         .flatMap { payload ->
             LOGGER.info("notifyDeleteReply: payload: $payload")
             notifyAll(payload)

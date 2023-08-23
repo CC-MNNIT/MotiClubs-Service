@@ -30,7 +30,7 @@ class ReplyService(
                 Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not the owner of reply"))
             } else {
                 replyRepository.deleteById(time)
-                    .then(notificationService.notifyDeleteReply(time))
+                    .then(notificationService.notifyDeleteReply(reply))
             }
         }
 }
