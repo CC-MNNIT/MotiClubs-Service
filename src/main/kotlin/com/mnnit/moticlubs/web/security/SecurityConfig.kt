@@ -83,7 +83,7 @@ class SecurityConfig(
                     firebaseAuth.getUser(token.uid).customClaims
                 }"
             )
-            Mono.just(auth.apply { isAuthenticated = token.isEmailVerified })
+            Mono.just(auth.apply { isAuthenticated = true })
         }
     ).apply {
         setServerAuthenticationConverter { exchange ->

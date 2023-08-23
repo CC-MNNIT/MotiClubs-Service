@@ -30,6 +30,10 @@ class PathAuthorization(
             val userId = token.claims[USER_ID_CLAIM]?.toString()?.toLong()
                 ?: return@flatMap Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing user ID claim"))
 
+            if (!token.isEmailVerified) {
+                return@flatMap Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please verify email ID"))
+            }
+
             LOGGER.info("userAuthorization: success [$userId]")
             Mono.just(userId)
         }
