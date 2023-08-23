@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.service
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
+import com.mnnit.moticlubs.dao.FCM
 import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.repository.*
@@ -128,8 +129,8 @@ class NotificationService(
         .from(
             subscriberRepository.findAllByCid(cid)
                 .flatMap { fcmRepository.findById(it.uid) }
-                .distinct()
-                .flatMap { fcm -> sendNotification(fcm.token, payload) }
+                .distinct { it.uid }
+                .flatMap { fcm -> sendNotification(fcm, payload) }
         )
 
     private fun notifyPostParticipants(pid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
@@ -137,26 +138,26 @@ class NotificationService(
             replyRepository.findUidByPid(pid)
                 .distinct()
                 .flatMap { fcmRepository.findById(it) }
-                .flatMap { fcm -> sendNotification(fcm.token, payload) }
+                .flatMap { fcm -> sendNotification(fcm, payload) }
         )
 
     private fun notifyAll(payload: HashMap<String, String>): Mono<Void> = fcmRepository
         .findAll()
-        .flatMap { fcm -> sendNotification(fcm.token, payload) }
+        .flatMap { fcm -> sendNotification(fcm, payload) }
         .then()
 
-    private fun sendNotification(token: String, payload: HashMap<String, String>): Mono<Void> = Mono
+    private fun sendNotification(fcm: FCM, payload: HashMap<String, String>): Mono<Void> = Mono
         .just(
             try {
                 val messageId = firebaseMessaging.send(
                     Message.builder()
-                        .setToken(token)
+                        .setToken(fcm.token)
                         .putAllData(payload)
                         .build()
                 )
                 LOGGER.debug("FCM: notification sent: ID: $messageId")
             } catch (e: Exception) {
-                LOGGER.warn("Unable to send notification to $token: ${e.localizedMessage}")
+                LOGGER.warn("Unable to send notification to ${fcm.uid}: ${e.localizedMessage}")
             }
         )
         .then()
