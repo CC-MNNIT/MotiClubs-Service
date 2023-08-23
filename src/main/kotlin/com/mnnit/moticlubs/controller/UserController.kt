@@ -67,13 +67,10 @@ class UserController(
 
     @PostMapping
     @Operation(summary = "Saves user")
-    fun saveUser(@RequestBody user: User): Mono<User> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
-            LOGGER.info("saveUser: user: ${user.regno}")
-            userService.saveUser(user)
-        }
-        .wrapError()
+    fun saveUser(@RequestBody user: User): Mono<User> {
+        LOGGER.info("saveUser: user: ${user.regno}")
+        return userService.saveUser(user).wrapError()
+    }
 
     @PostMapping("/avatar")
     @Operation(summary = "Updates user avatar")
