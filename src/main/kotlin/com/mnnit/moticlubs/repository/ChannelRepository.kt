@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono
 
 @Repository
 class ChannelRepository(
+    private val postRepository: PostRepository,
     private val db: R2dbcEntityTemplate,
 ) {
 
@@ -35,12 +36,23 @@ class ChannelRepository(
             Update.update(Channel::name.name, name),
             Channel::class.java
         )
-        .then(findById(chid))
+        .flatMap { findById(chid) }
 
     @Transactional
-    fun deleteById(chid: Long): Mono<Void> = db
-        .delete(
-            Query.query(Criteria.where(Channel::chid.name).`is`(chid)),
+    fun deleteById(chid: Long): Mono<Void> = postRepository.deleteAllByChid(chid)
+        .and(
+            db.delete(
+                Query.query(Criteria.where(Channel::chid.name).`is`(chid)),
+                Channel::class.java
+            )
+        )
+
+    @Transactional
+    fun deleteAllByCid(cid: Long): Mono<Void> = db
+        .select(
+            Query.query(Criteria.where(Channel::cid.name).`is`(cid)),
             Channel::class.java
-        ).then()
+        )
+        .flatMap { deleteById(it.chid) }
+        .then()
 }

@@ -33,4 +33,12 @@ class SubscriberRepository(
 
     @Transactional
     fun delete(subscribers: Subscribers): Mono<Void> = db.delete(subscribers).then()
+
+    @Transactional
+    fun deleteAllByCid(cid: Long): Mono<Void> = db
+        .delete(
+            Query.query(Criteria.where(Subscribers::cid.name).`is`(cid)),
+            Subscribers::class.java
+        )
+        .then()
 }

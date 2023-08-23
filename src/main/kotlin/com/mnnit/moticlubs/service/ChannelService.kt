@@ -23,5 +23,4 @@ class ChannelService(
     fun updateChannelName(chid: Long, name: String): Mono<Channel> = channelRepository.updateName(chid, name)
 
     fun deleteChannelByChID(chid: Long): Mono<Void> = channelRepository.deleteById(chid)
-        .then(postRepository.deleteAllByChid(chid))
 }

@@ -35,4 +35,12 @@ class ViewRepository(
             Query.query(Criteria.where(View::pid.name).`is`(pid)),
             View::class.java
         )
+
+    @Transactional
+    fun deleteAllByPid(pid: Long): Mono<Void> = db
+        .delete(
+            Query.query(Criteria.where(View::pid.name).`is`(pid)),
+            View::class.java
+        )
+        .then()
 }

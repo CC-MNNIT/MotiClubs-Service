@@ -51,4 +51,12 @@ class ReplyRepository(
             Reply::class.java
         )
         .then()
+
+    @Transactional
+    fun deleteAllByPid(pid: Long): Mono<Void> = db
+        .delete(
+            Query.query(Criteria.where(Reply::pid.name).`is`(pid)),
+            Reply::class.java
+        )
+        .then()
 }

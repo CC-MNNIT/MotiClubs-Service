@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono
 
 @Repository
 class PostRepository(
+    private val replyRepository: ReplyRepository,
+    private val viewRepository: ViewRepository,
     private val db: R2dbcEntityTemplate,
 ) {
 
@@ -44,21 +46,24 @@ class PostRepository(
             Update.update(Post::message.name, message),
             Post::class.java
         )
-        .then(findById(pid))
+        .flatMap { findById(pid) }
 
     @Transactional
-    fun deleteById(pid: Long): Mono<Void> = db
-        .delete(
-            Query.query(Criteria.where(Post::pid.name).`is`(pid)),
-            Post::class.java
+    fun deleteById(pid: Long): Mono<Void> = replyRepository.deleteAllByPid(pid)
+        .and(viewRepository.deleteAllByPid(pid))
+        .and(
+            db.delete(
+                Query.query(Criteria.where(Post::pid.name).`is`(pid)),
+                Post::class.java
+            )
         )
-        .then()
 
     @Transactional
     fun deleteAllByChid(chid: Long): Mono<Void> = db
-        .delete(
+        .select(
             Query.query(Criteria.where(Post::chid.name).`is`(chid)),
             Post::class.java
         )
+        .flatMap { deleteById(it.pid) }
         .then()
 }
