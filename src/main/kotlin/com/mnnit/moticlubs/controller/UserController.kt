@@ -6,7 +6,6 @@ import com.mnnit.moticlubs.dto.request.FCMTokenDTO
 import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
-import com.mnnit.moticlubs.service.MemberService
 import com.mnnit.moticlubs.service.UserService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
@@ -26,7 +25,6 @@ class UserController(
     private val pathAuthorization: PathAuthorization,
     private val userService: UserService,
     private val fcmService: FCMService,
-    private val memberService: MemberService,
 ) {
 
     companion object {

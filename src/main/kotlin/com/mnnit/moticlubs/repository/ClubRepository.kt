@@ -14,9 +14,6 @@ import reactor.core.publisher.Mono
 
 @Repository
 class ClubRepository(
-    private val adminRepository: AdminRepository,
-    private val channelRepository: ChannelRepository,
-    private val urlRepository: UrlRepository,
     private val db: R2dbcEntityTemplate,
 ) {
 
@@ -54,13 +51,10 @@ class ClubRepository(
         )
 
     @Transactional
-    fun deleteById(cid: Long): Mono<Void> = urlRepository.deleteAllByCid(cid)
-        .and(adminRepository.deleteAllByCid(cid))
-        .and(channelRepository.deleteAllByCid(cid))
-        .and(
-            db.delete(
-                Query.query(Criteria.where(Club::cid.name).`is`(cid)),
-                Club::class.java
-            )
+    fun deleteById(cid: Long): Mono<Void> = db
+        .delete(
+            Query.query(Criteria.where(Club::cid.name).`is`(cid)),
+            Club::class.java
         )
+        .then()
 }

@@ -44,11 +44,4 @@ class AdminRepository(
 
     @Transactional
     fun delete(admin: Admin): Mono<Void> = db.delete(admin).then()
-
-    @Transactional
-    fun deleteAllByCid(cid: Long): Mono<Void> = db
-        .delete(
-            Query.query(Criteria.where(Admin::cid.name).`is`(cid)),
-            Admin::class.java
-        ).then()
 }
