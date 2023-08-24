@@ -22,6 +22,13 @@ class AdminRepository(
     fun findAll(): Flux<Admin> = db.select(Query.empty(), Admin::class.java)
 
     @Transactional
+    fun findAllByCid(cid: Long): Flux<Admin> = db
+        .select(
+            Query.query(Criteria.where(Admin::cid.name).`is`(cid)),
+            Admin::class.java
+        )
+
+    @Transactional
     fun exists(admin: Admin): Mono<Boolean> = db
         .exists(
             Query.query(

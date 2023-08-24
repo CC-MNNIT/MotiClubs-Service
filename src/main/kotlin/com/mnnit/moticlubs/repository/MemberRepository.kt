@@ -44,6 +44,14 @@ class MemberRepository(
         .then()
 
     @Transactional
+    fun deleteAllByUid(uid: Long): Mono<Void> = db
+        .delete(
+            Query.query(Criteria.where(Member::uid.name).`is`(uid)),
+            Member::class.java
+        )
+        .then()
+
+    @Transactional
     fun deleteAllByChid(chid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Member::chid.name).`is`(chid)),

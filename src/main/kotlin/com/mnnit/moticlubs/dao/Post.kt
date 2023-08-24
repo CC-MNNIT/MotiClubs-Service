@@ -16,7 +16,4 @@ data class Post(
 
     @JsonProperty("message")
     val message: String,
-
-    @JsonProperty("general")
-    val general: Int,
 )

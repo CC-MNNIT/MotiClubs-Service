@@ -8,4 +8,7 @@ data class UpdateChannelDTO(
 
     @JsonProperty("name")
     val name: String,
+
+    @JsonProperty("private")
+    val private: Boolean,
 )

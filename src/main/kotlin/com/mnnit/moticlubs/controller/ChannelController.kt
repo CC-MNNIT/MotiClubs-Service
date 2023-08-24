@@ -30,9 +30,9 @@ class ChannelController(
     @Operation(summary = "Returns list of all channels")
     fun getAllChannels(): Mono<List<Channel>> = pathAuthorization
         .userAuthorization()
-        .flatMap {
+        .flatMap { uid ->
             LOGGER.info("getAllChannels")
-            channelService.getAllChannels()
+            channelService.getAllChannels(uid)
         }
         .wrapError()
 
@@ -40,9 +40,9 @@ class ChannelController(
     @Operation(summary = "Returns single channel from channelId")
     fun getChannelFromChid(@PathVariable channelId: Long): Mono<Channel> = pathAuthorization
         .userAuthorization()
-        .flatMap {
+        .flatMap { uid ->
             LOGGER.info("getChannelFromChid: chid: $channelId")
-            channelService.getChannelByChID(channelId)
+            channelService.getChannelByChID(uid, channelId)
         }
         .wrapError()
 
@@ -65,7 +65,7 @@ class ChannelController(
         .clubAuthorization(dto.cid)
         .flatMap {
             LOGGER.info("updateChannel: dto: $dto; chid: $channelId")
-            channelService.updateChannelName(channelId, dto.name)
+            channelService.updateChannel(channelId, dto)
         }
         .wrapError()
 

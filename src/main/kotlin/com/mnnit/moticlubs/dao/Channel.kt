@@ -13,4 +13,7 @@ data class Channel(
 
     @JsonProperty("name")
     val name: String,
+
+    @JsonProperty("private")
+    val private: Boolean,
 )

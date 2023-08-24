@@ -6,7 +6,6 @@ import com.mnnit.moticlubs.dto.request.AddClubDTO
 import com.mnnit.moticlubs.dto.request.AssignAdminDTO
 import com.mnnit.moticlubs.service.AdminService
 import com.mnnit.moticlubs.service.ClubService
-import com.mnnit.moticlubs.service.UserService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.SUPER_ADMIN_ROUTE
 import com.mnnit.moticlubs.utils.ServiceLogger
@@ -23,7 +22,6 @@ import reactor.core.publisher.Mono
 class SuperAdminController(
     private val pathAuthorization: PathAuthorization,
     private val clubService: ClubService,
-    private val userService: UserService,
     private val adminService: AdminService,
 ) {
 
@@ -63,8 +61,7 @@ class SuperAdminController(
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("assignAdmin: dto: $dto")
-            userService.getUserByRegNo(dto.regNo)
-                .flatMap { user -> adminService.saveAdmin(Admin(dto.cid, user.uid)) }
+            adminService.saveAdmin(dto)
         }
         .wrapError()
 
@@ -74,8 +71,7 @@ class SuperAdminController(
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("removeAdmin: dto: $dto")
-            userService.getUserByRegNo(dto.regNo)
-                .flatMap { user -> adminService.removeAdmin(Admin(dto.cid, user.uid)) }
+            adminService.removeAdmin(dto)
         }
         .wrapError()
 }
