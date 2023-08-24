@@ -10168,7 +10168,7 @@
 }
 
 .swagger-ui textarea {
-    background: hsla(0, 0%, 100%, .8);
+    background: hsla(0, 0%, 10%, .8);
     border: none;
     border-radius: 4px;
     color: #ebecee;
