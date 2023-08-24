@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 class NotificationService(
     private val firebaseMessaging: FirebaseMessaging,
     private val fcmRepository: FCMRepository,
-    private val subscriberRepository: SubscriberRepository,
+    private val memberRepository: MemberRepository,
     private val replyRepository: ReplyRepository,
     private val clubRepository: ClubRepository,
     private val channelRepository: ChannelRepository,
@@ -131,7 +131,7 @@ class NotificationService(
 
     private fun notifySubscribers(cid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
         .from(
-            subscriberRepository.findAllByCid(cid)
+            memberRepository.findAllByChid(cid)
                 .flatMap { fcmRepository.findById(it.uid) }
                 .distinct { it.uid }
                 .flatMap { fcm -> sendNotification(fcm, payload) }

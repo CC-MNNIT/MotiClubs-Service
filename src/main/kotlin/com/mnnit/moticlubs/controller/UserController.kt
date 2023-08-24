@@ -1,14 +1,12 @@
 package com.mnnit.moticlubs.controller
 
 import com.mnnit.moticlubs.dao.FCM
-import com.mnnit.moticlubs.dao.Subscribers
 import com.mnnit.moticlubs.dao.User
 import com.mnnit.moticlubs.dto.request.FCMTokenDTO
-import com.mnnit.moticlubs.dto.request.SubscriberDto
 import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
-import com.mnnit.moticlubs.service.SubscriberService
+import com.mnnit.moticlubs.service.MemberService
 import com.mnnit.moticlubs.service.UserService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
@@ -28,7 +26,7 @@ class UserController(
     private val pathAuthorization: PathAuthorization,
     private val userService: UserService,
     private val fcmService: FCMService,
-    private val subscriberService: SubscriberService,
+    private val memberService: MemberService,
 ) {
 
     companion object {
@@ -89,26 +87,6 @@ class UserController(
         .flatMap {
             LOGGER.info("updateFCM: uid: $it")
             fcmService.updateFcm(FCM(it, dto.token))
-        }
-        .wrapError()
-
-    @PostMapping("/subscribe")
-    @Operation(summary = "Subscribe a club")
-    fun subscribeClub(@RequestBody dto: SubscriberDto): Mono<Subscribers> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
-            LOGGER.info("subscribeClub: dto: $dto")
-            subscriberService.subscribe(Subscribers(dto.clubId, it))
-        }
-        .wrapError()
-
-    @PostMapping("/unsubscribe")
-    @Operation(summary = "Unsubscribe a club")
-    fun unsubscribeClub(@RequestBody dto: SubscriberDto): Mono<Void> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
-            LOGGER.info("unsubscribeClub: dto: $dto")
-            subscriberService.unsubscribe(Subscribers(dto.clubId, it))
         }
         .wrapError()
 }
