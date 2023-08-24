@@ -6,12 +6,11 @@ import com.mnnit.moticlubs.repository.AdminRepository
 import com.mnnit.moticlubs.repository.SuperAdminRepository
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.getReqId
 import com.mnnit.moticlubs.utils.putReqId
-import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Component
-import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 @Component
@@ -28,10 +27,10 @@ class PathAuthorization(
         .flatMap { ctx ->
             val token = ctx.authentication.principal as FirebaseToken
             val userId = token.claims[USER_ID_CLAIM]?.toString()?.toLong()
-                ?: return@flatMap Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing user ID claim"))
+                ?: return@flatMap Mono.error(UnauthorizedException("Missing user ID claim"))
 
             if (!token.isEmailVerified) {
-                return@flatMap Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please verify email ID"))
+                return@flatMap Mono.error(UnauthorizedException("Please verify email ID"))
             }
 
             LOGGER.info("userAuthorization: success [$userId]")
@@ -50,7 +49,7 @@ class PathAuthorization(
                         Mono.just(uid)
                     } else {
                         LOGGER.warn("clubAuthorization: unauthorized: [$admin]")
-                        Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not club admin"))
+                        Mono.error(UnauthorizedException("User is not club admin"))
                     }
                 }
         }
@@ -66,7 +65,7 @@ class PathAuthorization(
                         Mono.just(uid)
                     } else {
                         LOGGER.warn("superAdminAuthorization: unauthorized: [$uid]")
-                        Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not super admin"))
+                        Mono.error(UnauthorizedException("User is not super admin"))
                     }
                 }
         }

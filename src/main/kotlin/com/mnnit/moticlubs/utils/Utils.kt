@@ -6,7 +6,7 @@ import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
-    if (it is ResponseStatusException) it else ResponseStatusException(
+    if (it is UnauthorizedException) it else ResponseStatusException(
         HttpStatus.INTERNAL_SERVER_ERROR,
         it.localizedMessage
     )

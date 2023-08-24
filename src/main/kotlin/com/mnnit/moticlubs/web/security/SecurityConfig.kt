@@ -3,12 +3,12 @@ package com.mnnit.moticlubs.web.security
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.putReqId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
@@ -16,7 +16,6 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
-import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 @Configuration
@@ -103,7 +102,7 @@ class SecurityConfig(
                 ?.replace("Bearer", "")
                 ?.trim()
                 ?: return@setServerAuthenticationConverter Mono.error(
-                    ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing firebase auth token")
+                    UnauthorizedException("Missing firebase auth token")
                 )
 
             try {
@@ -111,7 +110,7 @@ class SecurityConfig(
                 Mono.just(FirebaseAuthentication(token))
             } catch (e: Exception) {
                 LOGGER.warn("Invalid auth token: ${e.localizedMessage}")
-                Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, e.localizedMessage))
+                Mono.error(UnauthorizedException(e.localizedMessage))
             }
         }
     }

@@ -2,10 +2,9 @@ package com.mnnit.moticlubs.service
 
 import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.repository.ReplyRepository
+import com.mnnit.moticlubs.utils.UnauthorizedException
 import org.springframework.data.domain.PageRequest
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 
 @Service
@@ -27,7 +26,7 @@ class ReplyService(
     fun deleteReply(uid: Long, time: Long): Mono<Void> = replyRepository.findById(time)
         .flatMap { reply ->
             if (reply.uid != uid) {
-                Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not the owner of reply"))
+                Mono.error(UnauthorizedException("User not the owner of reply"))
             } else {
                 replyRepository.deleteById(time)
                     .then(notificationService.notifyDeleteReply(reply))
