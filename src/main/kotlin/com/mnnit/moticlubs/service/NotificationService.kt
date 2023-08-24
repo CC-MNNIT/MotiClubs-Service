@@ -48,7 +48,6 @@ class NotificationService(
                         this["chid"] = post.chid.toString()
                         this["uid"] = post.uid.toString()
                         this["message"] = post.message
-                        this["general"] = post.general.toString()
                         this["adminName"] = user.name
                         this["adminAvatar"] = user.avatar
                         this["clubName"] = club.name
@@ -56,15 +55,15 @@ class NotificationService(
                         this["updated"] = updated.toString()
                     })
                 }
-        }
-        .flatMap { payload ->
-            if (post.general == 1) {
-                LOGGER.info("notifyPost -> notifyAll")
-                notifyAll(payload)
-            } else {
-                LOGGER.info("notifyPost -> notifySubscribers")
-                notifySubscribers(payload["cid"]!!.toLong(), payload)
-            }
+                .flatMap { payload ->
+                    if (channel.private) {
+                        LOGGER.info("notifyPost -> notifySubscribers")
+                        notifyMembers(channel.chid, payload)
+                    } else {
+                        LOGGER.info("notifyPost -> notifyAll")
+                        notifyAll(payload)
+                    }
+                }
         }
 
     fun notifyDeletePost(post: Post): Mono<Void> = Mono.just(post)
@@ -129,9 +128,9 @@ class NotificationService(
 
     // --------------------------------------------------------------------- //
 
-    private fun notifySubscribers(cid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
+    private fun notifyMembers(chid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
         .from(
-            memberRepository.findAllByChid(cid)
+            memberRepository.findAllByChid(chid)
                 .flatMap { fcmRepository.findById(it.uid) }
                 .distinct { it.uid }
                 .flatMap { fcm -> sendNotification(fcm, payload) }
