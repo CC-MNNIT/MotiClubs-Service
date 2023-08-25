@@ -1,8 +1,11 @@
 package com.mnnit.moticlubs.controller
 
 import com.mnnit.moticlubs.dao.Channel
+import com.mnnit.moticlubs.dao.Member
+import com.mnnit.moticlubs.dto.request.MembersDTO
 import com.mnnit.moticlubs.dto.request.UpdateChannelDTO
 import com.mnnit.moticlubs.service.ChannelService
+import com.mnnit.moticlubs.service.MemberService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ROUTE
@@ -20,6 +23,7 @@ import reactor.core.publisher.Mono
 class ChannelController(
     private val pathAuthorization: PathAuthorization,
     private val channelService: ChannelService,
+    private val memberService: MemberService,
 ) {
 
     companion object {
@@ -43,6 +47,36 @@ class ChannelController(
         .flatMap { uid ->
             LOGGER.info("getChannelFromChid: chid: $channelId")
             channelService.getChannelByChID(uid, channelId)
+        }
+        .wrapError()
+
+    @GetMapping("/members/{${CHANNEL_ID_CLAIM}}")
+    @Operation(summary = "Returns list of userIds that are member of the channelId")
+    fun getMembers(@PathVariable channelId: Long): Mono<List<Member>> = pathAuthorization
+        .userAuthorization()
+        .flatMap {
+            LOGGER.info("getMembers: chid: $channelId")
+            memberService.getMembersByChid(channelId)
+        }
+        .wrapError()
+
+    @PostMapping("/members")
+    @Operation(summary = "Makes list of userIds member of the clubId")
+    fun addMembers(@RequestBody dto: MembersDTO): Mono<List<Member>> = pathAuthorization
+        .clubAuthorization(dto.cid)
+        .flatMap {
+            LOGGER.info("addMembers: cid: ${dto.cid}; chid: ${dto.chid}")
+            memberService.addMembers(dto)
+        }
+        .wrapError()
+
+    @DeleteMapping("/members")
+    @Operation(summary = "Removes list of userIds from the member of the clubId")
+    fun removeMembers(@RequestBody dto: MembersDTO): Mono<Void> = pathAuthorization
+        .clubAuthorization(dto.cid)
+        .flatMap {
+            LOGGER.info("removeMembers: cid: ${dto.cid}; chid: ${dto.chid}")
+            memberService.removeMembers(dto)
         }
         .wrapError()
 

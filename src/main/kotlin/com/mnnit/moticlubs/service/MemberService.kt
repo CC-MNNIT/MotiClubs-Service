@@ -20,7 +20,7 @@ class MemberService(
         .flatMap { uid -> memberRepository.delete(Member(chid = dto.chid, uid = uid)) }
         .then()
 
-    fun getMembersByCid(cid: Long): Mono<List<Member>> = memberRepository
+    fun getMembersByChid(cid: Long): Mono<List<Member>> = memberRepository
         .findAllByChid(cid)
         .collectList()
 }
