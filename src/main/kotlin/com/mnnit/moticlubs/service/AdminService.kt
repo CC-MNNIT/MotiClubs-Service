@@ -7,6 +7,7 @@ import com.mnnit.moticlubs.repository.AdminRepository
 import com.mnnit.moticlubs.repository.ChannelRepository
 import com.mnnit.moticlubs.repository.MemberRepository
 import com.mnnit.moticlubs.repository.UserRepository
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -18,6 +19,7 @@ class AdminService(
     private val userRepository: UserRepository,
 ) {
 
+    @CacheEvict("admins", allEntries = true)
     fun saveAdmin(dto: AssignAdminDTO): Mono<Admin> = userRepository.findByRegNo(dto.regNo)
         .flatMap { user -> adminRepository.save(Admin(dto.cid, user.uid)) }
         .flatMap { admin ->
@@ -27,6 +29,7 @@ class AdminService(
                 .then(Mono.just(admin))
         }
 
+    @CacheEvict("admins", allEntries = true)
     fun removeAdmin(dto: AssignAdminDTO): Mono<Void> = userRepository.findByRegNo(dto.regNo)
         .flatMap { user ->
             memberRepository.deleteAllByUid(user.uid)

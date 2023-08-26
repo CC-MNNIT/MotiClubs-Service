@@ -7,6 +7,9 @@ import com.mnnit.moticlubs.repository.AdminRepository
 import com.mnnit.moticlubs.repository.ChannelRepository
 import com.mnnit.moticlubs.repository.MemberRepository
 import com.mnnit.moticlubs.utils.UnauthorizedException
+import com.mnnit.moticlubs.utils.storeCache
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -20,9 +23,11 @@ class ChannelService(
     fun saveChannel(channel: Channel): Mono<Channel> = channelRepository.save(channel)
         .flatMap { it.updateChannelAccess(it.private, it.cid, it.chid) }
 
+    @Cacheable("all_channels", key = "#uid")
     fun getAllChannels(uid: Long): Mono<List<Channel>> = channelRepository
         .findAll(uid)
         .collectList()
+        .storeCache()
 
     fun getChannelByChID(uid: Long, chid: Long): Mono<Channel> = channelRepository.findById(chid)
         .flatMap { channel ->
@@ -38,9 +43,11 @@ class ChannelService(
             } else Mono.just(channel)
         }
 
+    @CacheEvict("all_channels", allEntries = true)
     fun updateChannel(chid: Long, dto: UpdateChannelDTO): Mono<Channel> = channelRepository.update(chid, dto)
         .flatMap { it.updateChannelAccess(dto.private, dto.cid, chid) }
 
+    @CacheEvict("all_channels", allEntries = true)
     fun deleteChannelByChID(chid: Long): Mono<Void> = channelRepository.deleteById(chid)
 
     private fun Channel.updateChannelAccess(private: Boolean, cid: Long, chid: Long): Mono<Channel> {

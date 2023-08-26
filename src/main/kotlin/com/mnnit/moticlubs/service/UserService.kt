@@ -8,6 +8,9 @@ import com.mnnit.moticlubs.repository.AdminRepository
 import com.mnnit.moticlubs.repository.FCMRepository
 import com.mnnit.moticlubs.repository.UserRepository
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
+import com.mnnit.moticlubs.utils.storeCache
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
@@ -19,6 +22,7 @@ class UserService(
     private val firebaseAuth: FirebaseAuth,
 ) {
 
+    @CachePut("user", key = "#user.uid")
     fun saveUser(user: User): Mono<User> = userRepository.save(user)
         .flatMap { savedUser ->
             fcmRepository.save(FCM(savedUser.uid, ""))
@@ -31,16 +35,16 @@ class UserService(
                 }
         }
 
-    fun getUserByUid(uid: Long): Mono<User> = userRepository.findById(uid)
+    @Cacheable("user", key = "#uid")
+    fun getUserByUid(uid: Long): Mono<User> = userRepository.findById(uid).storeCache()
 
-    fun getUserByRegNo(regNo: String): Mono<User> = userRepository.findByRegNo(regNo)
-
+    @Cacheable("admins")
     fun getAllAdminUsers(): Mono<List<AdminUserDTO>> = adminRepository
         .findAll()
         .flatMap { admin -> getUserByUid(admin.uid).flatMap { user -> Mono.just(AdminUserDTO(admin.cid, user)) } }
         .collectList()
+        .storeCache()
 
+    @CachePut("user", key = "#uid")
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
-
-    fun deleteUser(uid: Long) = userRepository.deleteById(uid)
 }

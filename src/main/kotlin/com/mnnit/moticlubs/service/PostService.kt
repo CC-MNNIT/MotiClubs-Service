@@ -3,6 +3,9 @@ package com.mnnit.moticlubs.service
 import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dto.request.UpdatePostDTO
 import com.mnnit.moticlubs.repository.PostRepository
+import com.mnnit.moticlubs.utils.storeCache
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -13,16 +16,20 @@ class PostService(
     private val notificationService: NotificationService,
 ) {
 
+    @CacheEvict("post_channel", allEntries = true)
     fun savePost(post: Post): Mono<Post> = postRepository.save(post)
         .flatMap { savedPost ->
             notificationService.notifyPost(savedPost, false)
                 .then(Mono.just(savedPost))
         }
 
+    @Cacheable("post_channel", key = "#chid + '_' + pageRequest.pageNumber")
     fun getPostsByChannel(chid: Long, pageRequest: PageRequest): Mono<List<Post>> = postRepository
         .findAllByChid(chid, pageRequest)
         .collectList()
+        .storeCache()
 
+    @CacheEvict("post_channel", allEntries = true)
     fun updatePost(pid: Long, updatePostDTO: UpdatePostDTO): Mono<Post> = postRepository
         .updatePost(pid, updatePostDTO.message)
         .flatMap { post ->
@@ -30,6 +37,7 @@ class PostService(
                 .then(Mono.just(post))
         }
 
+    @CacheEvict("post_channel", allEntries = true)
     fun deletePostByPid(pid: Long): Mono<Void> = postRepository
         .findById(pid)
         .flatMap { post ->
