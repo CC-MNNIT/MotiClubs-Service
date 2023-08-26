@@ -2,9 +2,7 @@ package com.mnnit.moticlubs.service
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
-import com.mnnit.moticlubs.dao.FCM
-import com.mnnit.moticlubs.dao.Post
-import com.mnnit.moticlubs.dao.Reply
+import com.mnnit.moticlubs.dao.*
 import com.mnnit.moticlubs.repository.*
 import com.mnnit.moticlubs.utils.ServiceLogger
 import org.springframework.stereotype.Service
@@ -41,17 +39,8 @@ class NotificationService(
 
             clubRepository.findById(channel.cid)
                 .flatMap { club ->
-                    Mono.just(HashMap<String, String>().apply {
+                    Mono.just(getPostPayload(post, user, club, channel).apply {
                         this["type"] = Type.POST.ordinal.toString()
-                        this["pid"] = post.pid.toString()
-                        this["cid"] = channel.cid.toString()
-                        this["chid"] = post.chid.toString()
-                        this["uid"] = post.uid.toString()
-                        this["message"] = post.message
-                        this["adminName"] = user.name
-                        this["adminAvatar"] = user.avatar
-                        this["clubName"] = club.name
-                        this["channelName"] = channel.name
                         this["updated"] = updated.toString()
                     })
                 }
@@ -91,19 +80,7 @@ class NotificationService(
                 .flatMap { channel ->
                     clubRepository.findById(channel.cid)
                         .flatMap { club ->
-                            Mono.just(HashMap<String, String>().apply {
-                                this["type"] = Type.REPLY.ordinal.toString()
-                                this["pid"] = post.pid.toString()
-                                this["uid"] = reply.uid.toString()
-                                this["message"] = reply.message
-                                this["postMessage"] = post.message
-                                this["userName"] = user.name
-                                this["userAvatar"] = user.avatar
-                                this["clubName"] = club.name
-                                this["channelName"] = channel.name
-                                this["cid"] = club.cid.toString()
-                                this["chid"] = channel.chid.toString()
-                            })
+                            Mono.just(getReplyPayload(post, user, reply, club, channel))
                         }
                 }
         }
@@ -127,6 +104,39 @@ class NotificationService(
         }
 
     // --------------------------------------------------------------------- //
+
+    private fun getPostPayload(
+        post: Post,
+        user: User,
+        club: Club,
+        channel: Channel,
+    ): HashMap<String, String> = HashMap<String, String>().apply {
+        this["pid"] = post.pid.toString()
+        this["postUid"] = post.uid.toString()
+        this["postMessage"] = post.message
+        this["postUserName"] = user.name
+        this["postUserAvatar"] = user.avatar
+
+        this["clubName"] = club.name
+        this["channelName"] = channel.name
+        this["cid"] = channel.cid.toString()
+        this["chid"] = post.chid.toString()
+    }
+
+    private fun getReplyPayload(
+        post: Post,
+        user: User,
+        reply: Reply,
+        club: Club,
+        channel: Channel,
+    ): HashMap<String, String> = getPostPayload(post, user, club, channel).apply {
+        this["type"] = Type.REPLY.ordinal.toString()
+
+        this["replyUid"] = reply.uid.toString()
+        this["replyMessage"] = reply.message
+        this["replyUserName"] = user.name
+        this["replyUserAvatar"] = user.avatar
+    }
 
     private fun notifyMembers(chid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
         .from(
