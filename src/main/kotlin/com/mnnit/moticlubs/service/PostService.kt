@@ -23,7 +23,7 @@ class PostService(
                 .then(Mono.just(savedPost))
         }
 
-    @Cacheable("post_channel", key = "#chid + '_' + pageRequest.pageNumber")
+    @Cacheable("post_channel", key = "#chid + '_' + #pageRequest.pageNumber")
     fun getPostsByChannel(chid: Long, pageRequest: PageRequest): Mono<List<Post>> = postRepository
         .findAllByChid(chid, pageRequest)
         .collectList()
