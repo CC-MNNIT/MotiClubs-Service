@@ -1,11 +1,10 @@
 package com.mnnit.moticlubs.web.security
 
-import com.google.firebase.auth.FirebaseToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
 class FirebaseAuthentication(
-    private val token: FirebaseToken,
+    private val token: AuthenticationToken,
     private var authenticated: Boolean = false,
 ) : Authentication {
 
@@ -17,7 +16,7 @@ class FirebaseAuthentication(
 
     override fun getDetails(): Any = token
 
-    override fun getPrincipal(): FirebaseToken = token
+    override fun getPrincipal(): AuthenticationToken = token
 
     override fun isAuthenticated(): Boolean = authenticated
 

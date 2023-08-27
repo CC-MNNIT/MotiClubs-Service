@@ -25,9 +25,8 @@ class PathAuthorization(
 
     fun userAuthorization(): Mono<Long> = ReactiveSecurityContextHolder.getContext()
         .flatMap { ctx ->
-            val token = ctx.authentication.principal as FirebaseToken
-            val userId = token.claims[USER_ID_CLAIM]?.toString()?.toLong()
-                ?: return@flatMap Mono.error(UnauthorizedException("Missing user ID claim"))
+            val token = ctx.authentication.principal as AuthenticationToken
+            val userId = token.userId ?: return@flatMap Mono.error(UnauthorizedException("Missing user ID claim"))
 
             if (!token.isEmailVerified) {
                 return@flatMap Mono.error(UnauthorizedException("Please verify email ID"))

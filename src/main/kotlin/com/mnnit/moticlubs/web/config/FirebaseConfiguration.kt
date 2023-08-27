@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.FileInputStream
@@ -12,13 +13,22 @@ import java.io.FileInputStream
 @Configuration
 class FirebaseConfiguration {
 
+    @ConfigurationProperties(prefix = "firebase")
+    class Properties {
+        lateinit var issuer: String
+        lateinit var audience: String
+        lateinit var publicKeyUrl: String
+    }
+
     @Bean
-    fun firebaseApp(): FirebaseApp = FirebaseApp
+    fun googleCredentials(): GoogleCredentials = GoogleCredentials
+        .fromStream(FileInputStream("src/main/resources/firebase_private_key.json"))
+
+    @Bean
+    fun firebaseApp(googleCredentials: GoogleCredentials): FirebaseApp = FirebaseApp
         .initializeApp(
             FirebaseOptions.builder()
-                .setCredentials(
-                    GoogleCredentials.fromStream(FileInputStream("src/main/resources/firebase_private_key.json"))
-                )
+                .setCredentials(googleCredentials)
                 .build()
         )
 

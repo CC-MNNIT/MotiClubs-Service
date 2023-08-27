@@ -35,7 +35,7 @@ build/
 
 ### Project Secrets ###
 src/main/resources/firebase_private_key.json
-src/main/resources/r2dbc.yml
+src/main/resources/secrets.yml
 src/main/resources/*.sql
 
 ### Metadata ###

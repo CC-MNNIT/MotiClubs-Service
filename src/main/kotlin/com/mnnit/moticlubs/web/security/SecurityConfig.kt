@@ -1,7 +1,5 @@
 package com.mnnit.moticlubs.web.security
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseToken
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.putReqId
@@ -42,7 +40,7 @@ class SecurityConfig(
     @Bean
     fun securityWebFilterChain(
         http: ServerHttpSecurity,
-        firebaseAuth: FirebaseAuth,
+        keyProvider: KeyProvider,
     ): SecurityWebFilterChain = http
         .csrf { it.disable() }
 
@@ -56,7 +54,7 @@ class SecurityConfig(
         }, SecurityWebFiltersOrder.FIRST)
 
         // Firebase auth for APIs
-        .addFilterAt(firebaseAuthTokenFilter(firebaseAuth), SecurityWebFiltersOrder.AUTHENTICATION)
+        .addFilterAt(firebaseAuthTokenFilter(keyProvider), SecurityWebFiltersOrder.AUTHENTICATION)
 
         // Store requestId for logging and tracing
         .addFilterAt({ exchange, chain ->
@@ -74,13 +72,11 @@ class SecurityConfig(
         }
         .build()
 
-    private fun firebaseAuthTokenFilter(firebaseAuth: FirebaseAuth): AuthenticationWebFilter = AuthenticationWebFilter(
+    private fun firebaseAuthTokenFilter(keyProvider: KeyProvider): AuthenticationWebFilter = AuthenticationWebFilter(
         ReactiveAuthenticationManager { auth ->
-            val token = auth.principal as FirebaseToken
+            val token = auth.principal as AuthenticationToken
             LOGGER.info(
-                "authentication: emailVerified: ${token.isEmailVerified}; claims: ${
-                    firebaseAuth.getUser(token.uid).customClaims
-                }"
+                "authentication: emailVerified: ${token.isEmailVerified}; claims: ${token.userId}"
             )
             Mono.just(auth.apply { isAuthenticated = true })
         }
@@ -106,7 +102,7 @@ class SecurityConfig(
                 )
 
             try {
-                val token = firebaseAuth.verifyIdToken(authHeader)
+                val token = keyProvider.verifyJwt(authHeader)
                 Mono.just(FirebaseAuthentication(token))
             } catch (e: Exception) {
                 LOGGER.warn("Invalid auth token: ${e.localizedMessage}")

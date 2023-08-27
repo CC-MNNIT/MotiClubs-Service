@@ -19,7 +19,7 @@ spring:
   profiles:
     active: dev
   config:
-    import: optional:file:src/main/resources/r2dbc.yml
+    import: optional:file:src/main/resources/secrets.yml
   main:
     web-application-type: reactive
   boot:
