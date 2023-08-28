@@ -15,7 +15,8 @@ class UserRepository(
 ) {
 
     @Transactional
-    fun save(user: User): Mono<User> = db.insert(user)
+    fun save(user: User): Mono<User> = exists(user)
+        .flatMap { if (it) findByRegNo(user.regno) else db.insert(user) }
 
     @Transactional
     fun findById(uid: Long): Mono<User> = db
@@ -28,6 +29,13 @@ class UserRepository(
     fun findByRegNo(regNo: String): Mono<User> = db
         .selectOne(
             Query.query(Criteria.where(User::regno.name).`is`(regNo)).limit(1),
+            User::class.java
+        )
+
+    @Transactional
+    fun exists(user: User): Mono<Boolean> = db
+        .exists(
+            Query.query(Criteria.where(User::email.name).`is`(user.email)),
             User::class.java
         )
 

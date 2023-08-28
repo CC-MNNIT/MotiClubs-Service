@@ -22,14 +22,13 @@ class UserService(
     private val firebaseAuth: FirebaseAuth,
 ) {
 
-    @CachePut("user", key = "#user.uid")
     fun saveUser(user: User): Mono<User> = userRepository.save(user)
         .flatMap { savedUser ->
             fcmRepository.save(FCM(savedUser.uid, ""))
                 .flatMap {
-                    val record = firebaseAuth.getUserByEmail(user.email)
+                    val record = firebaseAuth.getUserByEmail(savedUser.email)
                     firebaseAuth.setCustomUserClaims(record.uid, HashMap<String, Any>().apply {
-                        this[USER_ID_CLAIM] = user.uid
+                        this[USER_ID_CLAIM] = savedUser.uid
                     })
                     Mono.just(savedUser)
                 }
