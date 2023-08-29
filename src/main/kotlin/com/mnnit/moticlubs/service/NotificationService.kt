@@ -133,6 +133,7 @@ class NotificationService(
         this["type"] = Type.REPLY.ordinal.toString()
 
         this["replyUid"] = reply.uid.toString()
+        this["replyTime"] = reply.time.toString()
         this["replyMessage"] = reply.message
         this["replyUserName"] = user.name
         this["replyUserAvatar"] = user.avatar
