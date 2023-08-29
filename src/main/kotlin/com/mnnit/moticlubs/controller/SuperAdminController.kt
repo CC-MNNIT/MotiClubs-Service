@@ -29,6 +29,16 @@ class SuperAdminController(
         private val LOGGER = ServiceLogger.getLogger(SuperAdminController::class.java)
     }
 
+    @GetMapping("/login")
+    @Operation(summary = "Check if you are super admin")
+    fun login(): Mono<String> = pathAuthorization
+        .superAdminAuthorization()
+        .flatMap {
+            LOGGER.info("super-admin logged in")
+            Mono.just("super-admin logged in")
+        }
+        .wrapError()
+
     @PostMapping("/add_club")
     @Operation(summary = "Adds a new club")
     fun addClub(@RequestBody dto: AddClubDTO): Mono<Club> = pathAuthorization
