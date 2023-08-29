@@ -9,6 +9,7 @@ import com.mnnit.moticlubs.repository.FCMRepository
 import com.mnnit.moticlubs.repository.UserRepository
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.storeCache
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -45,5 +46,6 @@ class UserService(
         .storeCache()
 
     @CachePut("user", key = "#uid")
+    @CacheEvict("admins", allEntries = true)
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
 }
