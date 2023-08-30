@@ -20,8 +20,8 @@ data class User(
     @JsonProperty("course")
     val course: String,
 
-    @JsonProperty("phone")
-    val phone: String,
+    @JsonProperty("branch")
+    val branch: String,
 
     @JsonProperty("avatar")
     val avatar: String,

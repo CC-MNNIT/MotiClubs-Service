@@ -22,8 +22,8 @@ data class AdminUserDTO(
     @JsonProperty("course")
     val course: String,
 
-    @JsonProperty("phone")
-    val phone: String,
+    @JsonProperty("branch")
+    val branch: String,
 
     @JsonProperty("avatar")
     val avatar: String,
@@ -35,7 +35,7 @@ data class AdminUserDTO(
         name = user.name,
         email = user.email,
         course = user.course,
-        phone = user.phone,
+        branch = user.branch,
         avatar = user.avatar,
     )
 }
