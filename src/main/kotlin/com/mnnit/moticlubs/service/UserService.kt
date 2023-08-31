@@ -35,6 +35,12 @@ class UserService(
                 }
         }
 
+    @Cacheable("all_users")
+    fun getAllUsers(): Mono<List<User>> = userRepository
+        .findAll()
+        .collectList()
+        .storeCache()
+
     @Cacheable("user", key = "#uid")
     fun getUserByUid(uid: Long): Mono<User> = userRepository.findById(uid).storeCache()
 
@@ -46,6 +52,6 @@ class UserService(
         .storeCache()
 
     @CachePut("user", key = "#uid")
-    @CacheEvict("admins", allEntries = true)
+    @CacheEvict(cacheNames = ["admins", "all_users"], allEntries = true)
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
 }

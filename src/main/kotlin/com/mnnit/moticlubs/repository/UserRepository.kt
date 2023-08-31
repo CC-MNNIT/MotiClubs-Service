@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.query.Query
 import org.springframework.data.relational.core.query.Update
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
@@ -24,6 +25,9 @@ class UserRepository(
             Query.query(Criteria.where(User::uid.name).`is`(uid)).limit(1),
             User::class.java
         )
+
+    @Transactional
+    fun findAll(): Flux<User> = db.select(Query.empty(), User::class.java)
 
     @Transactional
     fun findByRegNo(regNo: String): Mono<User> = db

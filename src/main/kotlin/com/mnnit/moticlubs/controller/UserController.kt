@@ -51,6 +51,16 @@ class UserController(
         }
         .wrapError()
 
+    @GetMapping("/all")
+    @Operation(summary = "Returns list of all the users")
+    fun getAllUsers(): Mono<List<User>> = pathAuthorization
+        .userAuthorization()
+        .flatMap {
+            LOGGER.info("getAll")
+            userService.getAllUsers()
+        }
+        .wrapError()
+
     @GetMapping("/admins")
     @Operation(summary = "Returns list of details of all the users who are admin")
     fun getAdmins(): Mono<List<AdminUserDTO>> = pathAuthorization
