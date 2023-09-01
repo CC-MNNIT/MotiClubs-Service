@@ -9,6 +9,7 @@ import com.mnnit.moticlubs.service.ClubService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.SUPER_ADMIN_ROUTE
 import com.mnnit.moticlubs.utils.ResponseStamp
+import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.invalidateStamp
 import com.mnnit.moticlubs.utils.wrapError
@@ -78,7 +79,10 @@ class SuperAdminController(
             LOGGER.info("assignAdmin: dto: $dto")
             adminService.saveAdmin(dto)
         }
-        .invalidateStamp { ResponseStamp.ADMIN }
+        .invalidateStamp {
+            ResponseStamp.MEMBER.invalidateStamp()
+            ResponseStamp.ADMIN
+        }
         .wrapError()
 
     @PostMapping("/remove_admin")
@@ -89,6 +93,9 @@ class SuperAdminController(
             LOGGER.info("removeAdmin: dto: $dto")
             adminService.removeAdmin(dto)
         }
-        .invalidateStamp { ResponseStamp.ADMIN }
+        .invalidateStamp {
+            ResponseStamp.MEMBER.invalidateStamp()
+            ResponseStamp.ADMIN
+        }
         .wrapError()
 }
