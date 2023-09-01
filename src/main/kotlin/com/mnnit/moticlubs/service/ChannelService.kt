@@ -20,6 +20,7 @@ class ChannelService(
     private val channelRepository: ChannelRepository,
 ) {
 
+    @CacheEvict(cacheNames = ["all_channels", "members"], allEntries = true)
     fun saveChannel(channel: Channel): Mono<Channel> = channelRepository.save(channel)
         .flatMap { it.updateChannelAccess(it.private, it.cid, it.chid) }
 
@@ -43,11 +44,11 @@ class ChannelService(
             } else Mono.just(channel)
         }
 
-    @CacheEvict("all_channels", allEntries = true)
+    @CacheEvict(cacheNames = ["all_channels", "members"], allEntries = true)
     fun updateChannel(chid: Long, dto: UpdateChannelDTO): Mono<Channel> = channelRepository.update(chid, dto)
         .flatMap { it.updateChannelAccess(dto.private, dto.cid, chid) }
 
-    @CacheEvict("all_channels", allEntries = true)
+    @CacheEvict(cacheNames = ["all_channels", "members", "post", "replies"], allEntries = true)
     fun deleteChannelByChID(chid: Long): Mono<Void> = channelRepository.deleteById(chid)
 
     private fun Channel.updateChannelAccess(private: Boolean, cid: Long, chid: Long): Mono<Channel> {

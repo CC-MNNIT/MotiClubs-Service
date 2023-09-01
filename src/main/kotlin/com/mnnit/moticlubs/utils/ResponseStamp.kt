@@ -52,9 +52,9 @@ object ResponseStamp {
     @Synchronized
     fun StampKey.invalidateStamp(): Long {
         val keys = LAST_UPDATED_MAP.keys.filter { it.contains(this.getKey()) }
-        LOGGER.info("[CACHE] invalidating filtered keys: $keys")
-
         val updatedStamp = System.currentTimeMillis()
+
+        LOGGER.info("[CACHE] invalidating: $updatedStamp to filtered keys: $keys")
         keys.forEach { LAST_UPDATED_MAP[it] = updatedStamp }
         return updatedStamp
     }

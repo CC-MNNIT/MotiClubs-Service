@@ -16,20 +16,20 @@ class PostService(
     private val notificationService: NotificationService,
 ) {
 
-    @CacheEvict("post_channel", allEntries = true)
+    @CacheEvict("post", allEntries = true)
     fun savePost(post: Post): Mono<Post> = postRepository.save(post)
         .flatMap { savedPost ->
             notificationService.notifyPost(savedPost, false)
                 .then(Mono.just(savedPost))
         }
 
-    @Cacheable("post_channel", key = "#chid + '_' + #pageRequest.pageNumber")
+    @Cacheable("post", key = "#chid + '_' + #pageRequest.pageNumber")
     fun getPostsByChannel(chid: Long, pageRequest: PageRequest): Mono<List<Post>> = postRepository
         .findAllByChid(chid, pageRequest)
         .collectList()
         .storeCache()
 
-    @CacheEvict("post_channel", allEntries = true)
+    @CacheEvict("post", allEntries = true)
     fun updatePost(pid: Long, updatePostDTO: UpdatePostDTO): Mono<Post> = postRepository
         .updatePost(pid, updatePostDTO.message)
         .flatMap { post ->
@@ -37,7 +37,7 @@ class PostService(
                 .then(Mono.just(post))
         }
 
-    @CacheEvict("post_channel", allEntries = true)
+    @CacheEvict(cacheNames = ["post", "replies"], allEntries = true)
     fun deletePostByPid(pid: Long): Mono<Void> = postRepository
         .findById(pid)
         .flatMap { post ->

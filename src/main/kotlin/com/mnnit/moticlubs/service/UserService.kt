@@ -10,7 +10,6 @@ import com.mnnit.moticlubs.repository.UserRepository
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.storeCache
 import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -23,6 +22,7 @@ class UserService(
     private val firebaseAuth: FirebaseAuth,
 ) {
 
+    @CacheEvict("user", allEntries = true)
     fun saveUser(user: User): Mono<User> = userRepository.save(user)
         .flatMap { savedUser ->
             fcmRepository.save(FCM(savedUser.uid, ""))
@@ -51,7 +51,6 @@ class UserService(
         .collectList()
         .storeCache()
 
-    @CachePut("user", key = "#uid")
-    @CacheEvict(cacheNames = ["admins", "all_users"], allEntries = true)
+    @CacheEvict(cacheNames = ["user", "admins", "all_users", "members"], allEntries = true)
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
 }

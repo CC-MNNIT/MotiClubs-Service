@@ -14,6 +14,7 @@ class ClubService(
     private val clubRepository: ClubRepository,
 ) {
 
+    @CacheEvict("all_clubs", allEntries = true)
     fun saveClub(club: Club): Mono<Club> = clubRepository.save(club)
 
     @Cacheable("all_clubs")
@@ -29,6 +30,9 @@ class ClubService(
 
     fun clubExists(cid: Long): Mono<Boolean> = clubRepository.existsById(cid)
 
-    @CacheEvict("all_clubs", allEntries = true)
+    @CacheEvict(
+        cacheNames = ["all_clubs", "urls", "admins", "all_channels", "members", "post", "replies"],
+        allEntries = true
+    )
     fun deleteClubByCid(cid: Long): Mono<Void> = clubRepository.deleteById(cid)
 }
