@@ -21,6 +21,7 @@ import java.security.interfaces.RSAPublicKey
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -40,6 +41,7 @@ class KeyProvider(
     }
 
     private val executor: ScheduledExecutorService = Executors.newScheduledThreadPool(8)
+    private var taskFuture: ScheduledFuture<*>? = null
     private var publicCert: PublicCert? = null
     private var seconds: Long = 0
     private var hasError: Boolean = true
@@ -72,7 +74,8 @@ class KeyProvider(
 
     fun scheduleFetchCerts() {
         LOGGER.info("$TAG scheduled execution after: $seconds sec")
-        executor.schedule(runnable, seconds, TimeUnit.SECONDS)
+        taskFuture?.cancel(true)
+        taskFuture = executor.schedule(runnable, seconds, TimeUnit.SECONDS)
     }
 
     fun verifyJwt(jwt: String): AuthenticationToken {
