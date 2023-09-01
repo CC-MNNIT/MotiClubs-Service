@@ -48,12 +48,20 @@ fun <T : Any> apiWrapper(
 fun <T> Mono<T>.invalidateStamp(
     getStampKey: (t: T) -> ResponseStamp.StampKey,
 ): Mono<ResponseEntity<T>> = map {
-    val key = getStampKey(it)
-    val updatedStamp = key.invalidateStamp()
+    val updatedStamp = getStampKey(it).invalidateStamp()
     ResponseEntity.ok()
         .header(Constants.STAMP_HEADER, updatedStamp.toString())
         .body(it)
 }
+
+fun Mono<Void>.invalidateStamp(
+    getStampKey: () -> ResponseStamp.StampKey,
+): Mono<ResponseEntity<Void>> = then(Mono.fromCallable {
+    val updatedStamp = getStampKey().invalidateStamp()
+    ResponseEntity.ok()
+        .header(Constants.STAMP_HEADER, updatedStamp.toString())
+        .build()
+})
 
 fun <T> Mono<T>.storeCache(): Mono<T> = cache(Duration.ofSeconds(120))
 
