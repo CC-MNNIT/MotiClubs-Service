@@ -69,7 +69,7 @@ class UserController(
     fun getAllUsers(
         @RequestHeader(STAMP_HEADER) stamp: Long,
     ): Mono<ResponseEntity<List<User>>> = apiWrapper(
-        key = ResponseStamp.USER,
+        key = ResponseStamp.USER.withKey("all"),
         stampValue = stamp,
         authorization = pathAuthorization::userAuthorization,
         serviceCall = {
