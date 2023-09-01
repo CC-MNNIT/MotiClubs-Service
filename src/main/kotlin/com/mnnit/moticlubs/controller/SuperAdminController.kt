@@ -8,11 +8,14 @@ import com.mnnit.moticlubs.service.AdminService
 import com.mnnit.moticlubs.service.ClubService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.SUPER_ADMIN_ROUTE
+import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.invalidateStamp
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
@@ -41,7 +44,7 @@ class SuperAdminController(
 
     @PostMapping("/add_club")
     @Operation(summary = "Adds a new club")
-    fun addClub(@RequestBody dto: AddClubDTO): Mono<Club> = pathAuthorization
+    fun addClub(@RequestBody dto: AddClubDTO): Mono<ResponseEntity<Club>> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("addClub: dto: $dto")
@@ -53,35 +56,39 @@ class SuperAdminController(
                 )
             )
         }
+        .invalidateStamp { ResponseStamp.CLUB }
         .wrapError()
 
     @DeleteMapping("/delete_club")
     @Operation(summary = "Deletes club")
-    fun deleteClub(@RequestParam clubId: Long): Mono<Void> = pathAuthorization
+    fun deleteClub(@RequestParam clubId: Long): Mono<ResponseEntity<Void>> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("deleteClubByCid: cid: $clubId")
             clubService.deleteClubByCid(clubId)
         }
+        .invalidateStamp { ResponseStamp.CLUB }
         .wrapError()
 
     @PostMapping("/add_admin")
     @Operation(summary = "Makes user admin of club")
-    fun assignAdmin(@RequestBody dto: AssignAdminDTO): Mono<Admin> = pathAuthorization
+    fun assignAdmin(@RequestBody dto: AssignAdminDTO): Mono<ResponseEntity<Admin>> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("assignAdmin: dto: $dto")
             adminService.saveAdmin(dto)
         }
+        .invalidateStamp { ResponseStamp.ADMIN }
         .wrapError()
 
     @PostMapping("/remove_admin")
     @Operation(summary = "Remove user from club admin")
-    fun removeAdmin(@RequestBody dto: AssignAdminDTO): Mono<Void> = pathAuthorization
+    fun removeAdmin(@RequestBody dto: AssignAdminDTO): Mono<ResponseEntity<Void>> = pathAuthorization
         .superAdminAuthorization()
         .flatMap {
             LOGGER.info("removeAdmin: dto: $dto")
             adminService.removeAdmin(dto)
         }
+        .invalidateStamp { ResponseStamp.ADMIN }
         .wrapError()
 }
