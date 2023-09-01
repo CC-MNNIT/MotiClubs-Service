@@ -32,7 +32,9 @@ class AdminService(
     @CacheEvict("admins", allEntries = true)
     fun removeAdmin(dto: AssignAdminDTO): Mono<Void> = userRepository.findByRegNo(dto.regNo)
         .flatMap { user ->
-            memberRepository.deleteAllByUid(user.uid)
-                .and(adminRepository.delete(Admin(dto.cid, user.uid)))
+            channelRepository.findByCid(dto.cid)
+                .filter { it.private }
+                .flatMap { channel -> memberRepository.delete(Member(channel.chid, user.uid)) }
+                .then(adminRepository.delete(Admin(dto.cid, user.uid)))
         }
 }
