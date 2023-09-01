@@ -3,15 +3,15 @@ package com.mnnit.moticlubs.controller
 import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dto.request.UpdatePostDTO
 import com.mnnit.moticlubs.service.PostService
+import com.mnnit.moticlubs.utils.*
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.POSTS_ROUTE
 import com.mnnit.moticlubs.utils.Constants.POST_ID_CLAIM
-import com.mnnit.moticlubs.utils.ServiceLogger
-import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
@@ -33,25 +33,29 @@ class PostController(
         @RequestParam channelId: Long,
         @RequestParam page: Int = 1,
         @RequestParam items: Int = 10,
-    ): Mono<List<Post>> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
+        @RequestHeader(Constants.STAMP_HEADER) stamp: Long,
+    ): Mono<ResponseEntity<List<Post>>> = apiWrapper(
+        key = ResponseStamp.POST.withKey("$channelId").withKey("$page"),
+        stampValue = stamp,
+        authorization = pathAuthorization::userAuthorization,
+        serviceCall = {
             LOGGER.info("getPostsByChannel: chid: $channelId; page: $page; items: $items")
             postService.getPostsByChannel(channelId, PageRequest.of(maxOf(page - 1, 0), items))
         }
-        .wrapError()
+    )
 
     @PostMapping
     @Operation(summary = "Saves post and notify users")
     fun savePost(
         @RequestBody post: Post,
         @RequestParam clubId: Long
-    ): Mono<Post> = pathAuthorization
+    ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
             LOGGER.info("savePost: cid: $clubId")
             postService.savePost(post)
         }
+        .invalidateStamp { ResponseStamp.POST.withKey("${post.chid}") }
         .wrapError()
 
     @PutMapping("/{$POST_ID_CLAIM}")
@@ -60,12 +64,13 @@ class PostController(
         @RequestBody dto: UpdatePostDTO,
         @PathVariable postId: Long,
         @RequestParam clubId: Long
-    ): Mono<Post> = pathAuthorization
+    ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
             LOGGER.info("updatePost: pid: $postId; cid: $clubId")
             postService.updatePost(postId, dto)
         }
+        .invalidateStamp { ResponseStamp.POST.withKey("${it.chid}") }
         .wrapError()
 
     @DeleteMapping("/{$POST_ID_CLAIM}")
@@ -73,11 +78,12 @@ class PostController(
     fun deletePost(
         @PathVariable postId: Long,
         @RequestParam clubId: Long
-    ): Mono<Void> = pathAuthorization
+    ): Mono<ResponseEntity<Void>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
             LOGGER.info("deletePost: pid: $postId; cid: $clubId")
             postService.deletePostByPid(postId)
         }
+        .invalidateStamp { ResponseStamp.POST }
         .wrapError()
 }

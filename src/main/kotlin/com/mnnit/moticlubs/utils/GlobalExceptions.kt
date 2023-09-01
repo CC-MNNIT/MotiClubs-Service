@@ -9,3 +9,10 @@ class UnauthorizedException(
     HttpStatus.UNAUTHORIZED,
     message
 )
+
+class CachedException(
+    override val message: String,
+) : ResponseStatusException(
+    HttpStatus.NOT_MODIFIED,
+    message
+)

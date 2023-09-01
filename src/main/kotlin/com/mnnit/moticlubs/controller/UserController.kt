@@ -7,14 +7,17 @@ import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
 import com.mnnit.moticlubs.service.UserService
+import com.mnnit.moticlubs.utils.*
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
+import com.mnnit.moticlubs.utils.Constants.STAMP_HEADER
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.USER_ROUTE
-import com.mnnit.moticlubs.utils.ServiceLogger
-import com.mnnit.moticlubs.utils.wrapError
+import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 
@@ -33,58 +36,82 @@ class UserController(
 
     @GetMapping
     @Operation(summary = "Returns details yourself")
-    fun getSelf(): Mono<User> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
-            LOGGER.info("getSelf: uid: $it")
+    fun getSelf(
+        @RequestHeader(STAMP_HEADER) stamp: Long,
+        serverRequest: ServerHttpRequest,
+    ): Mono<ResponseEntity<User>> = apiWrapper(
+        key = ResponseStamp.USER,
+        stampValue = stamp,
+        authorization = pathAuthorization::userAuthorization,
+        serviceCall = {
+            LOGGER.info("getSelf: uid: $it, ${serverRequest.path.value()}")
             userService.getUserByUid(it)
         }
-        .wrapError()
+    )
 
     @GetMapping("/{$USER_ID_CLAIM}")
     @Operation(summary = "Returns details of requested user")
-    fun getUser(@PathVariable userId: Long): Mono<User> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
+    fun getUser(
+        @PathVariable userId: Long,
+        @RequestHeader(STAMP_HEADER) stamp: Long,
+    ): Mono<ResponseEntity<User>> = apiWrapper(
+        key = ResponseStamp.USER,
+        stampValue = stamp,
+        authorization = pathAuthorization::userAuthorization,
+        serviceCall = {
             LOGGER.info("getUser: uid: $userId")
             userService.getUserByUid(userId)
         }
-        .wrapError()
+    )
 
     @GetMapping("/all")
     @Operation(summary = "Returns list of all the users")
-    fun getAllUsers(): Mono<List<User>> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
+    fun getAllUsers(
+        @RequestHeader(STAMP_HEADER) stamp: Long,
+    ): Mono<ResponseEntity<List<User>>> = apiWrapper(
+        key = ResponseStamp.USER,
+        stampValue = stamp,
+        authorization = pathAuthorization::userAuthorization,
+        serviceCall = {
             LOGGER.info("getAll")
             userService.getAllUsers()
         }
-        .wrapError()
+    )
 
     @GetMapping("/admins")
     @Operation(summary = "Returns list of details of all the users who are admin")
-    fun getAdmins(): Mono<List<AdminUserDTO>> = pathAuthorization
-        .userAuthorization()
-        .flatMap {
+    fun getAdmins(
+        @RequestHeader(STAMP_HEADER) stamp: Long,
+    ): Mono<ResponseEntity<List<AdminUserDTO>>> = apiWrapper(
+        key = ResponseStamp.ADMIN,
+        stampValue = stamp,
+        authorization = pathAuthorization::userAuthorization,
+        serviceCall = {
             LOGGER.info("getAdmins")
             userService.getAllAdminUsers()
         }
-        .wrapError()
+    )
 
     @PostMapping
     @Operation(summary = "Saves user")
-    fun saveUser(@RequestBody user: User): Mono<User> {
+    fun saveUser(@RequestBody user: User): Mono<ResponseEntity<User>> {
         LOGGER.info("saveUser: user: ${user.regno}")
-        return userService.saveUser(user).wrapError()
+        return userService.saveUser(user)
+            .invalidateStamp { ResponseStamp.USER }
+            .wrapError()
     }
 
     @PostMapping("/avatar")
     @Operation(summary = "Updates user avatar")
-    fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<User> = pathAuthorization
+    fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<ResponseEntity<User>> = pathAuthorization
         .userAuthorization()
         .flatMap {
             LOGGER.info("updateAvatar")
             userService.updateAvatar(it, dto.avatar)
+        }
+        .invalidateStamp {
+            ResponseStamp.ADMIN.invalidateStamp()
+            ResponseStamp.USER
         }
         .wrapError()
 

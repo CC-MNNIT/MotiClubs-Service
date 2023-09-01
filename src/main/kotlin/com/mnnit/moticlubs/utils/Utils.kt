@@ -1,16 +1,58 @@
 package com.mnnit.moticlubs.utils
 
+import com.mnnit.moticlubs.utils.ResponseStamp.getString
+import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
+import com.mnnit.moticlubs.utils.ResponseStamp.validateLast
 import org.slf4j.MDC
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
 
 fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
-    if (it is UnauthorizedException) it else ResponseStatusException(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        it.localizedMessage
-    )
+    when (it) {
+        is UnauthorizedException,
+        is CachedException -> it
+
+        else -> ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            it.localizedMessage
+        )
+    }
+}
+
+fun <T : Any> apiWrapper(
+    key: ResponseStamp.StampKey,
+    stampValue: Long,
+    authorization: () -> Mono<Long>,
+    serviceCall: (data: Long) -> Mono<T>
+): Mono<ResponseEntity<T>> = authorization()
+    .flatMap { if (key.validateLast(stampValue)) Mono.empty() else Mono.just(it) }
+    .flatMap { serviceCall(it) }
+    .map {
+        ResponseEntity.ok()
+            .header(Constants.STAMP_HEADER, key.getString(stampValue))
+            .body(it)
+    }
+    .switchIfEmpty {
+        Mono.just(
+            ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+                .header(Constants.STAMP_HEADER, key.getString(stampValue))
+                .build()
+        )
+    }
+    .wrapError()
+
+fun <T> Mono<T>.invalidateStamp(
+    getStampKey: (t: T) -> ResponseStamp.StampKey,
+): Mono<ResponseEntity<T>> = map {
+    val key = getStampKey(it)
+    val updatedStamp = key.invalidateStamp()
+    ResponseEntity.ok()
+        .header(Constants.STAMP_HEADER, updatedStamp.toString())
+        .body(it)
 }
 
 fun <T> Mono<T>.storeCache(): Mono<T> = cache(Duration.ofSeconds(120))
