@@ -20,10 +20,8 @@ class MemberService(
         .flatMap { uid -> memberRepository.save(Member(chid = dto.chid, uid = uid)) }
         .collectList()
 
-    @CacheEvict("members", key = "#dto.chid")
-    fun removeMembers(dto: MembersDTO): Mono<Void> = Flux.fromIterable(dto.users)
-        .flatMap { uid -> memberRepository.delete(Member(chid = dto.chid, uid = uid)) }
-        .then()
+    @CacheEvict("members", key = "#chid")
+    fun removeMember(chid: Long, uid: Long): Mono<Void> = memberRepository.delete(Member(chid = chid, uid = uid))
 
     @Cacheable("members", key = "#chid")
     fun getMembersByChid(chid: Long): Mono<List<Member>> = memberRepository

@@ -86,14 +86,18 @@ class ChannelController(
         .wrapError()
 
     @DeleteMapping("/members")
-    @Operation(summary = "Removes list of userIds from the member of the clubId")
-    fun removeMembers(@RequestBody dto: MembersDTO): Mono<ResponseEntity<Void>> = pathAuthorization
-        .clubAuthorization(dto.cid)
+    @Operation(summary = "Removes userId from the members of the clubId")
+    fun removeMembers(
+        @RequestParam clubId: Long,
+        @RequestParam channelId: Long,
+        @RequestParam userId: Long,
+    ): Mono<ResponseEntity<Void>> = pathAuthorization
+        .clubAuthorization(clubId)
         .flatMap {
-            LOGGER.info("removeMembers: cid: ${dto.cid}; chid: ${dto.chid}")
-            memberService.removeMembers(dto)
+            LOGGER.info("removeMembers: cid: $clubId; chid: $channelId; uid: $userId")
+            memberService.removeMember(channelId, userId)
         }
-        .invalidateStamp { ResponseStamp.MEMBER.withKey("${dto.chid}") }
+        .invalidateStamp { ResponseStamp.MEMBER.withKey("$channelId") }
         .wrapError()
 
     @PostMapping
