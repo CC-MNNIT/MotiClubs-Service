@@ -19,7 +19,7 @@ class AdminService(
     private val userRepository: UserRepository,
 ) {
 
-    @CacheEvict(cacheNames = ["admins", "members"], allEntries = true)
+    @CacheEvict(cacheNames = ["all_channels", "admins", "members"], allEntries = true)
     fun saveAdmin(dto: AssignAdminDTO): Mono<Admin> = userRepository.findByRegNo(dto.regNo)
         .flatMap { user -> adminRepository.save(Admin(dto.cid, user.uid)) }
         .flatMap { admin ->
@@ -29,7 +29,7 @@ class AdminService(
                 .then(Mono.just(admin))
         }
 
-    @CacheEvict(cacheNames = ["admins", "members"], allEntries = true)
+    @CacheEvict(cacheNames = ["all_channels", "admins", "members"], allEntries = true)
     fun removeAdmin(dto: AssignAdminDTO): Mono<Void> = userRepository.findByRegNo(dto.regNo)
         .flatMap { user ->
             channelRepository.findByCid(dto.cid)

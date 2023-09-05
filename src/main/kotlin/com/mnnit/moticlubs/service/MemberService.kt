@@ -15,12 +15,12 @@ class MemberService(
     private val memberRepository: MemberRepository,
 ) {
 
-    @CacheEvict("members", allEntries = true)
+    @CacheEvict(cacheNames = ["all_channels", "members"], allEntries = true)
     fun addMembers(dto: MembersDTO): Mono<List<Member>> = Flux.fromIterable(dto.users)
         .flatMap { uid -> memberRepository.save(Member(chid = dto.chid, uid = uid)) }
         .collectList()
 
-    @CacheEvict("members", key = "#chid")
+    @CacheEvict(cacheNames = ["all_channels", "members"], allEntries = true)
     fun removeMember(chid: Long, uid: Long): Mono<Void> = memberRepository.delete(Member(chid = chid, uid = uid))
 
     @Cacheable("members", key = "#chid")
