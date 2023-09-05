@@ -3,6 +3,7 @@ package com.mnnit.moticlubs.service
 import com.mnnit.moticlubs.dao.Reply
 import com.mnnit.moticlubs.repository.ReplyRepository
 import com.mnnit.moticlubs.utils.UnauthorizedException
+import com.mnnit.moticlubs.utils.storeCache
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
@@ -26,6 +27,7 @@ class ReplyService(
     fun getRepliesByPid(pid: Long, pageRequest: PageRequest): Mono<List<Reply>> = replyRepository
         .findAllByPid(pid, pageRequest)
         .collectList()
+        .storeCache()
 
     @CacheEvict("replies", allEntries = true)
     fun deleteReply(uid: Long, time: Long): Mono<Void> = replyRepository.findById(time)
