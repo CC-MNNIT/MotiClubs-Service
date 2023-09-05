@@ -16,4 +16,12 @@ data class Post(
 
     @JsonProperty("message")
     val message: String,
-)
+) {
+
+    fun toHashMap(): HashMap<String, String> = HashMap<String, String>().apply {
+        this["p_${Post::pid.name}"] = pid.toString()
+        this["p_${Post::uid.name}"] = uid.toString()
+        this["p_${Post::chid.name}"] = chid.toString()
+        this["p_${Post::message.name}"] = message
+    }
+}

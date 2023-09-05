@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.repository
 
 import com.mnnit.moticlubs.dao.Club
 import com.mnnit.moticlubs.dto.request.UpdateClubDTO
+import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
@@ -21,7 +22,10 @@ class ClubRepository(
     fun save(club: Club): Mono<Club> = db.insert(club)
 
     @Transactional
-    fun findAll(): Flux<Club> = db.select(Query.empty(), Club::class.java)
+    fun findAll(): Flux<Club> = db.select(
+        Query.empty().sort(Sort.by(Sort.Direction.ASC, Club::cid.name)),
+        Club::class.java
+    )
 
     @Transactional
     fun findById(cid: Long): Mono<Club> = db

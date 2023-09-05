@@ -23,18 +23,11 @@ class ChannelRepository(
     @Transactional
     fun findAll(uid: Long): Flux<Channel> = db
         .databaseClient
-        .sql("SELECT ch.chid, ch.cid, ch.name, ch.private FROM channel ch INNER JOIN member mem ON ch.chid = mem.chid WHERE uid = :uid UNION SELECT * FROM channel WHERE private = 0")
+        .sql("SELECT channel.* FROM channel INNER JOIN member ON channel.chid = member.chid WHERE uid = :uid UNION (SELECT * FROM channel WHERE private = 0) ORDER BY chid")
         .bind(0, uid)
         .fetch()
         .all()
-        .map {
-            Channel(
-                cid = it[Channel::cid.name].toString().toLong(),
-                chid = it[Channel::chid.name].toString().toLong(),
-                name = it[Channel::name.name].toString(),
-                private = it[Channel::private.name].toString().toInt() == 1,
-            )
-        }
+        .map { Channel(it) }
 
     @Transactional
     fun findById(chid: Long): Mono<Channel> = db

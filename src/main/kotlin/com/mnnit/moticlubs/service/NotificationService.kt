@@ -7,6 +7,7 @@ import com.mnnit.moticlubs.repository.*
 import com.mnnit.moticlubs.utils.ServiceLogger
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import reactor.util.function.Tuples
 
 @Service
 class NotificationService(
@@ -75,15 +76,12 @@ class NotificationService(
         .flatMap { tuple ->
             val post = tuple.t1
             val user = tuple.t2
-
-            channelRepository.findById(post.chid)
-                .flatMap { channel ->
-                    clubRepository.findById(channel.cid)
-                        .flatMap { club ->
-                            Mono.just(getReplyPayload(post, user, reply, club, channel))
-                        }
-                }
+            channelRepository.findById(post.chid).map { channel -> Tuples.of(post, user, channel) }
         }
+        .flatMap { tuple ->
+            clubRepository.findById(tuple.t3.cid).map { club -> Tuples.of(tuple.t1, tuple.t2, tuple.t3, club) }
+        }
+        .map { getReplyPayload(it.t1, it.t2, reply, it.t4, it.t3) }
         .flatMap { payload ->
             LOGGER.info("notifyReply: ${reply.pid}")
             notifyPostParticipants(reply.pid, payload)
@@ -111,16 +109,10 @@ class NotificationService(
         club: Club,
         channel: Channel,
     ): HashMap<String, String> = HashMap<String, String>().apply {
-        this["pid"] = post.pid.toString()
-        this["postUid"] = post.uid.toString()
-        this["postMessage"] = post.message
-        this["postUserName"] = user.name
-        this["postUserAvatar"] = user.avatar
-
-        this["clubName"] = club.name
-        this["channelName"] = channel.name
-        this["cid"] = channel.cid.toString()
-        this["chid"] = post.chid.toString()
+        putAll(post.toHashMap())
+        putAll(channel.toHashMap())
+        putAll(club.toHashMap())
+        putAll(user.toHashMap())
     }
 
     private fun getReplyPayload(
@@ -132,11 +124,7 @@ class NotificationService(
     ): HashMap<String, String> = getPostPayload(post, user, club, channel).apply {
         this["type"] = Type.REPLY.ordinal.toString()
 
-        this["replyUid"] = reply.uid.toString()
-        this["replyTime"] = reply.time.toString()
-        this["replyMessage"] = reply.message
-        this["replyUserName"] = user.name
-        this["replyUserAvatar"] = user.avatar
+        putAll(reply.toHashMap())
     }
 
     private fun notifyMembers(chid: Long, payload: HashMap<String, String>): Mono<Void> = Mono

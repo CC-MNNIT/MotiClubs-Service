@@ -19,4 +19,13 @@ data class Club(
 
     @JsonProperty("summary")
     val summary: String,
-)
+) {
+
+    fun toHashMap(): HashMap<String, String> = HashMap<String, String>().apply {
+        this["c_${Club::cid.name}"] = cid.toString()
+        this["c_${Club::name.name}"] = name
+        this["c_${Club::description.name}"] = description
+        this["c_${Club::summary.name}"] = summary
+        this["c_${Club::avatar.name}"] = avatar
+    }
+}

@@ -47,7 +47,6 @@ class UserService(
     @Cacheable("admins")
     fun getAllAdminUsers(): Mono<List<AdminUserDTO>> = adminRepository
         .findAll()
-        .flatMap { admin -> getUserByUid(admin.uid).flatMap { user -> Mono.just(AdminUserDTO(admin.cid, user)) } }
         .collectList()
         .storeCache()
 
