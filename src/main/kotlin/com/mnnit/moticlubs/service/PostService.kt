@@ -30,8 +30,8 @@ class PostService(
         .storeCache()
 
     @CacheEvict("post", allEntries = true)
-    fun updatePost(pid: Long, updatePostDTO: UpdatePostDTO): Mono<Post> = postRepository
-        .updatePost(pid, updatePostDTO.message)
+    fun updatePost(pid: Long, dto: UpdatePostDTO): Mono<Post> = postRepository
+        .updatePost(pid, dto)
         .flatMap { post ->
             notificationService.notifyPost(post, true)
                 .then(Mono.just(post))
