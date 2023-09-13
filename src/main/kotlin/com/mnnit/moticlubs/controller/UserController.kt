@@ -55,7 +55,7 @@ class UserController(
         @PathVariable userId: Long,
         @RequestHeader(STAMP_HEADER) stamp: Long,
     ): Mono<ResponseEntity<User>> = apiWrapper(
-        key = ResponseStamp.USER,
+        key = ResponseStamp.USER.withKey("$userId"),
         stampValue = stamp,
         authorization = pathAuthorization::userAuthorization,
         serviceCall = {
