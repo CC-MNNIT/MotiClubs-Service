@@ -27,6 +27,9 @@ data class AdminUserDTO(
 
     @JsonProperty("avatar")
     val avatar: String,
+
+    @JsonProperty("contact")
+    val contact: String,
 ) {
     constructor(clubId: Long, user: User) : this(
         uid = user.uid,
@@ -37,5 +40,6 @@ data class AdminUserDTO(
         course = user.course,
         branch = user.branch,
         avatar = user.avatar,
+        contact = user.contact,
     )
 }
