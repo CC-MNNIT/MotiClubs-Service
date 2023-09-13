@@ -52,4 +52,7 @@ class UserService(
 
     @CacheEvict(cacheNames = ["user", "admins", "all_users", "members"], allEntries = true)
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
+
+    @CacheEvict(cacheNames = ["user", "admins", "all_users", "members"], allEntries = true)
+    fun updateContact(uid: Long, contact: String): Mono<User> = userRepository.updateContact(uid, contact)
 }

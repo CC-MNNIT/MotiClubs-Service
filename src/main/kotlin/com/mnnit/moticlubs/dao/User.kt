@@ -25,6 +25,9 @@ data class User(
 
     @JsonProperty("avatar")
     val avatar: String,
+
+    @JsonProperty("contact")
+    val contact: String,
 ) {
     constructor(map: Map<String, Any>) : this(
         uid = map[User::uid.name].toString().toLong(),
@@ -34,6 +37,7 @@ data class User(
         course = map[User::course.name].toString(),
         branch = map[User::branch.name].toString(),
         avatar = map[User::avatar.name].toString(),
+        contact = map[User::contact.name].toString(),
     )
 
     fun toHashMap(): HashMap<String, String> = HashMap<String, String>().apply {
@@ -44,5 +48,6 @@ data class User(
         this["u_${User::course.name}"] = course
         this["u_${User::branch.name}"] = branch
         this["u_${User::avatar.name}"] = avatar
+        this["u_${User::contact.name}"] = contact
     }
 }

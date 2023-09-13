@@ -53,6 +53,15 @@ class UserRepository(
         .then(findById(uid))
 
     @Transactional
+    fun updateContact(uid: Long, contact: String): Mono<User> = db
+        .update(
+            Query.query(Criteria.where(User::uid.name).`is`(uid)),
+            Update.update(User::contact.name, contact),
+            User::class.java
+        )
+        .then(findById(uid))
+
+    @Transactional
     fun deleteById(uid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(User::uid.name).`is`(uid)).limit(1),

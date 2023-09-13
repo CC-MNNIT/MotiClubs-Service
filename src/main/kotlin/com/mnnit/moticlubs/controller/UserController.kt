@@ -4,6 +4,7 @@ import com.mnnit.moticlubs.dao.FCM
 import com.mnnit.moticlubs.dao.User
 import com.mnnit.moticlubs.dto.request.FCMTokenDTO
 import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
+import com.mnnit.moticlubs.dto.request.UpdateContactDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
 import com.mnnit.moticlubs.service.UserService
@@ -108,6 +109,20 @@ class UserController(
         .flatMap {
             LOGGER.info("updateAvatar")
             userService.updateAvatar(it, dto.avatar)
+        }
+        .invalidateStamp {
+            ResponseStamp.ADMIN.invalidateStamp()
+            ResponseStamp.USER
+        }
+        .wrapError()
+
+    @PostMapping("/contact")
+    @Operation(summary = "Updates user contact info")
+    fun updateContact(@RequestBody dto: UpdateContactDTO): Mono<ResponseEntity<User>> = pathAuthorization
+        .userAuthorization()
+        .flatMap {
+            LOGGER.info("updateContact")
+            userService.updateContact(it, dto.contact)
         }
         .invalidateStamp {
             ResponseStamp.ADMIN.invalidateStamp()
