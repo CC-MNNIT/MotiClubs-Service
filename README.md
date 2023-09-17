@@ -1,5 +1,7 @@
 # MotiClubs - Service
 
+[![Spring Maven Build](https://github.com/CC-MNNIT/MotiClubs-Service/actions/workflows/maven.yml/badge.svg)](https://github.com/CC-MNNIT/MotiClubs-Service/actions/workflows/maven.yml)
+
 This service is backend of the [MotiClubs App](https://github.com/CC-MNNIT/MotiClubs).
 
 ## Swagger URLs
@@ -13,7 +15,7 @@ This service is backend of the [MotiClubs App](https://github.com/CC-MNNIT/MotiC
 
 This service additionally requires the following files for running locally:
 
-- `r2dbc.yml`
+- `secrets.yml`
 - `firebase_private_key.json`
 
 ### Run Locally
