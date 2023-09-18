@@ -1,8 +1,9 @@
 package com.mnnit.moticlubs
 
+import com.mnnit.moticlubs.utils.ResponseStamp
 import org.junit.jupiter.api.Test
 
-class PathMatcherTest {
+class SampleTests {
 
     @Test
     fun validateMatching() {
@@ -26,5 +27,25 @@ class PathMatcherTest {
         assert(testPathAdminDiff matches matcherRegex)
         assert(!testPathAdminWrong.matches(matcherRegex))
         assert(!testPathRandom.matches(matcherRegex))
+    }
+
+    @Test
+    fun validateStampFilter() {
+        val map = HashMap<String, Boolean>().apply {
+            this[ResponseStamp.USER.getKey()] = false
+            this[ResponseStamp.ADMIN.getKey()] = false
+            this[ResponseStamp.MEMBER.withKey("23").withKey("69").getKey()] = false
+            this[ResponseStamp.MEMBER.withKey("23").withKey("6").getKey()] = false
+            this[ResponseStamp.MEMBER.withKey("23").getKey()] = false
+            this[ResponseStamp.MEMBER.withKey("69").getKey()] = false
+            this[ResponseStamp.MEMBER.getKey()] = false
+        }
+
+        val keys = map.keys.filter { it.contains(ResponseStamp.MEMBER.withKey("23").getKey()) }
+        keys.forEach { map[it] = true }
+
+        assert(map["MEMBER:23:69"] ?: false)
+        assert(map["MEMBER:23:6"] ?: false)
+        assert(map["MEMBER:23"] ?: false)
     }
 }
