@@ -3,15 +3,26 @@ package com.mnnit.moticlubs.controller
 import com.mnnit.moticlubs.dao.Club
 import com.mnnit.moticlubs.dto.request.UpdateClubDTO
 import com.mnnit.moticlubs.service.ClubService
-import com.mnnit.moticlubs.utils.*
+import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CLUBS_ROUTE
 import com.mnnit.moticlubs.utils.Constants.CLUB_ID_CLAIM
+import com.mnnit.moticlubs.utils.ResponseStamp
+import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.apiWrapper
+import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
@@ -37,14 +48,14 @@ class ClubController(
         serviceCall = {
             LOGGER.info("getClubs")
             clubService.getAllClubs()
-        }
+        },
     )
 
     @PutMapping("/{$CLUB_ID_CLAIM}")
     @Operation(summary = "Updates club avatar, description and summary")
     fun updateClub(
         @RequestBody dto: UpdateClubDTO,
-        @PathVariable clubId: Long
+        @PathVariable clubId: Long,
     ): Mono<ResponseEntity<Club>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {

@@ -3,16 +3,30 @@ package com.mnnit.moticlubs.controller
 import com.mnnit.moticlubs.dao.Post
 import com.mnnit.moticlubs.dto.request.UpdatePostDTO
 import com.mnnit.moticlubs.service.PostService
-import com.mnnit.moticlubs.utils.*
+import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.POSTS_ROUTE
 import com.mnnit.moticlubs.utils.Constants.POST_ID_CLAIM
+import com.mnnit.moticlubs.utils.ResponseStamp
+import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.apiWrapper
+import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
@@ -41,14 +55,14 @@ class PostController(
         serviceCall = {
             LOGGER.info("getPostsByChannel: chid: $channelId; page: $page; items: $items")
             postService.getPostsByChannel(channelId, PageRequest.of(maxOf(page - 1, 0), items))
-        }
+        },
     )
 
     @PostMapping
     @Operation(summary = "Saves post and notify users")
     fun savePost(
         @RequestBody post: Post,
-        @RequestParam clubId: Long
+        @RequestParam clubId: Long,
     ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
@@ -63,7 +77,7 @@ class PostController(
     fun updatePost(
         @RequestBody dto: UpdatePostDTO,
         @PathVariable postId: Long,
-        @RequestParam clubId: Long
+        @RequestParam clubId: Long,
     ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {
@@ -77,7 +91,7 @@ class PostController(
     @Operation(summary = "Deletes post")
     fun deletePost(
         @PathVariable postId: Long,
-        @RequestParam clubId: Long
+        @RequestParam clubId: Long,
     ): Mono<ResponseEntity<Void>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {

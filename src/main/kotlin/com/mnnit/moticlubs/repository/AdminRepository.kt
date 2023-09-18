@@ -29,7 +29,7 @@ class AdminRepository(
         .map {
             AdminUserDTO(
                 clubId = it[Admin::cid.name].toString().toLong(),
-                user = User(it)
+                user = User(it),
             )
         }
 
@@ -37,7 +37,7 @@ class AdminRepository(
     fun findAllByCid(cid: Long): Flux<Admin> = db
         .select(
             Query.query(Criteria.where(Admin::cid.name).`is`(cid)),
-            Admin::class.java
+            Admin::class.java,
         )
 
     @Transactional
@@ -48,10 +48,10 @@ class AdminRepository(
                     .where(Admin::cid.name)
                     .`is`(admin.cid)
                     .and(
-                        Criteria.where(Admin::uid.name).`is`(admin.uid)
-                    )
+                        Criteria.where(Admin::uid.name).`is`(admin.uid),
+                    ),
             ),
-            Admin::class.java
+            Admin::class.java,
         )
 
     @Transactional

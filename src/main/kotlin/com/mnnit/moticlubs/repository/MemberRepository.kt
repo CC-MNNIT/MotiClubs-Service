@@ -22,7 +22,7 @@ class MemberRepository(
     fun findAllByChid(chid: Long): Flux<Member> = db
         .select(
             Query.query(Criteria.where(Member::chid.name).`is`(chid)),
-            Member::class.java
+            Member::class.java,
         )
 
     @Transactional
@@ -32,10 +32,10 @@ class MemberRepository(
                 Criteria
                     .where(Member::chid.name).`is`(member.chid)
                     .and(
-                        Criteria.where(Member::uid.name).`is`(member.uid)
-                    )
+                        Criteria.where(Member::uid.name).`is`(member.uid),
+                    ),
             ),
-            Member::class.java
+            Member::class.java,
         )
 
     @Transactional
@@ -47,7 +47,7 @@ class MemberRepository(
     fun deleteAllByUid(uid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Member::uid.name).`is`(uid)),
-            Member::class.java
+            Member::class.java,
         )
         .then()
 
@@ -55,7 +55,7 @@ class MemberRepository(
     fun deleteAllByChid(chid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Member::chid.name).`is`(chid)),
-            Member::class.java
+            Member::class.java,
         )
         .then()
 }

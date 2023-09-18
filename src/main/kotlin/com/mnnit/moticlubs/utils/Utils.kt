@@ -14,11 +14,12 @@ import java.time.Duration
 fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
     when (it) {
         is UnauthorizedException,
-        is CachedException -> it
+        is CachedException,
+        -> it
 
         else -> ResponseStatusException(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            it.localizedMessage
+            it.localizedMessage,
         )
     }
 }
@@ -27,7 +28,7 @@ fun <T : Any> apiWrapper(
     key: ResponseStamp.StampKey,
     stampValue: Long,
     authorization: () -> Mono<Long>,
-    serviceCall: (data: Long) -> Mono<T>
+    serviceCall: (data: Long) -> Mono<T>,
 ): Mono<ResponseEntity<T>> = authorization()
     .flatMap { if (key.validateLast(stampValue)) Mono.empty() else Mono.just(it) }
     .flatMap { serviceCall(it) }
@@ -40,7 +41,7 @@ fun <T : Any> apiWrapper(
         Mono.just(
             ResponseEntity.status(HttpStatus.NOT_MODIFIED)
                 .header(Constants.STAMP_HEADER, key.getString(stampValue))
-                .build()
+                .build(),
         )
     }
     .wrapError()
@@ -56,12 +57,14 @@ fun <T> Mono<T>.invalidateStamp(
 
 fun Mono<Void>.invalidateStamp(
     getStampKey: () -> ResponseStamp.StampKey,
-): Mono<ResponseEntity<Void>> = then(Mono.fromCallable {
-    val updatedStamp = getStampKey().invalidateStamp()
-    ResponseEntity.ok()
-        .header(Constants.STAMP_HEADER, updatedStamp.toString())
-        .build()
-})
+): Mono<ResponseEntity<Void>> = then(
+    Mono.fromCallable {
+        val updatedStamp = getStampKey().invalidateStamp()
+        ResponseEntity.ok()
+            .header(Constants.STAMP_HEADER, updatedStamp.toString())
+            .build()
+    },
+)
 
 fun <T> Mono<T>.storeCache(): Mono<T> = cache(Duration.ofSeconds(120))
 

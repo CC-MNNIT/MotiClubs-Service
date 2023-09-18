@@ -3,7 +3,7 @@ package com.mnnit.moticlubs.web.security
 import com.auth0.jwt.interfaces.DecodedJWT
 
 class AuthenticationToken(
-    private val decodedJWT: DecodedJWT
+    private val decodedJWT: DecodedJWT,
 ) {
 
     val isEmailVerified

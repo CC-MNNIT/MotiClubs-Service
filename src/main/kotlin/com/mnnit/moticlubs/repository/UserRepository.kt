@@ -23,7 +23,7 @@ class UserRepository(
     fun findById(uid: Long): Mono<User> = db
         .selectOne(
             Query.query(Criteria.where(User::uid.name).`is`(uid)).limit(1),
-            User::class.java
+            User::class.java,
         )
 
     @Transactional
@@ -33,14 +33,14 @@ class UserRepository(
     fun findByRegNo(regNo: String): Mono<User> = db
         .selectOne(
             Query.query(Criteria.where(User::regno.name).`is`(regNo)).limit(1),
-            User::class.java
+            User::class.java,
         )
 
     @Transactional
     fun exists(user: User): Mono<Boolean> = db
         .exists(
             Query.query(Criteria.where(User::email.name).`is`(user.email)),
-            User::class.java
+            User::class.java,
         )
 
     @Transactional
@@ -48,7 +48,7 @@ class UserRepository(
         .update(
             Query.query(Criteria.where(User::uid.name).`is`(uid)),
             Update.update(User::avatar.name, avatar),
-            User::class.java
+            User::class.java,
         )
         .then(findById(uid))
 
@@ -57,7 +57,7 @@ class UserRepository(
         .update(
             Query.query(Criteria.where(User::uid.name).`is`(uid)),
             Update.update(User::contact.name, contact),
-            User::class.java
+            User::class.java,
         )
         .then(findById(uid))
 
@@ -65,7 +65,7 @@ class UserRepository(
     fun deleteById(uid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(User::uid.name).`is`(uid)).limit(1),
-            User::class.java
+            User::class.java,
         )
         .then()
 }

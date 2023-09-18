@@ -26,7 +26,7 @@ class PostRepository(
     fun findById(pid: Long): Mono<Post> = db
         .selectOne(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)).limit(1),
-            Post::class.java
+            Post::class.java,
         )
 
     @Transactional
@@ -36,18 +36,20 @@ class PostRepository(
                 .sort(Sort.by(Sort.Direction.DESC, Post::updated.name))
                 .limit(pageRequest.pageSize)
                 .offset(pageRequest.offset),
-            Post::class.java
+            Post::class.java,
         )
 
     @Transactional
     fun updatePost(pid: Long, dto: UpdatePostDTO): Mono<Post> = db
         .update(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)),
-            Update.from(HashMap<SqlIdentifier, Any>().apply {
-                this[SqlIdentifier.unquoted(Post::message.name)] = dto.message
-                this[SqlIdentifier.unquoted(Post::updated.name)] = dto.updated
-            }),
-            Post::class.java
+            Update.from(
+                HashMap<SqlIdentifier, Any>().apply {
+                    this[SqlIdentifier.unquoted(Post::message.name)] = dto.message
+                    this[SqlIdentifier.unquoted(Post::updated.name)] = dto.updated
+                },
+            ),
+            Post::class.java,
         )
         .flatMap { findById(pid) }
 
@@ -55,7 +57,7 @@ class PostRepository(
     fun deleteById(pid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Post::pid.name).`is`(pid)),
-            Post::class.java
+            Post::class.java,
         )
         .then()
 }

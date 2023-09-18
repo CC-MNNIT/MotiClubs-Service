@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit
 @Service
 class KeyProvider(
     private val googleClient: GoogleClient,
-    private val properties: FirebaseConfiguration.Properties
+    private val properties: FirebaseConfiguration.Properties,
 ) {
 
     private data class PublicCert(
         val maxAge: Long,
-        val publicKeys: Map<String, JWTVerifier>
+        val publicKeys: Map<String, JWTVerifier>,
     )
 
     companion object {
@@ -85,7 +85,7 @@ class KeyProvider(
         val header = JWTParser().parseHeader(
             Base64.getUrlDecoder()
                 .decode(jwt.split(".")[0])
-                .toString(StandardCharsets.UTF_8)
+                .toString(StandardCharsets.UTF_8),
         )
 
         val verifier = cert.publicKeys[header.keyId]
@@ -105,7 +105,7 @@ class KeyProvider(
             publicKey
                 .replace("-----BEGIN CERTIFICATE-----\n", "")
                 .replace("-----END CERTIFICATE-----\n", "")
-                .replace("\n", "")
+                .replace("\n", ""),
         )
         val certificate = CertificateFactory.getInstance("X.509")
             .generateCertificate(ByteArrayInputStream(decode)) as X509Certificate

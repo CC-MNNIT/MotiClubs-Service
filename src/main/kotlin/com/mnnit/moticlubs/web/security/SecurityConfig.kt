@@ -43,24 +43,30 @@ class SecurityConfig(
         keyProvider: KeyProvider,
     ): SecurityWebFilterChain = http
         .csrf { it.disable() }
-
-        // Change context path of service
-        .addFilterAt({ exchange, chain ->
-            chain.filter(
-                exchange.mutate()
-                    .request(exchange.request.mutate().contextPath(contextPath).build())
-                    .build()
-            )
-        }, SecurityWebFiltersOrder.FIRST)
-
-        // Firebase auth for APIs
-        .addFilterAt(firebaseAuthTokenFilter(keyProvider), SecurityWebFiltersOrder.AUTHENTICATION)
-
-        // Store requestId for logging and tracing
-        .addFilterAt({ exchange, chain ->
-            putReqId(exchange.request.id)
-            chain.filter(exchange)
-        }, SecurityWebFiltersOrder.AUTHORIZATION)
+        .addFilterAt(
+            // Change context path of service
+            { exchange, chain ->
+                chain.filter(
+                    exchange.mutate()
+                        .request(exchange.request.mutate().contextPath(contextPath).build())
+                        .build(),
+                )
+            },
+            SecurityWebFiltersOrder.FIRST,
+        )
+        .addFilterAt(
+            // Firebase auth for APIs
+            firebaseAuthTokenFilter(keyProvider),
+            SecurityWebFiltersOrder.AUTHENTICATION,
+        )
+        .addFilterAt(
+            // Store requestId for logging and tracing
+            { exchange, chain ->
+                putReqId(exchange.request.id)
+                chain.filter(exchange)
+            },
+            SecurityWebFiltersOrder.AUTHORIZATION,
+        )
         .authorizeExchange { spec ->
             spec.pathMatchers(
                 "/actuator/**",
@@ -76,10 +82,10 @@ class SecurityConfig(
         ReactiveAuthenticationManager { auth ->
             val token = auth.principal as AuthenticationToken
             LOGGER.info(
-                "authentication: emailVerified: ${token.isEmailVerified}; claims: ${token.userId}"
+                "authentication: emailVerified: ${token.isEmailVerified}; claims: ${token.userId}",
             )
             Mono.just(auth.apply { isAuthenticated = true })
-        }
+        },
     ).apply {
         setServerAuthenticationConverter { exchange ->
             putReqId(exchange.request.id)
@@ -98,7 +104,7 @@ class SecurityConfig(
                 ?.replace("Bearer", "")
                 ?.trim()
                 ?: return@setServerAuthenticationConverter Mono.error(
-                    UnauthorizedException("Missing firebase auth token")
+                    UnauthorizedException("Missing firebase auth token"),
                 )
 
             try {

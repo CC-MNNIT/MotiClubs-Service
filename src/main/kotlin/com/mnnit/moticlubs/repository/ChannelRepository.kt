@@ -23,7 +23,10 @@ class ChannelRepository(
     @Transactional
     fun findAll(uid: Long): Flux<Channel> = db
         .databaseClient
-        .sql("SELECT channel.* FROM channel INNER JOIN member ON channel.chid = member.chid WHERE uid = :uid UNION (SELECT * FROM channel WHERE private = 0) ORDER BY chid")
+        .sql(
+            "SELECT channel.* FROM channel INNER JOIN member ON channel.chid = member.chid " +
+                "WHERE uid = :uid UNION (SELECT * FROM channel WHERE private = 0) ORDER BY chid",
+        )
         .bind(0, uid)
         .fetch()
         .all()
@@ -33,25 +36,27 @@ class ChannelRepository(
     fun findById(chid: Long): Mono<Channel> = db
         .selectOne(
             Query.query(Criteria.where(Channel::chid.name).`is`(chid)).limit(1),
-            Channel::class.java
+            Channel::class.java,
         )
 
     @Transactional
     fun findByCid(cid: Long): Flux<Channel> = db
         .select(
             Query.query(Criteria.where(Channel::cid.name).`is`(cid)),
-            Channel::class.java
+            Channel::class.java,
         )
 
     @Transactional
     fun update(chid: Long, dto: UpdateChannelDTO): Mono<Channel> = db
         .update(
             Query.query(Criteria.where(Channel::chid.name).`is`(chid)),
-            Update.from(HashMap<SqlIdentifier, Any>().apply {
-                this[SqlIdentifier.unquoted(Channel::name.name)] = dto.name
-                this[SqlIdentifier.unquoted(Channel::private.name)] = if (dto.private) 1 else 0
-            }),
-            Channel::class.java
+            Update.from(
+                HashMap<SqlIdentifier, Any>().apply {
+                    this[SqlIdentifier.unquoted(Channel::name.name)] = dto.name
+                    this[SqlIdentifier.unquoted(Channel::private.name)] = if (dto.private) 1 else 0
+                },
+            ),
+            Channel::class.java,
         )
         .flatMap { findById(chid) }
 
@@ -59,7 +64,7 @@ class ChannelRepository(
     fun deleteById(chid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Channel::chid.name).`is`(chid)),
-            Channel::class.java
+            Channel::class.java,
         )
         .then()
 }

@@ -22,10 +22,10 @@ class ViewRepository(
                     .where(View::pid.name)
                     .`is`(view.pid)
                     .and(
-                        Criteria.where(View::uid.name).`is`(view.uid)
-                    )
+                        Criteria.where(View::uid.name).`is`(view.uid),
+                    ),
             ),
-            View::class.java
+            View::class.java,
         )
         .flatMap { if (it) Mono.just(view) else db.insert(view) }
 
@@ -33,6 +33,6 @@ class ViewRepository(
     fun findAllByPid(pid: Long): Flux<View> = db
         .select(
             Query.query(Criteria.where(View::pid.name).`is`(pid)),
-            View::class.java
+            View::class.java,
         )
 }

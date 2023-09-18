@@ -2,8 +2,19 @@ package com.mnnit.moticlubs.service
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
-import com.mnnit.moticlubs.dao.*
-import com.mnnit.moticlubs.repository.*
+import com.mnnit.moticlubs.dao.Channel
+import com.mnnit.moticlubs.dao.Club
+import com.mnnit.moticlubs.dao.FCM
+import com.mnnit.moticlubs.dao.Post
+import com.mnnit.moticlubs.dao.Reply
+import com.mnnit.moticlubs.dao.User
+import com.mnnit.moticlubs.repository.ChannelRepository
+import com.mnnit.moticlubs.repository.ClubRepository
+import com.mnnit.moticlubs.repository.FCMRepository
+import com.mnnit.moticlubs.repository.MemberRepository
+import com.mnnit.moticlubs.repository.PostRepository
+import com.mnnit.moticlubs.repository.ReplyRepository
+import com.mnnit.moticlubs.repository.UserRepository
 import com.mnnit.moticlubs.utils.ServiceLogger
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -40,10 +51,12 @@ class NotificationService(
 
             clubRepository.findById(channel.cid)
                 .flatMap { club ->
-                    Mono.just(getPostPayload(post, user, club, channel).apply {
-                        this["type"] = Type.POST.ordinal.toString()
-                        this["updated"] = updated.toString()
-                    })
+                    Mono.just(
+                        getPostPayload(post, user, club, channel).apply {
+                            this["type"] = Type.POST.ordinal.toString()
+                            this["updated"] = updated.toString()
+                        },
+                    )
                 }
                 .flatMap { payload ->
                     if (channel.private) {
@@ -58,11 +71,13 @@ class NotificationService(
 
     fun notifyDeletePost(post: Post): Mono<Void> = Mono.just(post)
         .flatMap { p ->
-            Mono.just(HashMap<String, String>().apply {
-                this["type"] = Type.DELETE_POST.ordinal.toString()
-                this["pid"] = p.pid.toString()
-                this["chid"] = p.chid.toString()
-            })
+            Mono.just(
+                HashMap<String, String>().apply {
+                    this["type"] = Type.DELETE_POST.ordinal.toString()
+                    this["pid"] = p.pid.toString()
+                    this["chid"] = p.chid.toString()
+                },
+            )
         }.flatMap { payload ->
             LOGGER.info("notifyDeletePost: payload: $payload")
             notifyAll(payload)
@@ -89,12 +104,14 @@ class NotificationService(
 
     fun notifyDeleteReply(reply: Reply): Mono<Void> = postRepository.findById(reply.pid)
         .flatMap { post ->
-            Mono.just(HashMap<String, String>().apply {
-                this["type"] = Type.DELETE_REPLY.ordinal.toString()
-                this["pid"] = reply.pid.toString()
-                this["chid"] = post.chid.toString()
-                this["time"] = reply.time.toString()
-            })
+            Mono.just(
+                HashMap<String, String>().apply {
+                    this["type"] = Type.DELETE_REPLY.ordinal.toString()
+                    this["pid"] = reply.pid.toString()
+                    this["chid"] = post.chid.toString()
+                    this["time"] = reply.time.toString()
+                },
+            )
         }
         .flatMap { payload ->
             LOGGER.info("notifyDeleteReply: payload: $payload")
@@ -132,7 +149,7 @@ class NotificationService(
             memberRepository.findAllByChid(chid)
                 .flatMap { fcmRepository.findById(it.uid) }
                 .distinct { it.uid }
-                .flatMap { fcm -> sendNotification(fcm, payload) }
+                .flatMap { fcm -> sendNotification(fcm, payload) },
         )
 
     private fun notifyPostParticipants(pid: Long, payload: HashMap<String, String>): Mono<Void> = Mono
@@ -140,7 +157,7 @@ class NotificationService(
             replyRepository.findUidByPid(pid)
                 .distinct()
                 .flatMap { fcmRepository.findById(it) }
-                .flatMap { fcm -> sendNotification(fcm, payload) }
+                .flatMap { fcm -> sendNotification(fcm, payload) },
         )
 
     private fun notifyAll(payload: HashMap<String, String>): Mono<Void> = fcmRepository
@@ -155,12 +172,12 @@ class NotificationService(
                     Message.builder()
                         .setToken(fcm.token)
                         .putAllData(payload)
-                        .build()
+                        .build(),
                 )
                 LOGGER.debug("FCM: notification sent: ID: $messageId")
             } catch (e: Exception) {
                 LOGGER.warn("Unable to send notification to ${fcm.uid}: ${e.localizedMessage}")
-            }
+            },
         )
         .then()
 }

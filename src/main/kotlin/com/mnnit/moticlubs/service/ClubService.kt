@@ -32,7 +32,7 @@ class ClubService(
 
     @CacheEvict(
         cacheNames = ["all_clubs", "urls", "admins", "all_channels", "members", "post", "replies"],
-        allEntries = true
+        allEntries = true,
     )
     fun deleteClubByCid(cid: Long): Mono<Void> = clubRepository.deleteById(cid)
 }

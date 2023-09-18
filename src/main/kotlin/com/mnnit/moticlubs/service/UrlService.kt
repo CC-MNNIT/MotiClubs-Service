@@ -19,7 +19,7 @@ class UrlService(
         .then(
             urlRepository
                 .saveAll(urls)
-                .collectList()
+                .collectList(),
         )
 
     @Cacheable("urls", key = "#cid")

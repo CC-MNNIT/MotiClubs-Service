@@ -17,6 +17,6 @@ class SuperAdminRepository(
     fun existsById(uid: Long): Mono<Boolean> = db
         .exists(
             Query.query(Criteria.where(SuperAdmin::uid.name).`is`(uid)),
-            SuperAdmin::class.java
+            SuperAdmin::class.java,
         )
 }

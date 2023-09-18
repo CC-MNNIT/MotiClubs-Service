@@ -23,7 +23,7 @@ class ReplyRepository(
     fun findById(rid: Long): Mono<Reply> = db
         .selectOne(
             Query.query(Criteria.where(Reply::time.name).`is`(rid)).limit(1),
-            Reply::class.java
+            Reply::class.java,
         )
 
     @Transactional
@@ -33,14 +33,14 @@ class ReplyRepository(
                 .sort(Sort.by(Sort.Direction.DESC, Reply::time.name))
                 .limit(pageRequest.pageSize)
                 .offset(pageRequest.offset),
-            Reply::class.java
+            Reply::class.java,
         )
 
     @Transactional
     fun findUidByPid(pid: Long): Flux<Long> = db
         .select(
             Query.query(Criteria.where(Reply::pid.name).`is`(pid)),
-            Reply::class.java
+            Reply::class.java,
         )
         .map { it.uid }
 
@@ -48,7 +48,7 @@ class ReplyRepository(
     fun deleteById(rid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Reply::time.name).`is`(rid)),
-            Reply::class.java
+            Reply::class.java,
         )
         .then()
 }

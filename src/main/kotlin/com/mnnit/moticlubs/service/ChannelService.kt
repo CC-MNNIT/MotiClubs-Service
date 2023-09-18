@@ -41,7 +41,9 @@ class ChannelService(
                             Mono.error(UnauthorizedException("User is not allowed to view this channel"))
                         }
                     }
-            } else Mono.just(channel)
+            } else {
+                Mono.just(channel)
+            }
         }
 
     @CacheEvict(cacheNames = ["all_channels", "members"], allEntries = true)

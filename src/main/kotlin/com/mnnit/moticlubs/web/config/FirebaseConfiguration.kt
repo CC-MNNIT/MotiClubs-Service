@@ -29,7 +29,7 @@ class FirebaseConfiguration {
         .initializeApp(
             FirebaseOptions.builder()
                 .setCredentials(googleCredentials)
-                .build()
+                .build(),
         )
 
     @Bean

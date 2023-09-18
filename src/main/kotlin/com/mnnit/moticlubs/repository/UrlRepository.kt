@@ -18,19 +18,18 @@ class UrlRepository(
     fun saveAll(list: List<Url>): Flux<Url> = Flux.fromIterable(list)
         .concatMap { db.insert(it) }
 
-
     @Transactional
     fun findAllByCid(cid: Long): Flux<Url> = db
         .select(
             Query.query(Criteria.where(Url::cid.name).`is`(cid)),
-            Url::class.java
+            Url::class.java,
         )
 
     @Transactional
     fun deleteAllByCid(cid: Long): Mono<Void> = db
         .delete(
             Query.query(Criteria.where(Url::cid.name).`is`(cid)),
-            Url::class.java
+            Url::class.java,
         )
         .then()
 }

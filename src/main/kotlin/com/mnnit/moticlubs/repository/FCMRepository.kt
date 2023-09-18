@@ -22,7 +22,7 @@ class FCMRepository(
     fun findById(uid: Long): Mono<FCM> = db
         .selectOne(
             Query.query(Criteria.where(FCM::uid.name).`is`(uid)).limit(1),
-            FCM::class.java
+            FCM::class.java,
         )
 
     @Transactional
@@ -32,7 +32,7 @@ class FCMRepository(
     fun exists(fcm: FCM): Mono<Boolean> = db
         .exists(
             Query.query(Criteria.where(FCM::uid.name).`is`(fcm.uid)),
-            FCM::class.java
+            FCM::class.java,
         )
 
     @Transactional

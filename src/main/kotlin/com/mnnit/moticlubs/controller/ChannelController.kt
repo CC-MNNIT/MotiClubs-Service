@@ -6,15 +6,29 @@ import com.mnnit.moticlubs.dto.request.MembersDTO
 import com.mnnit.moticlubs.dto.request.UpdateChannelDTO
 import com.mnnit.moticlubs.service.ChannelService
 import com.mnnit.moticlubs.service.MemberService
-import com.mnnit.moticlubs.utils.*
+import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ROUTE
+import com.mnnit.moticlubs.utils.ResponseStamp
+import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.apiWrapper
+import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
@@ -41,7 +55,7 @@ class ChannelController(
         serviceCall = { uid ->
             LOGGER.info("getAllChannels")
             channelService.getAllChannels(uid)
-        }
+        },
     )
 
     @GetMapping("/{$CHANNEL_ID_CLAIM}")
@@ -56,7 +70,7 @@ class ChannelController(
         serviceCall = { uid ->
             LOGGER.info("getChannelFromChid: chid: $channelId")
             channelService.getChannelByChID(uid, channelId)
-        }
+        },
     )
 
     @GetMapping("/members/{${CHANNEL_ID_CLAIM}}")
@@ -71,7 +85,7 @@ class ChannelController(
         serviceCall = {
             LOGGER.info("getMembers: chid: $channelId")
             memberService.getMembersByChid(channelId)
-        }
+        },
     )
 
     @PostMapping("/members")
@@ -115,7 +129,7 @@ class ChannelController(
     @Operation(summary = "Updates the name of channel")
     fun updateChannel(
         @RequestBody dto: UpdateChannelDTO,
-        @PathVariable channelId: Long
+        @PathVariable channelId: Long,
     ): Mono<ResponseEntity<Channel>> = pathAuthorization
         .clubAuthorization(dto.cid)
         .flatMap {
@@ -129,7 +143,7 @@ class ChannelController(
     @Operation(summary = "Deletes the channel and the posts in it")
     fun deleteChannel(
         @RequestParam clubId: Long,
-        @PathVariable channelId: Long
+        @PathVariable channelId: Long,
     ): Mono<ResponseEntity<Void>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {

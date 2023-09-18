@@ -7,12 +7,12 @@ class UnauthorizedException(
     override val message: String,
 ) : ResponseStatusException(
     HttpStatus.UNAUTHORIZED,
-    message
+    message,
 )
 
 class CachedException(
     override val message: String,
 ) : ResponseStatusException(
     HttpStatus.NOT_MODIFIED,
-    message
+    message,
 )

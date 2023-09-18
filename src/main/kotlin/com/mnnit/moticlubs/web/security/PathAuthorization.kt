@@ -1,10 +1,8 @@
 package com.mnnit.moticlubs.web.security
 
-import com.google.firebase.auth.FirebaseToken
 import com.mnnit.moticlubs.dao.Admin
 import com.mnnit.moticlubs.repository.AdminRepository
 import com.mnnit.moticlubs.repository.SuperAdminRepository
-import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.getReqId

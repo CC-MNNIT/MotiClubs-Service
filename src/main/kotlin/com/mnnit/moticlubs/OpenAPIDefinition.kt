@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.servers.Server
 @SecurityScheme(
     type = SecuritySchemeType.HTTP,
     name = "Firebase Auth",
-    scheme = "Bearer"
+    scheme = "Bearer",
 )
 @OpenAPIDefinition(
     info = Info(
@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.servers.Server
         contact = Contact(
             name = "CC-Club MNNIT",
             url = "https://github.com/CC-MNNIT",
-            email = "computer.club@mnnit.ac.in"
+            email = "computer.club@mnnit.ac.in",
         ),
     ),
     servers = [
@@ -33,6 +33,6 @@ import io.swagger.v3.oas.annotations.servers.Server
             description = "Production",
         ),
     ],
-    security = [SecurityRequirement(name = "Firebase Auth")]
+    security = [SecurityRequirement(name = "Firebase Auth")],
 )
 class OpenAPIDefinition
