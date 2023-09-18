@@ -32,6 +32,6 @@ jobs:
           SEC: ${{ secrets.SEC }}
         run: chmod +x ./decrypt.sh && ./decrypt.sh
       - name: Build with Maven
-        run: mvn -B clean package --file pom.xml -T 8
+        run: mvn -B clean ktlint:check package --file pom.xml -T 8
       - name: Clean up secrets
         run: rm -rf src/main/resources/secrets.yml && rm -rf src/main/resources/firebase_private_key.json
