@@ -11,6 +11,7 @@ import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.CHANNEL_ROUTE
 import com.mnnit.moticlubs.utils.ResponseStamp
+import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
@@ -96,7 +97,10 @@ class ChannelController(
             LOGGER.info("addMembers: cid: ${dto.cid}; chid: ${dto.chid}")
             memberService.addMembers(dto)
         }
-        .invalidateStamp { ResponseStamp.MEMBER.withKey("${dto.chid}") }
+        .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.MEMBER.withKey("${dto.chid}")
+        }
         .wrapError()
 
     @DeleteMapping("/members")
@@ -111,7 +115,10 @@ class ChannelController(
             LOGGER.info("removeMembers: cid: $clubId; chid: $channelId; uid: $userId")
             memberService.removeMember(channelId, userId)
         }
-        .invalidateStamp { ResponseStamp.MEMBER.withKey("$channelId") }
+        .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.MEMBER.withKey("$channelId")
+        }
         .wrapError()
 
     @PostMapping
@@ -122,7 +129,10 @@ class ChannelController(
             LOGGER.info("createChannel: channel: $channel")
             channelService.saveChannel(channel)
         }
-        .invalidateStamp { ResponseStamp.CHANNEL }
+        .invalidateStamp {
+            ResponseStamp.MEMBER.withKey("${channel.chid}").invalidateStamp()
+            ResponseStamp.CHANNEL
+        }
         .wrapError()
 
     @PutMapping("/{$CHANNEL_ID_CLAIM}")
@@ -150,6 +160,10 @@ class ChannelController(
             LOGGER.info("deleteChannel: chid: $channelId; cid: $clubId")
             channelService.deleteChannelByChID(channelId)
         }
-        .invalidateStamp { ResponseStamp.CHANNEL }
+        .invalidateStamp {
+            ResponseStamp.POST.withKey("$channelId").invalidateStamp()
+            ResponseStamp.MEMBER.withKey("$channelId").invalidateStamp()
+            ResponseStamp.CHANNEL
+        }
         .wrapError()
 }
