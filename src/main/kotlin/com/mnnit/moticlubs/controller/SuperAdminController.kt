@@ -86,6 +86,7 @@ class SuperAdminController(
             adminService.saveAdmin(dto)
         }
         .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
             ResponseStamp.MEMBER.invalidateStamp()
             ResponseStamp.ADMIN
         }
@@ -100,6 +101,7 @@ class SuperAdminController(
             adminService.removeAdmin(dto)
         }
         .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
             ResponseStamp.MEMBER.invalidateStamp()
             ResponseStamp.ADMIN
         }
