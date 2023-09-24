@@ -10,6 +10,7 @@ import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.CLUBS_ROUTE
 import com.mnnit.moticlubs.utils.Constants.CLUB_ID_CLAIM
+import com.mnnit.moticlubs.utils.Constants.URL_ROUTE
 import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
@@ -71,7 +72,7 @@ class ClubController(
         .invalidateStamp { ResponseStamp.CLUB }
         .wrapError()
 
-    @GetMapping("/url")
+    @GetMapping("/$URL_ROUTE")
     @Operation(summary = "Returns list of urls for the club")
     fun getUrls(
         @RequestParam clubId: Long,
@@ -86,7 +87,7 @@ class ClubController(
         },
     )
 
-    @PostMapping("/url")
+    @PostMapping("/$URL_ROUTE")
     @Operation(summary = "Updates the list of urls for the club")
     fun updateUrls(
         @RequestBody dto: SaveUrlsDTO,

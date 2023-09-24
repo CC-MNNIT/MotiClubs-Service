@@ -9,6 +9,7 @@ import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.POSTS_ROUTE
 import com.mnnit.moticlubs.utils.Constants.POST_ID_CLAIM
+import com.mnnit.moticlubs.utils.Constants.VIEWS_ROUTE
 import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
@@ -104,7 +105,7 @@ class PostController(
         .invalidateStamp { ResponseStamp.POST }
         .wrapError()
 
-    @GetMapping("/views")
+    @GetMapping("/$VIEWS_ROUTE")
     @Operation(summary = "Get number of views of a post")
     fun getViews(@RequestParam postId: Long): Mono<List<View>> = pathAuthorization
         .userAuthorization()
@@ -114,7 +115,7 @@ class PostController(
         }
         .wrapError()
 
-    @PostMapping("/views")
+    @PostMapping("/$VIEWS_ROUTE")
     @Operation(summary = "Add views of a post")
     fun addView(@RequestBody view: View): Mono<View> = pathAuthorization
         .userAuthorization()
