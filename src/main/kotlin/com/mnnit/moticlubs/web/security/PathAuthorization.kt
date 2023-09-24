@@ -8,7 +8,6 @@ import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.getReqId
 import com.mnnit.moticlubs.utils.putReqId
-import com.nimbusds.jwt.JWTParser
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
 import org.springframework.stereotype.Component
@@ -46,17 +45,11 @@ class PathAuthorization(
             Mono.just(userId)
         }
 
-    private fun validateOidcUser(user: DefaultOidcUser): Mono<Pair<Long, Boolean>> {
-        val jwtClaims = JWTParser.parse(user.idToken.tokenValue).jwtClaimsSet
-        val isEmailVerified = jwtClaims.claims["email_verified"]?.toString()?.toBoolean() ?: false
-        val email = jwtClaims.claims["email"]?.toString()
-
-        email ?: return Mono.error(UnauthorizedException("Missing email"))
-
-        return userRepository.findByEmail(email)
-            .map { Pair(it.uid, isEmailVerified) }
-            .switchIfEmpty { Mono.error(UnauthorizedException("Invalid user")) }
-    }
+    private fun validateOidcUser(
+        user: DefaultOidcUser,
+    ): Mono<Pair<Long, Boolean>> = userRepository.findByEmail(user.email)
+        .map { Pair(it.uid, user.emailVerified) }
+        .switchIfEmpty { Mono.error(UnauthorizedException("Invalid user")) }
 
     fun clubAuthorization(cid: Long): Mono<Long> = userAuthorization()
         .flatMap { uid ->

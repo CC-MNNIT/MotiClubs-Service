@@ -1,6 +1,7 @@
 package com.mnnit.moticlubs.web.security
 
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
+import com.mnnit.moticlubs.utils.Constants.EMAIL_REGEX
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.putReqId
@@ -9,10 +10,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import reactor.core.publisher.Mono
@@ -75,12 +78,20 @@ class SecurityConfig(
                 "/actuator/**",
                 "/login/**",
             ).permitAll()
-                .anyExchange().authenticated()
+                .anyExchange().access { authentication, _ ->
+                    authentication.map { auth ->
+                        when (val principal = auth.principal) {
+                            is AuthenticationToken -> AuthorizationDecision(true)
+                            is DefaultOidcUser -> AuthorizationDecision(principal.email matches EMAIL_REGEX)
+                            else -> AuthorizationDecision(false)
+                        }
+                    }
+                }
         }
         .oauth2Login { }
         .oauth2Client { }
         .oauth2ResourceServer { it.jwt { } }
-        .logout { }
+        .logout { it.logoutUrl("/logout") }
         .build()
 
     private fun firebaseAuthTokenFilter(keyProvider: KeyProvider): AuthenticationWebFilter = AuthenticationWebFilter(
