@@ -1,8 +1,10 @@
 package com.mnnit.moticlubs.controller
 
 import com.mnnit.moticlubs.dao.Post
+import com.mnnit.moticlubs.dao.View
 import com.mnnit.moticlubs.dto.request.UpdatePostDTO
 import com.mnnit.moticlubs.service.PostService
+import com.mnnit.moticlubs.service.ViewService
 import com.mnnit.moticlubs.utils.Constants
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.POSTS_ROUTE
@@ -35,6 +37,7 @@ import reactor.core.publisher.Mono
 class PostController(
     private val pathAuthorization: PathAuthorization,
     private val postService: PostService,
+    private val viewService: ViewService,
 ) {
 
     companion object {
@@ -99,5 +102,25 @@ class PostController(
             postService.deletePostByPid(postId)
         }
         .invalidateStamp { ResponseStamp.POST }
+        .wrapError()
+
+    @GetMapping("/views")
+    @Operation(summary = "Get number of views of a post")
+    fun getViews(@RequestParam postId: Long): Mono<List<View>> = pathAuthorization
+        .userAuthorization()
+        .flatMap {
+            LOGGER.info("getViews: pid: $postId")
+            viewService.getViewsByPid(postId)
+        }
+        .wrapError()
+
+    @PostMapping("/views")
+    @Operation(summary = "Add views of a post")
+    fun addView(@RequestBody view: View): Mono<View> = pathAuthorization
+        .userAuthorization()
+        .flatMap {
+            LOGGER.info("addView: view: $view")
+            viewService.saveView(view)
+        }
         .wrapError()
 }
