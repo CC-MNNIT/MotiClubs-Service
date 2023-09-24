@@ -111,7 +111,7 @@ class SecurityConfig(
                         .map { "$contextPath$it" }
                         .any { reqPath.startsWith(it) } -> Mono.empty()
 
-                    reqPath.startsWith("/$BASE_PATH") -> if (validSession) {
+                    reqPath.startsWith("$contextPath/$BASE_PATH") -> if (validSession) {
                         Mono.empty()
                     } else {
                         Mono.error(UnauthorizedException("Missing firebase auth token"))
