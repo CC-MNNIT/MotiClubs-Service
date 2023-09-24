@@ -11,7 +11,6 @@ object Constants {
     const val POSTS_ROUTE = "posts"
     const val SUPER_ADMIN_ROUTE = "admin"
     const val CHANNEL_ROUTE = "channel"
-    const val URL_ROUTE = "url"
     const val VIEWS_ROUTE = "views"
     const val REPLY_ROUTE = "reply"
 
