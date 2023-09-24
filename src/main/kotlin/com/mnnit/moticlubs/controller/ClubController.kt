@@ -90,7 +90,7 @@ class ClubController(
     @Operation(summary = "Updates the list of urls for the club")
     fun updateUrls(
         @RequestBody dto: SaveUrlsDTO,
-        @RequestParam clubId: Long
+        @RequestParam clubId: Long,
     ): Mono<ResponseEntity<List<Url>>> = pathAuthorization
         .clubAuthorization(clubId)
         .flatMap {

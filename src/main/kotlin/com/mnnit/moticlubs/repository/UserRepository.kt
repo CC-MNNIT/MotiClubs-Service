@@ -27,6 +27,13 @@ class UserRepository(
         )
 
     @Transactional
+    fun findByEmail(email: String): Mono<User> = db
+        .selectOne(
+            Query.query(Criteria.where(User::email.name).`is`(email)).limit(1),
+            User::class.java,
+        )
+
+    @Transactional
     fun findAll(): Flux<User> = db.select(Query.empty(), User::class.java)
 
     @Transactional

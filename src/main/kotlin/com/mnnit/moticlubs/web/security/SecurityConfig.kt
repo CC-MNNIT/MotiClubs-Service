@@ -1,5 +1,6 @@
 package com.mnnit.moticlubs.web.security
 
+import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.putReqId
@@ -30,6 +31,8 @@ class SecurityConfig(
             "/swagger",
             "/webjars/swagger-ui",
             "/v3/api-docs",
+            "/login",
+            "/logout",
         )
     }
 
@@ -70,12 +73,14 @@ class SecurityConfig(
         .authorizeExchange { spec ->
             spec.pathMatchers(
                 "/actuator/**",
-                "/swagger/**",
-                "/webjars/swagger-ui/**",
-                "/v3/api-docs/**",
+                "/login/**",
             ).permitAll()
                 .anyExchange().authenticated()
         }
+        .oauth2Login { }
+        .oauth2Client { }
+        .oauth2ResourceServer { it.jwt { } }
+        .logout { }
         .build()
 
     private fun firebaseAuthTokenFilter(keyProvider: KeyProvider): AuthenticationWebFilter = AuthenticationWebFilter(
@@ -91,28 +96,37 @@ class SecurityConfig(
             putReqId(exchange.request.id)
 
             val reqPath = exchange.request.path.value()
-            if (AUTH_WHITELIST_PATH
-                    .map { "$contextPath$it" }
-                    .any { reqPath.startsWith(it) }
-            ) {
-                return@setServerAuthenticationConverter Mono.empty()
-            }
 
             LOGGER.info("attempt path: ${exchange.request.method.name()} ${exchange.request.path.value()}")
             val authHeader = exchange.request.headers[HttpHeaders.AUTHORIZATION]
                 ?.first()
                 ?.replace("Bearer", "")
                 ?.trim()
-                ?: return@setServerAuthenticationConverter Mono.error(
-                    UnauthorizedException("Missing firebase auth token"),
-                )
 
-            try {
-                val token = keyProvider.verifyJwt(authHeader)
-                Mono.just(FirebaseAuthentication(token))
-            } catch (e: Exception) {
-                LOGGER.warn("Invalid auth token: ${e.localizedMessage}")
-                Mono.error(UnauthorizedException(e.localizedMessage))
+            exchange.session.flatMap { session ->
+                val validSession = session.isStarted && !session.isExpired
+
+                authHeader ?: return@flatMap when {
+                    AUTH_WHITELIST_PATH
+                        .map { "$contextPath$it" }
+                        .any { reqPath.startsWith(it) } -> Mono.empty()
+
+                    reqPath.startsWith("/$BASE_PATH") -> if (validSession) {
+                        Mono.empty()
+                    } else {
+                        Mono.error(UnauthorizedException("Missing firebase auth token"))
+                    }
+
+                    else -> Mono.error(UnauthorizedException("Path not whitelisted"))
+                }
+
+                try {
+                    val token = keyProvider.verifyJwt(authHeader)
+                    Mono.just(FirebaseAuthentication(token))
+                } catch (e: Exception) {
+                    LOGGER.warn("Invalid auth token: ${e.localizedMessage}")
+                    Mono.error(UnauthorizedException(e.localizedMessage))
+                }
             }
         }
     }

@@ -1,18 +1,10 @@
 package com.mnnit.moticlubs
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact
 import io.swagger.v3.oas.annotations.info.Info
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
-import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.servers.Server
 
-@SecurityScheme(
-    type = SecuritySchemeType.HTTP,
-    name = "Firebase Auth",
-    scheme = "Bearer",
-)
 @OpenAPIDefinition(
     info = Info(
         title = "MotiClubs Service",
@@ -33,6 +25,5 @@ import io.swagger.v3.oas.annotations.servers.Server
             description = "Production",
         ),
     ],
-    security = [SecurityRequirement(name = "Firebase Auth")],
 )
 class OpenAPIDefinition
