@@ -108,6 +108,13 @@ class SecurityConfig(
 
             val reqPath = exchange.request.path.value()
 
+            if (AUTH_WHITELIST_PATH
+                    .map { "$contextPath$it" }
+                    .any { reqPath.startsWith(it) }
+            ) {
+                return@setServerAuthenticationConverter Mono.empty()
+            }
+
             LOGGER.info("attempt path: ${exchange.request.method.name()} ${exchange.request.path.value()}")
             val authHeader = exchange.request.headers[HttpHeaders.AUTHORIZATION]
                 ?.first()
@@ -118,10 +125,6 @@ class SecurityConfig(
                 val validSession = session.isStarted && !session.isExpired
 
                 authHeader ?: return@flatMap when {
-                    AUTH_WHITELIST_PATH
-                        .map { "$contextPath$it" }
-                        .any { reqPath.startsWith(it) } -> Mono.empty()
-
                     reqPath.startsWith("$contextPath/$BASE_PATH") -> if (validSession) {
                         Mono.empty()
                     } else {
