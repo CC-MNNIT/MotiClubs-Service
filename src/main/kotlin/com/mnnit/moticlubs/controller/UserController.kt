@@ -27,6 +27,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
@@ -113,7 +114,7 @@ class UserController(
             .wrapError()
     }
 
-    @PostMapping("/avatar")
+    @PutMapping("/avatar")
     @Operation(summary = "Updates user avatar")
     fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<ResponseEntity<User>> = pathAuthorization
         .userAuthorization()
@@ -128,7 +129,7 @@ class UserController(
         }
         .wrapError()
 
-    @PostMapping("/contact")
+    @PutMapping("/contact")
     @Operation(summary = "Updates user contact info")
     fun updateContact(@RequestBody dto: UpdateContactDTO): Mono<ResponseEntity<User>> = pathAuthorization
         .userAuthorization()
@@ -143,7 +144,7 @@ class UserController(
         }
         .wrapError()
 
-    @PostMapping("/fcm")
+    @PutMapping("/fcm")
     @Operation(summary = "Update fcm token for the user")
     fun updateFCM(@RequestBody dto: FCMTokenDTO): Mono<FCM> = pathAuthorization
         .userAuthorization()
