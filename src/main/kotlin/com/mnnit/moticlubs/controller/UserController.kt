@@ -17,6 +17,7 @@ import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.validateRequestBody
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -116,6 +117,7 @@ class UserController(
     @Operation(summary = "Updates user avatar")
     fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<ResponseEntity<User>> = pathAuthorization
         .userAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("updateAvatar")
             userService.updateAvatar(it, dto.avatar)
@@ -130,6 +132,7 @@ class UserController(
     @Operation(summary = "Updates user contact info")
     fun updateContact(@RequestBody dto: UpdateContactDTO): Mono<ResponseEntity<User>> = pathAuthorization
         .userAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("updateContact")
             userService.updateContact(it, dto.contact)
@@ -144,6 +147,7 @@ class UserController(
     @Operation(summary = "Update fcm token for the user")
     fun updateFCM(@RequestBody dto: FCMTokenDTO): Mono<FCM> = pathAuthorization
         .userAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("updateFCM: uid: $it")
             fcmService.updateFcm(FCM(it, dto.token))

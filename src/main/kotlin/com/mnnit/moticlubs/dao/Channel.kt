@@ -1,6 +1,7 @@
 package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.mnnit.moticlubs.utils.Validator
 import org.springframework.data.annotation.Id
 
 data class Channel(
@@ -9,14 +10,14 @@ data class Channel(
 
     @Id
     @JsonProperty("chid")
-    val chid: Long,
+    val chid: Long = System.currentTimeMillis(),
 
     @JsonProperty("name")
     val name: String,
 
     @JsonProperty("private")
     val private: Boolean,
-) {
+) : Validator() {
 
     constructor(map: Map<String, Any>) : this(
         cid = map[Channel::cid.name].toString().toLong(),
@@ -31,4 +32,6 @@ data class Channel(
         this["ch_${Channel::name.name}"] = name
         this["ch_${Channel::private.name}"] = if (private) "1" else "0"
     }
+
+    override fun validate(): Boolean = name.validateName()
 }

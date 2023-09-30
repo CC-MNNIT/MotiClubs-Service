@@ -9,6 +9,7 @@ import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.validateRequestBody
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -58,6 +59,7 @@ class ReplyController(
     @Operation(summary = "Saves reply in the post and notify participants")
     fun saveReply(@RequestBody reply: Reply): Mono<ResponseEntity<Reply>> = pathAuthorization
         .userAuthorization()
+        .validateRequestBody(reply)
         .flatMap {
             LOGGER.info("saveReply: reply: ${reply.time}")
             replyService.saveReply(reply)

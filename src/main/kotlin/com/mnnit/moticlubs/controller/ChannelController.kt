@@ -15,6 +15,7 @@ import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.validateRequestBody
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -93,6 +94,7 @@ class ChannelController(
     @Operation(summary = "Makes list of userIds member of the clubId")
     fun addMembers(@RequestBody dto: MembersDTO): Mono<ResponseEntity<List<Member>>> = pathAuthorization
         .clubAuthorization(dto.cid)
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("addMembers: cid: ${dto.cid}; chid: ${dto.chid}")
             memberService.addMembers(dto)
@@ -125,6 +127,7 @@ class ChannelController(
     @Operation(summary = "Creates a channel in the club")
     fun createChannel(@RequestBody channel: Channel): Mono<ResponseEntity<Channel>> = pathAuthorization
         .clubAuthorization(channel.cid)
+        .validateRequestBody(channel)
         .flatMap {
             LOGGER.info("createChannel: channel: $channel")
             channelService.saveChannel(channel)
@@ -142,6 +145,7 @@ class ChannelController(
         @PathVariable channelId: Long,
     ): Mono<ResponseEntity<Channel>> = pathAuthorization
         .clubAuthorization(dto.cid)
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("updateChannel: dto: $dto; chid: $channelId")
             channelService.updateChannel(channelId, dto)

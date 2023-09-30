@@ -14,6 +14,7 @@ import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.validateRequestBody
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -69,6 +70,7 @@ class PostController(
         @RequestParam clubId: Long,
     ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
+        .validateRequestBody(post)
         .flatMap {
             LOGGER.info("savePost: cid: $clubId")
             postService.savePost(post)
@@ -84,6 +86,7 @@ class PostController(
         @RequestParam clubId: Long,
     ): Mono<ResponseEntity<Post>> = pathAuthorization
         .clubAuthorization(clubId)
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("updatePost: pid: $postId; cid: $clubId")
             postService.updatePost(postId, dto)

@@ -1,8 +1,6 @@
 package com.mnnit.moticlubs.utils
 
 object Constants {
-    val EMAIL_REGEX = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@mnnit.ac.in$".toRegex()
-
     const val STAMP_HEADER = "X-Stamp-Value"
 
     const val BASE_PATH = "api/v1"

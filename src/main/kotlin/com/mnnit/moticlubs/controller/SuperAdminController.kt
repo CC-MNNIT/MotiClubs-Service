@@ -12,6 +12,7 @@ import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.invalidateStamp
+import com.mnnit.moticlubs.utils.validateRequestBody
 import com.mnnit.moticlubs.utils.wrapError
 import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Operation
@@ -53,6 +54,7 @@ class SuperAdminController(
     @Operation(summary = "Adds a new club")
     fun addClub(@RequestBody dto: AddClubDTO): Mono<ResponseEntity<Club>> = pathAuthorization
         .superAdminAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("addClub: dto: $dto")
             clubService.saveClub(
@@ -81,6 +83,7 @@ class SuperAdminController(
     @Operation(summary = "Makes user admin of club")
     fun assignAdmin(@RequestBody dto: AssignAdminDTO): Mono<ResponseEntity<Admin>> = pathAuthorization
         .superAdminAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("assignAdmin: dto: $dto")
             adminService.saveAdmin(dto)
@@ -96,6 +99,7 @@ class SuperAdminController(
     @Operation(summary = "Remove user from club admin")
     fun removeAdmin(@RequestBody dto: AssignAdminDTO): Mono<ResponseEntity<Void>> = pathAuthorization
         .superAdminAuthorization()
+        .validateRequestBody(dto)
         .flatMap {
             LOGGER.info("removeAdmin: dto: $dto")
             adminService.removeAdmin(dto)

@@ -1,6 +1,7 @@
 package com.mnnit.moticlubs.dao
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.mnnit.moticlubs.utils.Validator
 import org.springframework.data.annotation.Id
 
 data class Post(
@@ -19,7 +20,7 @@ data class Post(
 
     @JsonProperty("message")
     val message: String,
-) {
+) : Validator() {
 
     fun toHashMap(): HashMap<String, String> = HashMap<String, String>().apply {
         this["p_${Post::pid.name}"] = pid.toString()
@@ -28,4 +29,6 @@ data class Post(
         this["p_${Post::updated.name}"] = updated.toString()
         this["p_${Post::message.name}"] = message
     }
+
+    override fun validate(): Boolean = message.validatePostMessage()
 }

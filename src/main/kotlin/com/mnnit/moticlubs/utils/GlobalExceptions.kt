@@ -16,3 +16,10 @@ class CachedException(
     HttpStatus.NOT_MODIFIED,
     message,
 )
+
+class BadRequestException(
+    override val message: String,
+) : ResponseStatusException(
+    HttpStatus.BAD_REQUEST,
+    message,
+)

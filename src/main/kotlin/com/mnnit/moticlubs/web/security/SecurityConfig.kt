@@ -1,9 +1,9 @@
 package com.mnnit.moticlubs.web.security
 
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
-import com.mnnit.moticlubs.utils.Constants.EMAIL_REGEX
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
+import com.mnnit.moticlubs.utils.Validator.Companion.EMAIL_REGEX
 import com.mnnit.moticlubs.utils.putReqId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

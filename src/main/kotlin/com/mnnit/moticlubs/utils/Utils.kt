@@ -15,6 +15,7 @@ fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
     when (it) {
         is UnauthorizedException,
         is CachedException,
+        is BadRequestException,
         -> it
 
         else -> ResponseStatusException(
@@ -55,16 +56,16 @@ fun <T> Mono<T>.invalidateStamp(
         .body(it)
 }
 
-fun Mono<Void>.invalidateStamp(
-    getStampKey: () -> ResponseStamp.StampKey,
-): Mono<ResponseEntity<Void>> = then(
-    Mono.fromCallable {
-        val updatedStamp = getStampKey().invalidateStamp()
-        ResponseEntity.ok()
-            .header(Constants.STAMP_HEADER, updatedStamp.toString())
-            .build()
-    },
-)
+/**
+ * Supposed to be called after any function of [com.mnnit.moticlubs.web.security.PathAuthorization]
+ */
+fun Mono<Long>.validateRequestBody(vararg validators: Validator) = flatMap { data ->
+    if (validators.isNotEmpty() && validators.any { !it.validate() }) {
+        Mono.error(BadRequestException("Invalid request"))
+    } else {
+        Mono.just(data)
+    }
+}
 
 fun <T> Mono<T>.storeCache(): Mono<T> = cache(Duration.ofSeconds(120))
 

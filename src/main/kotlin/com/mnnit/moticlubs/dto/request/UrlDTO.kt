@@ -1,6 +1,7 @@
 package com.mnnit.moticlubs.dto.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.mnnit.moticlubs.utils.Validator
 
 data class UrlDTO(
     @JsonProperty("urlId")
@@ -14,4 +15,7 @@ data class UrlDTO(
 
     @JsonProperty("url")
     val url: String,
-)
+) : Validator() {
+
+    override fun validate(): Boolean = name.validateName() && color.validateColor() && url.validateUrl()
+}

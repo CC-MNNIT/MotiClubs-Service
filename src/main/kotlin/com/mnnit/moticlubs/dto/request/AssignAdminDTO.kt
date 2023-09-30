@@ -1,6 +1,7 @@
 package com.mnnit.moticlubs.dto.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.mnnit.moticlubs.utils.Validator
 
 data class AssignAdminDTO(
     @JsonProperty("cid")
@@ -8,4 +9,7 @@ data class AssignAdminDTO(
 
     @JsonProperty("regNo")
     val regNo: String,
-)
+) : Validator() {
+
+    override fun validate(): Boolean = regNo.validateRegNo()
+}
