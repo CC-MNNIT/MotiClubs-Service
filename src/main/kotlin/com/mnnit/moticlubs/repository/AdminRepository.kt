@@ -2,7 +2,6 @@ package com.mnnit.moticlubs.repository
 
 import com.mnnit.moticlubs.dao.Admin
 import com.mnnit.moticlubs.dao.User
-import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
@@ -21,17 +20,21 @@ class AdminRepository(
         .flatMap { if (it) Mono.just(admin) else db.insert(admin) }
 
     @Transactional
-    fun findAll(): Flux<AdminUserDTO> = db
+    fun findAllAdmins(): Flux<User> = db
         .databaseClient
-        .sql("SELECT admin.cid, user.* FROM admin INNER JOIN user ON admin.uid = user.uid ORDER BY user.name")
+        .sql("SELECT user.* FROM user INNER JOIN (SELECT DISTINCT (admin.uid) FROM admin) as ad ON ad.uid = user.uid;")
         .fetch()
         .all()
-        .map {
-            AdminUserDTO(
-                clubId = it[Admin::cid.name].toString().toLong(),
-                user = User(it),
-            )
-        }
+        .map { User(it) }
+
+    @Transactional
+    fun findAllByUid(uid: Long): Mono<List<Long>> = db
+        .select(
+            Query.query(Criteria.where(Admin::uid.name).`is`(uid)),
+            Admin::class.java,
+        )
+        .map { it.cid }
+        .collectList()
 
     @Transactional
     fun findAllByCid(cid: Long): Flux<Admin> = db
