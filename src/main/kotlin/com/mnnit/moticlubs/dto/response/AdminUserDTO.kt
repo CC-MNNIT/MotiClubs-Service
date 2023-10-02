@@ -8,7 +8,7 @@ data class AdminUserDTO(
     val uid: Long,
 
     @JsonProperty("cid")
-    val clubId: Long,
+    val clubId: List<Long>,
 
     @JsonProperty("regNo")
     val regno: String,
@@ -31,7 +31,7 @@ data class AdminUserDTO(
     @JsonProperty("contact")
     val contact: String,
 ) {
-    constructor(clubId: Long, user: User) : this(
+    constructor(clubId: List<Long>, user: User) : this(
         uid = user.uid,
         clubId = clubId,
         regno = user.regno,

@@ -49,9 +49,11 @@ class UserService(
 
     @Cacheable("admins")
     fun getAllAdminUsers(): Mono<List<AdminUserDTO>> = adminRepository
-        .findAll()
+        .findAllAdmins()
+        .flatMap { user ->
+            adminRepository.findAllByUid(user.uid).map { AdminUserDTO(it, user) }
+        }
         .collectList()
-        .storeCache()
 
     @CacheEvict(cacheNames = ["user", "admins", "all_users", "members"], allEntries = true)
     fun updateAvatar(uid: Long, avatar: String): Mono<User> = userRepository.updateAvatar(uid, avatar)
