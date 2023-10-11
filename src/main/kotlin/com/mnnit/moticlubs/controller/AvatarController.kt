@@ -20,6 +20,7 @@ import com.mnnit.moticlubs.web.security.PathAuthorization
 import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.core.env.Environment
 import org.springframework.core.io.UrlResource
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
@@ -51,6 +52,7 @@ import java.util.*
 @RequestMapping("/${Constants.BASE_PATH}/${Constants.AVATAR_ROUTE}")
 @Tag(name = "AvatarRoute")
 class AvatarController(
+    private val environment: Environment,
     private val pathAuthorization: PathAuthorization,
     private val clubService: ClubService,
     private val userService: UserService,
@@ -181,13 +183,17 @@ class AvatarController(
         }
 
         val fileName = id.getFileName()
-        val rawUrl = "${serverRequest.uri.toURL()}"
+        val rawUrl = if (environment.activeProfiles.contains("prod")) {
+            "https://sac.mnnit.ac.in/moticlubs/api/v1/avatar"
+        } else {
+            "http://localhost:8002/api/v1/avatar"
+        }
 
         val hashPrefix = id.encodeToUrl()
         val (path, url) = when (imageType) {
-            ImageType.USER -> Pair(USER_AVATAR_PATH, rawUrl.replace("user.*".toRegex(), "g/user/$hashPrefix"))
-            ImageType.CLUB -> Pair(CLUB_AVATAR_PATH, rawUrl.replace("club.*".toRegex(), "g/club/$hashPrefix"))
-            ImageType.POST -> Pair(POST_AVATAR_PATH, rawUrl.replace("post.*".toRegex(), "g/post/$hashPrefix"))
+            ImageType.USER -> Pair(USER_AVATAR_PATH, "$rawUrl/g/user/$hashPrefix")
+            ImageType.CLUB -> Pair(CLUB_AVATAR_PATH, "$rawUrl/g/club/$hashPrefix")
+            ImageType.POST -> Pair(POST_AVATAR_PATH, "$rawUrl/g/post/$hashPrefix")
         }
 
         val folder = File(path)
