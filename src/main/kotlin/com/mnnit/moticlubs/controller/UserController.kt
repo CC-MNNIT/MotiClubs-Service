@@ -3,7 +3,6 @@ package com.mnnit.moticlubs.controller
 import com.mnnit.moticlubs.dao.FCM
 import com.mnnit.moticlubs.dao.User
 import com.mnnit.moticlubs.dto.request.FCMTokenDTO
-import com.mnnit.moticlubs.dto.request.UpdateAvatarDTO
 import com.mnnit.moticlubs.dto.request.UpdateContactDTO
 import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
@@ -110,24 +109,9 @@ class UserController(
     fun saveUser(@RequestBody user: User): Mono<ResponseEntity<User>> {
         LOGGER.info("saveUser: user: ${user.regno}")
         return userService.saveUser(user)
-            .invalidateStamp { ResponseStamp.USER }
+            .invalidateStamp { ResponseStamp.USER.withKey("all") }
             .wrapError()
     }
-
-    @PutMapping("/avatar")
-    @Operation(summary = "Updates user avatar")
-    fun updateAvatar(@RequestBody dto: UpdateAvatarDTO): Mono<ResponseEntity<User>> = pathAuthorization
-        .userAuthorization()
-        .validateRequestBody(dto)
-        .flatMap {
-            LOGGER.info("updateAvatar")
-            userService.updateAvatar(it, dto.avatar)
-        }
-        .invalidateStamp {
-            ResponseStamp.ADMIN.invalidateStamp()
-            ResponseStamp.USER
-        }
-        .wrapError()
 
     @PutMapping("/contact")
     @Operation(summary = "Updates user contact info")
@@ -140,7 +124,7 @@ class UserController(
         }
         .invalidateStamp {
             ResponseStamp.ADMIN.invalidateStamp()
-            ResponseStamp.USER
+            ResponseStamp.USER.withKey("${it.uid}")
         }
         .wrapError()
 

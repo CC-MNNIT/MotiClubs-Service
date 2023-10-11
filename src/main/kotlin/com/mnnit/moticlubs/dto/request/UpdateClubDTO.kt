@@ -7,14 +7,10 @@ data class UpdateClubDTO(
     @JsonProperty("description")
     val description: String,
 
-    @JsonProperty("avatar")
-    val avatar: String,
-
     @JsonProperty("summary")
     val summary: String,
 ) : Validator() {
 
     override fun validate(): Boolean = description.validateClubDescription() &&
-        summary.validateClubSummary() &&
-        avatar.validateUrl()
+        summary.validateClubSummary()
 }

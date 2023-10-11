@@ -42,3 +42,4 @@ src/main/resources/*.sql
 logs/
 deploy.sh
 sac.conf
+images/

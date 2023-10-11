@@ -28,6 +28,9 @@ class ClubService(
     @CacheEvict("all_clubs", allEntries = true)
     fun updateClub(cid: Long, dto: UpdateClubDTO): Mono<Club> = clubRepository.updateClub(cid, dto)
 
+    @CacheEvict("all_clubs", allEntries = true)
+    fun updateAvatar(cid: Long, avatar: String): Mono<Club> = clubRepository.updateClubAvatar(cid, avatar)
+
     fun clubExists(cid: Long): Mono<Boolean> = clubRepository.existsById(cid)
 
     @CacheEvict(
