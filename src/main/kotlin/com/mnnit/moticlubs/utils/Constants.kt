@@ -7,6 +7,7 @@ object Constants {
 
     const val USER_ROUTE = "user"
     const val CLUBS_ROUTE = "clubs"
+    const val AVATAR_ROUTE = "avatar"
     const val POSTS_ROUTE = "posts"
     const val SUPER_ADMIN_ROUTE = "admin"
     const val CHANNEL_ROUTE = "channel"
@@ -18,4 +19,8 @@ object Constants {
     const val CLUB_ID_CLAIM = "clubId"
     const val CHANNEL_ID_CLAIM = "channelId"
     const val POST_ID_CLAIM = "postId"
+
+    const val USER_AVATAR_PATH = "images/$USER_ROUTE"
+    const val CLUB_AVATAR_PATH = "images/$CLUBS_ROUTE"
+    const val POST_AVATAR_PATH = "images/$POSTS_ROUTE"
 }

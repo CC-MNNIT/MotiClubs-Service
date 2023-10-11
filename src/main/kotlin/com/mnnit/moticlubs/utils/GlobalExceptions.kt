@@ -23,3 +23,10 @@ class BadRequestException(
     HttpStatus.BAD_REQUEST,
     message,
 )
+
+class NotFoundException(
+    override val message: String,
+) : ResponseStatusException(
+    HttpStatus.NOT_FOUND,
+    message,
+)

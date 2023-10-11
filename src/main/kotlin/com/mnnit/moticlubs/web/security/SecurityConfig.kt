@@ -1,5 +1,6 @@
 package com.mnnit.moticlubs.web.security
 
+import com.mnnit.moticlubs.utils.Constants.AVATAR_ROUTE
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.ServiceLogger
 import com.mnnit.moticlubs.utils.UnauthorizedException
@@ -30,6 +31,7 @@ class SecurityConfig(
     companion object {
         private val LOGGER = ServiceLogger.getLogger(SecurityConfig::class.java)
         private val AUTH_WHITELIST_PATH = arrayOf(
+            "/$BASE_PATH/$AVATAR_ROUTE/g",
             "/actuator",
             "/swagger",
             "/webjars/swagger-ui",
@@ -77,6 +79,7 @@ class SecurityConfig(
             spec.pathMatchers(
                 "/actuator/**",
                 "/login/**",
+                "/$BASE_PATH/$AVATAR_ROUTE/g/**",
             ).permitAll()
                 .anyExchange().access { authentication, _ ->
                     authentication.map { auth ->

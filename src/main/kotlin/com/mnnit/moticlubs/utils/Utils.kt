@@ -16,6 +16,7 @@ fun <T> Mono<T>.wrapError(): Mono<T> = onErrorMap {
         is UnauthorizedException,
         is CachedException,
         is BadRequestException,
+        is NotFoundException,
         -> it
 
         else -> ResponseStatusException(

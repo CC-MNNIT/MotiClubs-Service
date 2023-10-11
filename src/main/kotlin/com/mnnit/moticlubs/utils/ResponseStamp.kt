@@ -14,6 +14,7 @@ object ResponseStamp {
         fun getKey(): String = keyValue
     }
 
+    val NONE get() = object : StampKey("NONE") {}
     val ADMIN get() = object : StampKey("ADMIN") {}
     val CHANNEL get() = object : StampKey("CHANNEL") {}
     val CLUB get() = object : StampKey("CLUB") {}

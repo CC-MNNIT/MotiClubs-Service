@@ -41,10 +41,18 @@ class ClubRepository(
             Update.from(
                 HashMap<SqlIdentifier, Any>().apply {
                     this[SqlIdentifier.unquoted(Club::description.name)] = dto.description
-                    this[SqlIdentifier.unquoted(Club::avatar.name)] = dto.avatar
                     this[SqlIdentifier.unquoted(Club::summary.name)] = dto.summary
                 },
             ),
+            Club::class.java,
+        )
+        .flatMap { findById(cid) }
+
+    @Transactional
+    fun updateClubAvatar(cid: Long, avatar: String): Mono<Club> = db
+        .update(
+            Query.query(Criteria.where(Club::cid.name).`is`(cid)),
+            Update.update(Club::avatar.name, avatar),
             Club::class.java,
         )
         .flatMap { findById(cid) }
