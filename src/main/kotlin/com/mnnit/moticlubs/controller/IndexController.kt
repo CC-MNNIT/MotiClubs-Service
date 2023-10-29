@@ -17,11 +17,11 @@ class IndexController {
 
     @GetMapping("", produces = ["text/html"])
     fun index(
-        @Value("classpath:templates/index.html") html: Resource
+        @Value("classpath:templates/index.html") html: Resource,
     ): Mono<ResponseEntity<Resource>> = Mono.just(ResponseEntity.status(HttpStatus.OK).body(html))
 
     @GetMapping("/privacy", produces = ["text/html"])
     fun privacy(
-        @Value("classpath:templates/privacy.html") html: Resource
+        @Value("classpath:templates/privacy.html") html: Resource,
     ): Mono<ResponseEntity<Resource>> = Mono.just(ResponseEntity.status(HttpStatus.OK).body(html))
 }
