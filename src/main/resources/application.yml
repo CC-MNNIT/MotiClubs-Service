@@ -16,6 +16,7 @@ springdoc:
 spring:
   webflux:
     base-path: ${app.context-path}
+    static-path-pattern: /static/**
   profiles:
     active: dev
   config:

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.css"/>
+    <link rel="icon" type="image/x-icon" href="static/img/app.png">
+
+    <title>MotiClubs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.js"></script>
+</head>
+<body>
+
+<div>
+    <nav class="bg-white dark:bg-gray-900 fixed w-full z-40 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="#" class="flex items-center" onclick="home()">
+                <img src="static/img/app.png" class="h-8 mr-3 rounded-lg" alt="MotiClubs Logo">
+                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">MotiClubs</span>
+            </a>
+            <div class="flex md:order-2">
+                <button type="button"
+                        class="flex items-center justify-center text-white bg-[#006C4B] hover:bg-[#006C4B] font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0 dark:bg-[#006C4B] dark:hover:bg-[#006C4B]">
+                    Download
+                </button>
+                <button data-collapse-toggle="navbar-sticky" type="button"
+                        class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                        aria-controls="navbar-sticky" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                         viewBox="0 0 17 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M1 1h15M1 7h15M1 13h15"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
+                <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <li>
+                        <a href="#"
+                           class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#006C4B] md:p-0 md:dark:hover:text-[#006C4B] dark:text-white dark:hover:bg-[#006C4B] dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                           aria-current="page"
+                           onclick="home()">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#about"
+                           class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#006C4B] md:p-0 md:dark:hover:text-[#006C4B] dark:text-white dark:hover:bg-[#006C4B] dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                           onclick="hideNav()">
+                            About
+                        </a>
+                    </li>
+                    <li>
+                        <a href="privacy"
+                           class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#006C4B] md:p-0 md:dark:hover:text-[#006C4B] dark:text-white dark:hover:bg-[#006C4B] dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                           onclick="hideNav()">
+                            Privacy
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="md:mt-16 mt-16 bg-white dark:bg-gray-900">
+        <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+            <div class="mr-auto place-self-center lg:col-span-7">
+                <!--                <a href="#"-->
+                <!--                   class="inline-flex justify-between items-center py-1 px-1 pr-4 mb-7 text-sm text-gray-700 bg-gray-100 rounded-full dark:bg-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"-->
+                <!--                   role="alert">-->
+                <!--                    <span class="text-xs bg-[#006C4B] rounded-full text-white px-4 py-1.5 mr-3">New</span> <span-->
+                <!--                    class="text-sm font-medium">Update is out! See what's new</span>-->
+                <!--                    <svg class="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20"-->
+                <!--                         xmlns="http://www.w3.org/2000/svg">-->
+                <!--                        <path fill-rule="evenodd"-->
+                <!--                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"-->
+                <!--                              clip-rule="evenodd"></path>-->
+                <!--                    </svg>-->
+                <!--                </a>-->
+                <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                    MotiClubs
+                </h1>
+                <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+                    A platform that is created to provide efficient and effective communication and collaboration
+                    between clubs and communities and students.
+                </p>
+                <div
+                    class="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                    <a href="#"
+                       class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-[#006C4B] hover:bg-[#006C4B]">
+                        <div class="mr-3">
+                            <svg viewBox="30 336.7 120.9 129.2" width="20">
+                                <path fill="#FFD400"
+                                      d="M119.2,421.2c15.3-8.4,27-14.8,28-15.3c3.2-1.7,6.5-6.2,0-9.7  c-2.1-1.1-13.4-7.3-28-15.3l-20.1,20.2L119.2,421.2z">
+                                </path>
+                                <path fill="#FF3333"
+                                      d="M99.1,401.1l-64.2,64.7c1.5,0.2,3.2-0.2,5.2-1.3  c4.2-2.3,48.8-26.7,79.1-43.3L99.1,401.1L99.1,401.1z">
+                                </path>
+                                <path fill="#48FF48"
+                                      d="M99.1,401.1l20.1-20.2c0,0-74.6-40.7-79.1-43.1  c-1.7-1-3.6-1.3-5.3-1L99.1,401.1z">
+                                </path>
+                                <path fill="#3BCCFF"
+                                      d="M99.1,401.1l-64.3-64.3c-2.6,0.6-4.8,2.9-4.8,7.6  c0,7.5,0,107.5,0,113.8c0,4.3,1.7,7.4,4.9,7.7L99.1,401.1z">
+                                </path>
+                            </svg>
+                        </div>
+                        Play Store
+                    </a>
+                    <a href="#"
+                       class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-gray-900 rounded-lg border border-gray-300 hover:bg-gray-100 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 -ml-1 w-5 h-5" height="1em"
+                             viewBox="0 0 576 512">
+                            <path
+                                d="M64 0C28.7 0 0 28.7 0 64V352c0 35.3 28.7 64 64 64H240l-10.7 32H160c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H346.7L336 416H512c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zM512 64V288H64V64H512z"/>
+                        </svg>
+                        Desktop App coming soon
+                    </a>
+                </div>
+            </div>
+            <div class="place-self-center px-16 lg:mt-0 lg:col-span-5 lg:flex">
+                <img class="rounded-3xl" src="static/img/app.png" alt="mockup">
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-16 bg-white dark:bg-gray-900 relative w-full" data-carousel="slide">
+        <!-- Carousel wrapper -->
+        <div class="relative h-[512px] overflow-hidden rounded-lg md:h-[512px]">
+            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img src="static/img/app_login.png"
+                     class="absolute block max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+            </div>
+            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img src="static/img/home_light.png"
+                     class="dark:hidden absolute max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+                <img src="static/img/home_dark.png"
+                     class="absolute hidden dark:block max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+            </div>
+            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img src="static/img/post_list_light.png"
+                     class="dark:hidden absolute max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+                <img src="static/img/post_list_dark.png"
+                     class="absolute hidden dark:block max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+            </div>
+            <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                <img src="static/img/post_light.png"
+                     class="dark:hidden absolute max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+                <img src="static/img/post_dark.png"
+                     class="absolute hidden dark:block max-w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                     alt="">
+            </div>
+        </div>
+        <!-- Slider controls -->
+        <button type="button"
+                class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-prev>
+            <span
+                class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:bg-white/30 bg-gray-800/30 dark:group-hover:bg-white/50 group-hover:bg-gray-800/60 group-focus:ring-4 dark:group-focus:ring-white group-focus:ring-gray-800/70 group-focus:outline-none">
+                <svg class="w-4 h-4 dark:text-white text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M5 1 1 5l4 4"/>
+                </svg>
+                <span class="sr-only">Previous</span>
+            </span>
+        </button>
+        <button type="button"
+                class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                data-carousel-next>
+            <span
+                class="inline-flex items-center justify-center w-10 h-10 rounded-full dark:bg-white/30 bg-gray-800/30 dark:group-hover:bg-white/50 group-hover:bg-gray-800/60 group-focus:ring-4 dark:group-focus:ring-white group-focus:ring-gray-800/70 group-focus:outline-none">
+                <svg class="w-4 h-4 dark:text-white text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 6 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="m1 9 4-4-4-4"/>
+                </svg>
+                <span class="sr-only">Next</span>
+            </span>
+        </button>
+    </section>
+
+    <section class="bg-white dark:bg-gray-900" id="about">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
+            <div class="max-w-screen-md mb-8 lg:mb-16">
+                <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Welcome to
+                    MotiClubs</h2>
+                <p class="text-gray-500 sm:text-xl dark:text-gray-400">Tired of too many groups on WhatsApp ? MotiClubs
+                    is your gateway to streamlined club and
+                    community communication at MNNIT Allahabad. We are here to empower your club with a platform
+                    designed for all students, enhancing inclusivity and efficiency.</p>
+            </div>
+            <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-2 md:gap-12 md:space-y-0">
+                <div>
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
+                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor"
+                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Efficient Communication</h3>
+                    <p class="text-gray-500 dark:text-gray-400">MotiClubs lets you create channels and connect with
+                        members based on specific criteria such as year, branch, or course. Make announcements, share
+                        posts with images, and effortlessly contact anyone in the college community by clicking on their
+                        profile.</p>
+                </div>
+                <div>
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
+                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor"
+                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.780a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Inclusivity Matters</h3>
+                    <p class="text-gray-500 dark:text-gray-400">We understand that inclusivity is key. MotiClubs breaks
+                        down barriers and welcomes all students. No more dependency on exclusive platforms. Keep
+                        everyone in the loop, regardless of their status or affiliation.</p>
+                </div>
+                <div>
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
+                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+                            <path
+                                d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Channel Control</h3>
+                    <p class="text-gray-500 dark:text-gray-400">Take control of your channels with MotiClubs. Create
+                        both private and public channels, allowing respective users to engage and collaborate seamlessly
+                        while ensuring data privacy.</p>
+                </div>
+                <div>
+                    <div
+                        class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
+                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor"
+                             viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z"
+                                  clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mb-2 text-xl font-bold dark:text-white">Club Communication</h3>
+                    <p class="text-gray-500 dark:text-gray-400">Simplify club management, collaborate seamlessly, and
+                        keep everyone in the loop, regardless of their affiliation. MotiClubs ensures that your club's
+                        announcements, events, and discussions are organized and easily accessible.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
+        <div class="mx-auto max-w-screen-xl text-center">
+            <a href="#" class="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white">
+                <img class="mr-2 h-8 rounded-lg" src="static/img/app.png" alt="MotiClubs logo">
+                MotiClubs
+            </a>
+            <p class="my-6 text-gray-500 dark:text-gray-400">Communication platform explicitly for MNNIT Allahabad</p>
+            <ul class="flex flex-wrap justify-center items-center mb-6 text-gray-900 dark:text-white">
+                <li>
+                    <a href="https://github.com/CC-MNNIT/MotiClubs" class="mr-4 hover:underline md:mr-6">Source Code</a>
+                </li>
+                <li>
+                    <a href="swagger" class="mr-4 hover:underline md:mr-6 ">Swagger</a>
+                </li>
+                <li>
+                    <a href="privacy" class="mr-4 hover:underline md:mr-6 ">Privacy Policy</a>
+                </li>
+            </ul>
+            <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+                © 2023
+                <a href="#"
+                   class="hover:underline">
+                    Computer Coding Club - MNNIT Allahabad
+                </a>
+                . All Rights Reserved.
+            </span>
+        </div>
+    </footer>
+</div>
+
+<script>
+    function hideNav() {
+        const nav = document.getElementById("navbar-sticky")
+        if (!nav) {
+            return
+        }
+
+        if (!nav.classList.contains("hidden")) {
+            nav.classList.add("hidden");
+        }
+    }
+
+    function home() {
+        window.scrollTo(0, 0)
+        hideNav()
+    }
+</script>
+</body>
+</html>

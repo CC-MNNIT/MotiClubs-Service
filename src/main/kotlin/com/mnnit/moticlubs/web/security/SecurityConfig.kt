@@ -38,6 +38,13 @@ class SecurityConfig(
             "/v3/api-docs",
             "/login",
             "/logout",
+            "/static"
+        )
+        private val FIXED_BYPASS = arrayOf(
+            "/",
+            "/privacy",
+            "/moticlubs",
+            "/favicon.ico",
         )
     }
 
@@ -80,6 +87,11 @@ class SecurityConfig(
                 "/actuator/**",
                 "/login/**",
                 "/$BASE_PATH/$AVATAR_ROUTE/g/**",
+                "/static/**",
+                "/",
+                "/moticlubs/**",
+                "/privacy",
+                "/favicon.ico"
             ).permitAll()
                 .anyExchange().access { authentication, _ ->
                     authentication.map { auth ->
@@ -110,6 +122,13 @@ class SecurityConfig(
             putReqId(exchange.request.id)
 
             val reqPath = exchange.request.path.value()
+
+            if (FIXED_BYPASS
+                    .map { "$contextPath$it" }
+                    .any { reqPath == it }
+            ) {
+                return@setServerAuthenticationConverter Mono.empty()
+            }
 
             if (AUTH_WHITELIST_PATH
                     .map { "$contextPath$it" }
