@@ -57,6 +57,17 @@ fun <T> Mono<T>.invalidateStamp(
         .body(it)
 }
 
+fun Mono<Void>.invalidateStamp(
+    getStampKey: () -> ResponseStamp.StampKey,
+): Mono<ResponseEntity<Void>> = then(
+    Mono.fromCallable {
+        val updatedStamp = getStampKey().invalidateStamp()
+        ResponseEntity.ok()
+            .header(Constants.STAMP_HEADER, updatedStamp.toString())
+            .body(null)
+    },
+)
+
 /**
  * Supposed to be called after any function of [com.mnnit.moticlubs.web.security.PathAuthorization]
  */

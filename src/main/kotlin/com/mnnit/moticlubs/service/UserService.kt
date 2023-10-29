@@ -60,4 +60,10 @@ class UserService(
 
     @CacheEvict(cacheNames = ["user", "admins", "all_users", "members"], allEntries = true)
     fun updateContact(uid: Long, contact: String): Mono<User> = userRepository.updateContact(uid, contact)
+
+    @CacheEvict(
+        cacheNames = ["user", "admins", "all_users", "members", "post", "replies", "all_channels"],
+        allEntries = true,
+    )
+    fun deleteUser(uid: Long) = userRepository.deleteById(uid)
 }

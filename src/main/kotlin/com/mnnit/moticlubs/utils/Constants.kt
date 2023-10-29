@@ -2,6 +2,7 @@ package com.mnnit.moticlubs.utils
 
 object Constants {
     const val STAMP_HEADER = "X-Stamp-Value"
+    const val CAPTCHA_HEADER = "X-Captcha-Email"
 
     const val BASE_PATH = "api/v1"
 

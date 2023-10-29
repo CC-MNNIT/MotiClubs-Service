@@ -8,12 +8,14 @@ import com.mnnit.moticlubs.dto.response.AdminUserDTO
 import com.mnnit.moticlubs.service.FCMService
 import com.mnnit.moticlubs.service.UserService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
+import com.mnnit.moticlubs.utils.Constants.CAPTCHA_HEADER
 import com.mnnit.moticlubs.utils.Constants.STAMP_HEADER
 import com.mnnit.moticlubs.utils.Constants.USER_ID_CLAIM
 import com.mnnit.moticlubs.utils.Constants.USER_ROUTE
 import com.mnnit.moticlubs.utils.ResponseStamp
 import com.mnnit.moticlubs.utils.ResponseStamp.invalidateStamp
 import com.mnnit.moticlubs.utils.ServiceLogger
+import com.mnnit.moticlubs.utils.UnauthorizedException
 import com.mnnit.moticlubs.utils.apiWrapper
 import com.mnnit.moticlubs.utils.invalidateStamp
 import com.mnnit.moticlubs.utils.validateRequestBody
@@ -23,6 +25,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -136,6 +139,33 @@ class UserController(
         .flatMap {
             LOGGER.info("updateFCM: uid: $it")
             fcmService.updateFcm(FCM(it, dto.token))
+        }
+        .wrapError()
+
+    @DeleteMapping
+    @Operation(
+        summary = "Delete your own account",
+        description = "This API will delete your account and any actions (that includes posts, " +
+            "replies and as club admin) permanently. You need to enter your college G-Suite ID email in the captcha.",
+    )
+    fun deleteUser(@RequestHeader(CAPTCHA_HEADER) email: String): Mono<ResponseEntity<Void>> = pathAuthorization
+        .userAuthorization()
+        .flatMap { uid -> userService.getUserByUid(uid).map { Pair(uid, it) } }
+        .flatMap { (uid, user) ->
+            if (user.email == email) {
+                LOGGER.info("deleteUser: DELETE ACCOUNT [$uid]")
+                userService.deleteUser(uid)
+            } else {
+                Mono.error(UnauthorizedException("Please enter your email in the captcha"))
+            }
+        }
+        .invalidateStamp {
+            ResponseStamp.ADMIN.invalidateStamp()
+            ResponseStamp.MEMBER.invalidateStamp()
+            ResponseStamp.POST.invalidateStamp()
+            ResponseStamp.REPLY.invalidateStamp()
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.USER
         }
         .wrapError()
 }
