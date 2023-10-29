@@ -38,12 +38,11 @@ class SecurityConfig(
             "/v3/api-docs",
             "/login",
             "/logout",
-            "/static"
+            "/static",
         )
         private val FIXED_BYPASS = arrayOf(
             "/",
             "/privacy",
-            "/moticlubs",
             "/favicon.ico",
         )
     }
@@ -89,9 +88,8 @@ class SecurityConfig(
                 "/$BASE_PATH/$AVATAR_ROUTE/g/**",
                 "/static/**",
                 "/",
-                "/moticlubs/**",
                 "/privacy",
-                "/favicon.ico"
+                "/favicon.ico",
             ).permitAll()
                 .anyExchange().access { authentication, _ ->
                     authentication.map { auth ->
