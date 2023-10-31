@@ -110,4 +110,22 @@ class SuperAdminController(
             ResponseStamp.ADMIN
         }
         .wrapError()
+
+    @PostMapping("/invalidate_stamps")
+    @Operation(summary = "Invalidate all variants of stamps")
+    fun invalidateStamp(): Mono<ResponseEntity<Void>> = pathAuthorization
+        .superAdminAuthorization()
+        .flatMap { Mono.just(it).then() }
+        .invalidateStamp {
+            ResponseStamp.NONE.invalidateStamp()
+            ResponseStamp.ADMIN.invalidateStamp()
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.CLUB.invalidateStamp()
+            ResponseStamp.MEMBER.invalidateStamp()
+            ResponseStamp.POST.invalidateStamp()
+            ResponseStamp.REPLY.invalidateStamp()
+            ResponseStamp.URL.invalidateStamp()
+            ResponseStamp.USER
+        }
+        .wrapError()
 }
