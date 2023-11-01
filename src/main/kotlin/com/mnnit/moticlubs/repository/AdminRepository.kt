@@ -58,5 +58,17 @@ class AdminRepository(
         )
 
     @Transactional
-    fun delete(admin: Admin): Mono<Void> = db.delete(admin).then()
+    fun delete(admin: Admin): Mono<Void> = db
+        .delete(
+            Query.query(
+                Criteria
+                    .where(Admin::cid.name)
+                    .`is`(admin.cid)
+                    .and(
+                        Criteria.where(Admin::uid.name).`is`(admin.uid),
+                    ),
+            ),
+            Admin::class.java,
+        )
+        .then()
 }

@@ -40,7 +40,19 @@ class MemberRepository(
 
     @Transactional
     fun delete(member: Member): Mono<Void> = exists(member)
-        .flatMap { if (it) db.delete(member) else Mono.just(member) }
+        .flatMap {
+            if (it) {
+                db.delete(
+                    Query.query(
+                        Criteria.where(Member::uid.name).`is`(member.uid)
+                            .and(Criteria.where(Member::chid.name).`is`(member.chid)),
+                    ),
+                    Member::class.java,
+                )
+            } else {
+                Mono.just(member)
+            }
+        }
         .then()
 
     @Transactional
