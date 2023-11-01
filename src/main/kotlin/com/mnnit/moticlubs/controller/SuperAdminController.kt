@@ -1,10 +1,12 @@
 package com.mnnit.moticlubs.controller
 
 import com.mnnit.moticlubs.dao.Admin
+import com.mnnit.moticlubs.dao.Channel
 import com.mnnit.moticlubs.dao.Club
 import com.mnnit.moticlubs.dto.request.AddClubDTO
 import com.mnnit.moticlubs.dto.request.AssignAdminDTO
 import com.mnnit.moticlubs.service.AdminService
+import com.mnnit.moticlubs.service.ChannelService
 import com.mnnit.moticlubs.service.ClubService
 import com.mnnit.moticlubs.utils.Constants.BASE_PATH
 import com.mnnit.moticlubs.utils.Constants.SUPER_ADMIN_ROUTE
@@ -33,6 +35,7 @@ import reactor.core.publisher.Mono
 class SuperAdminController(
     private val pathAuthorization: PathAuthorization,
     private val clubService: ClubService,
+    private val channelService: ChannelService,
     private val adminService: AdminService,
 ) {
 
@@ -65,7 +68,16 @@ class SuperAdminController(
                 ),
             )
         }
-        .invalidateStamp { ResponseStamp.CLUB }
+        .flatMap { club ->
+            LOGGER.info("addClub: creating general channel")
+            channelService.saveChannel(
+                Channel(cid = club.cid, name = "General", private = false),
+            ).map { club }
+        }
+        .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.CLUB
+        }
         .wrapError()
 
     @DeleteMapping("/delete_club")
@@ -76,7 +88,10 @@ class SuperAdminController(
             LOGGER.info("deleteClubByCid: cid: $clubId")
             clubService.deleteClubByCid(clubId)
         }
-        .invalidateStamp { ResponseStamp.CLUB }
+        .invalidateStamp {
+            ResponseStamp.CHANNEL.invalidateStamp()
+            ResponseStamp.CLUB
+        }
         .wrapError()
 
     @PostMapping("/add_admin")
