@@ -19,8 +19,8 @@ class ReplyService(
     @CacheEvict("replies", allEntries = true)
     fun saveReply(reply: Reply): Mono<Reply> = replyRepository.save(reply)
         .flatMap { savedReply ->
-            notificationService.notifyReply(savedReply)
-                .then(Mono.just(savedReply))
+            notificationService.notifyReply(reply)
+            Mono.just(savedReply)
         }
 
     @Cacheable("replies", key = "#pid + '_' + #pageRequest.pageNumber")
@@ -35,8 +35,8 @@ class ReplyService(
             if (reply.uid != uid) {
                 Mono.error(UnauthorizedException("User not the owner of reply"))
             } else {
+                notificationService.notifyDeleteReply(reply)
                 replyRepository.deleteById(time)
-                    .then(notificationService.notifyDeleteReply(reply))
             }
         }
 }

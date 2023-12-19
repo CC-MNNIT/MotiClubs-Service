@@ -2,6 +2,7 @@ package com.mnnit.moticlubs
 
 import com.mnnit.moticlubs.utils.ResponseStamp
 import org.junit.jupiter.api.Test
+import reactor.core.publisher.Mono
 
 class SampleTests {
 
@@ -47,5 +48,26 @@ class SampleTests {
         assert(map["MEMBER:23:69"] ?: false)
         assert(map["MEMBER:23:6"] ?: false)
         assert(map["MEMBER:23"] ?: false)
+    }
+
+    @Test
+    fun testIndependentTask() {
+        var num = 0
+        Mono.just(num)
+            .flatMap {
+                Thread {
+                    Thread.sleep(1500)
+                    println("Thread done with $num")
+                }.start()
+
+                num++
+                println("Num: $it")
+                Mono.just(it)
+            }
+            .subscribe()
+        println("Finished with $num:")
+
+        num++
+        Thread.sleep(3000)
     }
 }

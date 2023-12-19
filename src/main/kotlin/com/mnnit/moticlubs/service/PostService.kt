@@ -20,7 +20,7 @@ class PostService(
     fun savePost(post: Post): Mono<Post> = postRepository.save(post)
         .flatMap { savedPost ->
             notificationService.notifyPost(savedPost, false)
-                .then(Mono.just(savedPost))
+            Mono.just(savedPost)
         }
 
     @Cacheable("post", key = "#chid + '_' + #pageRequest.pageNumber")
@@ -34,14 +34,14 @@ class PostService(
         .updatePost(pid, dto)
         .flatMap { post ->
             notificationService.notifyPost(post, true)
-                .then(Mono.just(post))
+            Mono.just(post)
         }
 
     @CacheEvict(cacheNames = ["post", "replies"], allEntries = true)
     fun deletePostByPid(pid: Long): Mono<Void> = postRepository
         .findById(pid)
         .flatMap { post ->
+            notificationService.notifyDeletePost(post)
             postRepository.deleteById(pid)
-                .then(notificationService.notifyDeletePost(post))
         }
 }
